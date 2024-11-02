@@ -1,0 +1,12 @@
+Django==4.2
+djangorestframework~=3.14.0
+djangorestframework-simplejwt~=5.2.2
+psycopg2-binary==2.9.5
+Pillow==9.2.0
+python-decouple==3.4 #conf
+drf-yasg #swager
+django-cors-headers~=4.0.0
+django-filter==23.2
+drf-extra-fields~=3.5.0
+drf-spectacular
+
