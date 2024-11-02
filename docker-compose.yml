@@ -18,8 +18,8 @@ services:
   web:
     build: .
     command:
-      - python app/manage.py collectstatic --noinput
-      - gunicorn app/main_conf.wsgi:application --bind 0.0.0.0:8000
+      - python ./app/manage.py collectstatic --noinput
+      - gunicorn ./app/main_conf.wsgi:application --bind 0.0.0.0:8000
     restart: always
     volumes:
       - static_volume:/usr/src/app/static
