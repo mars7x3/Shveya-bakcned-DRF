@@ -44,8 +44,7 @@ services:
       - web
     networks:
       - app_network
-/home/mars7x3/PycharmProjects/SHVEYA_DRF/docker-compose:
-  yml:
+
 volumes:
   static_volume:
   media_volume:
