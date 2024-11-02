@@ -9,4 +9,6 @@ django-cors-headers~=4.0.0
 django-filter==23.2
 drf-extra-fields~=3.5.0
 drf-spectacular
+gunicorn
+
 
