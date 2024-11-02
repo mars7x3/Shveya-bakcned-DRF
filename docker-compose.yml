@@ -16,9 +16,9 @@ services:
       - db_network
 
   web:
-    build: .
+    build: ./
     command:
-      - gunicorn ./app/main_conf.wsgi:application --bind 0.0.0.0:8000
+      - gunicorn app/main_conf.wsgi:application --bind 0.0.0.0:8000
     restart: always
     volumes:
       - static_volume:/usr/src/app/static
