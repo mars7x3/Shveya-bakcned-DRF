@@ -1,0 +1,53 @@
+# Виртуальное окружение
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+
+# Файлы и каталоги конфигурации IDE
+.idea/
+.vscode/
+*.swp
+
+# Логи и временные файлы
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+*.pyo
+
+# Кэш Django
+db.sqlite3
+*.sqlite3
+*.log
+media/
+*.DS_Store
+
+# Файлы конфигурации ОС
+Thumbs.db
+.DS_Store
+
+# Файлы среды и конфигурации системы
+.env
+.env.*
+*.env
+
+# Миграции Django
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Сборка статических файлов
+staticfiles/
+node_modules/
+
+app/media/
