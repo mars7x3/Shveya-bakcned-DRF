@@ -7,12 +7,14 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet
-from .views.general import RankListView, SizeListView
+from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet
 
 router = DefaultRouter()
 
 router.register('user/staff/crud', StaffModelViewSet)
 router.register('user/client/crud', ClientModelViewSet)
+router.register('general/rank/crud', RankModelViewSet)
+router.register('general/size/crud', SizeModelViewSet)
 
 
 

@@ -17,7 +17,7 @@ class MyUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "name", "password1", "password2"),
+                "fields": ("username", "password1", "password2"),
             }
         ),
         (
@@ -74,3 +74,20 @@ class SizeAdmin(admin.ModelAdmin):
     list_display_links = ("id", "title")
 
 # ______________________________ General end ______________________________
+
+
+# ______________________________ Nomenclature ______________________________
+
+class PatternInline(admin.StackedInline):
+    model = Pattern
+    extra = 0
+
+
+@admin.register(Nomenclature)
+class NomenclatureAdmin(admin.ModelAdmin):
+    inlines = (PatternInline,)
+    list_display = ("id", "title", "vendor_code")
+    list_display_links = ("id", "title", "vendor_code")
+    search_fields = ("id", "title", "vendor_code")
+
+# ______________________________ Nomenclature end ______________________________

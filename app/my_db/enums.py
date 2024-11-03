@@ -13,30 +13,22 @@ class StaffRole(models.IntegerChoices):
     SEAMSTRESS = 4, 'ШВЕЯ'
 
 
-"""
-class NomTypeEnum(int, Enum):
-    MATERIAL = 1  # сырье
-    GP = 2  # готовый продукт
-    PF_1 = 3  # полуфабрикат 1го уровня
-    PF_2 = 4  # полуфабрикат 2го уровня
+class NomType(models.IntegerChoices):
+    MATERIAL = 1, 'СЫРЬЕ'
+    PF_1 = 2, "ПФ1"
+    PF_2 = 3, "ПФ2"
+    GP = 4, "ГП"
 
 
-class NomUnitEnum(int, Enum):
-    MM = 1  # мм
-    SM = 2  # см
-    M2 = 3  # м2
-    L = 4  # литр
-    
-    
-class OrderStatusEnum(int, Enum):
-    NEW = 1  # новый
-    DONE = 2  # готов
-    PROGRESS = 3  # да
-    OVERDUE = 4  # просрочен
+class NomUnit(models.IntegerChoices):
+    MM = 1, "ММ"
+    SM = 2, "СМ"
+    M2 = 3, "М2"
+    L = 4, "ЛИТР"
 
 
-class ImageActionEnum(int, Enum):
-    CREATE = 1
-    UPDATE = 2
-    DELETE = 3
-"""
+class OrderStatus(models.IntegerChoices):
+    NEW = 1, "НОВЫЙ"
+    DONE = 2, "ГОТОВ"
+    PROGRESS = 3, "В ПРОЦЕССЕ"
+    OVERDUE = 4, "ПРОСРОЧЕН"
