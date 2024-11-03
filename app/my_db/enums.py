@@ -32,3 +32,22 @@ class OrderStatus(models.IntegerChoices):
     DONE = 2, "ГОТОВ"
     PROGRESS = 3, "В ПРОЦЕССЕ"
     OVERDUE = 4, "ПРОСРОЧЕН"
+
+
+class QuantityStatus(models.IntegerChoices):
+    PROGRESSING = 1, "В ОБРАБОТКЕ"
+    ACTIVE = 2, "АКТИВЕН"
+    INACTIVE = 3, "НЕАКТИВЕН"
+
+
+class WorkStatus(models.IntegerChoices):
+    NEW = 1, "НОВЫЙ"
+    MODERATION = 2, "МОДЕРАЦИЯ"
+    DONE = 3, "ГОТОВ"
+    PAYED = 4, "ОПЛАЧЕН"
+
+
+class PaymentStatus(models.IntegerChoices):
+    SALARY = 1, "ЗП"
+    FINE = 2, "ШТРАФ"
+    ADVANCE = 3, "АВАНС"

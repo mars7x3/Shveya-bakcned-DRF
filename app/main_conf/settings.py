@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
-
+    'nested_admin',
     'my_db',
 ]
 

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
+from nested_admin.nested import NestedStackedInline, NestedModelAdmin
 
 from .models import *
 
@@ -78,16 +79,120 @@ class SizeAdmin(admin.ModelAdmin):
 
 # ______________________________ Nomenclature ______________________________
 
-class PatternInline(admin.StackedInline):
+admin.site.register(Combination)
+admin.site.register(Equipment)
+
+
+class ConsumableInline(NestedStackedInline):
+    model = Consumable
+    extra = 0
+
+
+class OperationSizeInline(NestedStackedInline):
+    model = OperationSize
+    extra = 0
+    inlines = [ConsumableInline]
+
+
+class OperationInline(NestedStackedInline):
+    model = Operation
+    extra = 0
+    inlines = [OperationSizeInline]
+
+
+class PatternInline(NestedStackedInline):
     model = Pattern
     extra = 0
 
 
 @admin.register(Nomenclature)
-class NomenclatureAdmin(admin.ModelAdmin):
-    inlines = (PatternInline,)
+class NomenclatureAdmin(NestedModelAdmin):
+    inlines = (PatternInline, OperationInline)
     list_display = ("id", "title", "vendor_code")
     list_display_links = ("id", "title", "vendor_code")
     search_fields = ("id", "title", "vendor_code")
 
 # ______________________________ Nomenclature end ______________________________
+
+
+# ______________________________ Warehouse ______________________________
+
+admin.site.register(Warehouse)
+
+
+class QuantityNomenclatureInline(NestedStackedInline):
+    model = QuantityNomenclature
+    extra = 0
+
+
+class QuantityHistoryInline(NestedStackedInline):
+    model = QuantityHistory
+    extra = 0
+
+
+class QuantityFileInline(NestedStackedInline):
+    model = QuantityFile
+    extra = 0
+
+
+@admin.register(Quantity)
+class QuantityAdmin(NestedModelAdmin):
+    inlines = (QuantityNomenclatureInline, QuantityFileInline, QuantityHistoryInline)
+    list_display = ("id", "in_warehouse", "out_warehouse", "status", "created_at")
+    list_display_links = ("id", "in_warehouse", "out_warehouse", "status", "created_at")
+
+# ______________________________ Warehouse end ______________________________
+
+
+# ______________________________ Order ______________________________
+
+class OrderProductAmountInline(NestedStackedInline):
+    model = OrderProductAmount
+    extra = 0
+
+
+class OrderProductInline(NestedStackedInline):
+    model = OrderProduct
+    extra = 0
+    inlines = (OrderProductAmountInline,)
+
+
+@admin.register(Order)
+class OrderAdmin(NestedModelAdmin):
+    inlines = (OrderProductInline,)
+    list_display = ("id", "status", "deadline", "created_at")
+    list_display_links = ("id", "status", "deadline", "created_at")
+
+# ______________________________ Order end ______________________________
+
+
+# ______________________________ Work ______________________________
+
+class WorkDetailInline(NestedStackedInline):
+    model = WorkDetail
+    extra = 0
+
+
+@admin.register(Work)
+class WorkAdmin(NestedModelAdmin):
+    inlines = (WorkDetailInline,)
+    list_display = ("id", "staff", "order", "status", "created_at")
+    list_display_links = ("id", "staff", "order", "status", "created_at")
+
+# ______________________________ Work end ______________________________
+
+
+# ______________________________ Payment ______________________________
+
+class PaymentFileInline(NestedStackedInline):
+    model = PaymentFile
+    extra = 0
+
+
+@admin.register(Payment)
+class PaymentAdmin(NestedModelAdmin):
+    inlines = (PaymentFileInline,)
+    list_display = ("id", "staff", "status", "created_at")
+    list_display_links = ("id", "staff", "status", "created_at")
+
+# ______________________________ Payment end ______________________________
