@@ -1,3 +1,4 @@
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -24,13 +25,16 @@ class StaffInfoView(APIView):
 
 
 class StaffProfileFilter(filters.FilterSet):
-    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
+    name = filters.CharFilter(method='filter_by_name_or_surname', label='Name or Surname')
     role = filters.NumberFilter(field_name='role')
     is_active = filters.BooleanFilter(field_name='user__is_active')
 
     class Meta:
         model = StaffProfile
         fields = ['name', 'role', 'is_active']
+
+    def filter_by_name_or_surname(self, queryset, name, value):
+        return queryset.filter(Q(name__icontains=value) | Q(surname__icontains=value))
 
 
 class StaffModelViewSet(viewsets.ModelViewSet):
@@ -117,12 +121,17 @@ class StaffModelViewSet(viewsets.ModelViewSet):
 
 
 class ClientProfileFilter(filters.FilterSet):
-    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
-    company_title = filters.NumberFilter(field_name='company')
+    name = filters.CharFilter(method='filter_by_all_fields', label='Name, Surname or Company Title')
+    is_active = filters.BooleanFilter(field_name='user__is_active')
 
     class Meta:
         model = ClientProfile
-        fields = ['name', 'company_title']
+        fields = ['name', 'is_active']
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) | Q(company_title__icontains=value) | Q(surname__icontains=value)
+        )
 
 
 class ClientModelViewSet(viewsets.ModelViewSet):
