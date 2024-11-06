@@ -7,7 +7,7 @@ from serializers.general import RankSerializer
 class MyUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'is_active']
 
 
 class MyUserCreateSerializer(serializers.ModelSerializer):

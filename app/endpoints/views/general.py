@@ -26,8 +26,20 @@ class RankModelViewSet(viewsets.ModelViewSet):
     queryset = Rank.objects.all()
     serializer_class = RankSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        rank = self.get_object()
+        rank.is_active = False
+        rank.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class SizeModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        size = self.get_object()
+        size.is_active = False
+        size.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
