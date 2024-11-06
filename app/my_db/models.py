@@ -59,9 +59,18 @@ class Rank(models.Model):
         return self.title
 
 
+class SizeCategory(models.Model):
+    title = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Size(models.Model):
     title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
+    category = models.ForeignKey(SizeCategory, on_delete=models.CASCADE, blank=True, null=True, related_name='sizes')
 
     def __str__(self):
         return self.title
@@ -77,6 +86,7 @@ class Nomenclature(models.Model):
     type = models.IntegerField(choices=NomType.choices)
     unit = models.IntegerField(choices=NomUnit.choices)
     is_active = models.BooleanField(default=True)
+    cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'

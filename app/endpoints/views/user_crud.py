@@ -215,3 +215,4 @@ class ClientModelViewSet(viewsets.ModelViewSet):
         user.is_active = False
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
