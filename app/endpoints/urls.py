@@ -6,6 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from .views.order import OrderListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet
 
@@ -33,6 +34,9 @@ urlpatterns = [
         path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
         path('user/staff/info/', StaffInfoView.as_view()),
+
+        path('order/list/', OrderListView.as_view()),
+
 
 
         path('', include(router.urls)),

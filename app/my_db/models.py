@@ -203,8 +203,8 @@ class OrderProduct(models.Model):
 
 
 class OrderProductAmount(models.Model):
-    order_product = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='files')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='files')
+    order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE, related_name='amounts')
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='amounts')
     amount = models.IntegerField(default=0)
 
 # ______________________________ Order end ______________________________
