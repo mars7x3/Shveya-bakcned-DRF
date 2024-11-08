@@ -12,7 +12,7 @@ from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
-    CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer
+    CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer
 from django_filters import rest_framework as filters
 
 
@@ -29,6 +29,14 @@ class GPListView(ListAPIView):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = GPListFilter
     pagination_class = StandardPagination
+
+
+class MaterialListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    queryset = Nomenclature.objects.filter(type=NomType.MATERIAL)
+    serializer_class = MaterialListSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = GPListFilter
 
 
 class GPModelViewSet(mixins.CreateModelMixin,
