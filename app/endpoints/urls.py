@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
-    OperationModelViewSet, EquipmentModelViewSet, MaterialListView
+    OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView
 from .views.order import OrderListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
@@ -54,6 +54,8 @@ urlpatterns = [
 
         path('product/crud/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
+        path('product/<int:pk>/images/', PatternListView.as_view()),
+
 
 
         path('', include(router.urls)),

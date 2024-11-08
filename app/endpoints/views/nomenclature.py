@@ -1,3 +1,5 @@
+from tracemalloc import Trace
+
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
@@ -12,7 +14,8 @@ from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
-    CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer
+    CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
+    PatternSerializer
 from django_filters import rest_framework as filters
 
 
@@ -63,6 +66,23 @@ class GPDetailView(APIView):
     def get(self, request, pk):
         product = self.get_object(pk)
         serializer = GPDetailSerializer(product)
+        return Response(serializer.data)
+
+
+class PatternListView(APIView):
+    def get_object(self, pk):
+        try:
+            return Nomenclature.objects.prefetch_related('patterns').get(pk=pk)
+        except:
+            return Response('Product does not exist!', status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        responses=PatternSerializer(many=True),
+    )
+    def get(self, request, pk):
+        product = self.get_object(pk)
+        patterns = product.patterns.all()
+        serializer = PatternSerializer(patterns, many=True, context=self.get_renderer_context())
         return Response(serializer.data)
 
 

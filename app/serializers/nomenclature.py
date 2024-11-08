@@ -89,13 +89,12 @@ class OperationSerializer(serializers.ModelSerializer):
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
-    patterns = PatternSerializer(read_only=True, many=True)
     combinations = CombinationSerializer(read_only=True, many=True)
     operations = OperationSerializer(read_only=True, many=True)
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'patterns', 'combinations', 'operations']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
