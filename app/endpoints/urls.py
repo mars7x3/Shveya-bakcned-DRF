@@ -6,7 +6,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from my_db.models import SizeCategory
+
+from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
+    OperationModelViewSet, EquipmentModelViewSet
 from .views.order import OrderListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
@@ -19,6 +21,12 @@ router.register('user/client/crud', ClientModelViewSet)
 router.register('general/rank/crud', RankModelViewSet)
 router.register('general/size/crud', SizeModelViewSet)
 router.register('general/size/category/crud', SizeCategoryModelViewSet)
+router.register('product/crud', GPModelViewSet)
+router.register('product/combination/crud', CombinationModelViewSet)
+router.register('product/operation/crud', OperationModelViewSet)
+router.register('equipment/crud', EquipmentModelViewSet)
+
+
 
 
 
@@ -41,6 +49,9 @@ urlpatterns = [
 
         path('order/list/', OrderListView.as_view()),
 
+        path('product/list/', GPListView.as_view()),
+        path('product/crud/<int:pk>/', GPDetailView.as_view()),
+        path('product/images/crud', PatternCRUDView.as_view()),
 
 
         path('', include(router.urls)),

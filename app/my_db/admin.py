@@ -91,8 +91,8 @@ class ConsumableInline(NestedStackedInline):
     extra = 0
 
 
-class OperationSizeInline(NestedStackedInline):
-    model = OperationSize
+class OperationNomInline(NestedStackedInline):
+    model = OperationNom
     extra = 0
     inlines = [ConsumableInline]
 
@@ -100,7 +100,7 @@ class OperationSizeInline(NestedStackedInline):
 class OperationInline(NestedStackedInline):
     model = Operation
     extra = 0
-    inlines = [OperationSizeInline]
+    inlines = [OperationNomInline]
 
 
 class PatternInline(NestedStackedInline):

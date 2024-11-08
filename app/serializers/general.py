@@ -22,3 +22,4 @@ class SizeCategorySerializer(serializers.ModelSerializer):
         model = SizeCategory
         fields = ['id', 'title', 'is_active', 'sizes']
 
+

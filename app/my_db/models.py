@@ -84,7 +84,7 @@ class Nomenclature(models.Model):
     vendor_code = models.CharField(max_length=50, unique=True)
     title = models.CharField(max_length=50)
     type = models.IntegerField(choices=NomType.choices)
-    unit = models.IntegerField(choices=NomUnit.choices)
+    unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
@@ -93,7 +93,7 @@ class Nomenclature(models.Model):
 
 
 class Pattern(models.Model):
-    nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='patters')
+    nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='patterns')
     image = WEBPField(upload_to=staff_image_folder)
 
 # ______________________________ Nomenclature end ______________________________
@@ -102,6 +102,10 @@ class Pattern(models.Model):
 # ______________________________ Nomenclature Operation ______________________________
 
 class Combination(models.Model):
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='combinations'
+    )
+    operations = models.ManyToManyField(Nomenclature, related_name='combination')
     title = models.CharField(max_length=50)
 
     def __str__(self):
@@ -122,9 +126,6 @@ class Operation(models.Model):
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='operations'
     )
-    combination = models.ForeignKey(
-        Combination, on_delete=models.SET_NULL, blank=True, null=True, related_name='operations'
-    )
     equipment = models.ForeignKey(
         Equipment, on_delete=models.SET_NULL, blank=True, null=True, related_name='operations'
     )
@@ -132,18 +133,19 @@ class Operation(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-class OperationSize(models.Model):
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='op_sizes')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='op_sizes')
+class OperationNom(models.Model):
+    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='op_noms')
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='op_noms'
+    )
 
 
 class Consumable(models.Model):
-    operation_size = models.ForeignKey(OperationSize, on_delete=models.CASCADE, related_name='consumables')
-    nomenclature = models.ForeignKey(
-        Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='consumables'
-    )
+    operation_nom = models.ForeignKey(OperationNom, on_delete=models.CASCADE, related_name='consumables')
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='consumables')
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     waste = models.DecimalField(max_digits=12, decimal_places=3)
+
 
 # ______________________________ Nomenclature Operation end ______________________________
 
@@ -166,7 +168,7 @@ class Quantity(models.Model):
     out_warehouse = models.ForeignKey(
         Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='out_quants'
     )
-    status = models.IntegerField(choices=QuantityStatus.choices, default=QuantityStatus.PROGRESSING)
+    status = models.IntegerField(choices=QuantityStatus.choices, default=QuantityStatus.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -177,7 +179,6 @@ class QuantityNomenclature(models.Model):
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='quantities'
     )
-    price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     amount = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 
@@ -193,6 +194,16 @@ class QuantityHistory(models.Model):
     staff_surname = models.CharField(max_length=50)
     status = models.IntegerField(choices=QuantityStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class NomCount(models.Model):
+    warehouse = models.ForeignKey(
+        Warehouse, on_delete=models.CASCADE, blank=True, null=True, related_name='counts'
+    )
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, blank=True, null=True, related_name='counts'
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 # ______________________________ Warehouse end ______________________________
 

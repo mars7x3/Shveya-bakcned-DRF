@@ -4,15 +4,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 
+from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.models import Order
 from serializers.order import OrderSerializer
-
-
-class StandardPagination(PageNumberPagination):
-    page_size = 20
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 
 
 class OrderFilter(filters.FilterSet):
