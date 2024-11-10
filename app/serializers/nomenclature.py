@@ -49,12 +49,6 @@ class EquipmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class Rank2Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rank
-        fields = ['id', 'title']
-
-
 class Size2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Size
@@ -80,12 +74,11 @@ class OperationNomSerializer(serializers.ModelSerializer):
 
 class OperationSerializer(serializers.ModelSerializer):
     equipment = EquipmentSerializer()
-    rank = Rank2Serializer()
     op_noms = OperationNomSerializer(many=True)
 
     class Meta:
         model = Operation
-        fields = ['id', 'title', 'price', 'nomenclature', 'equipment', 'rank', 'is_active', 'op_noms']
+        fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active', 'op_noms']
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
