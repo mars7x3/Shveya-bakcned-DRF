@@ -23,6 +23,12 @@ class PatternSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
+class EquipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['id', 'title']
+
+
 class CombinationOperationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
