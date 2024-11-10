@@ -43,12 +43,6 @@ class NomenclatureSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'unit']
 
 
-class EquipmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipment
-        fields = ['id', 'title']
-
-
 class Size2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Size
@@ -73,7 +67,6 @@ class OperationNomSerializer(serializers.ModelSerializer):
 
 
 class OperationSerializer(serializers.ModelSerializer):
-    equipment = EquipmentSerializer()
     op_noms = OperationNomSerializer(many=True)
 
     class Meta:
