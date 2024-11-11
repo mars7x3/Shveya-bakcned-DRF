@@ -52,7 +52,7 @@ urlpatterns = [
         path('product/list/', GPListView.as_view()),
         path('material/list/', MaterialListView.as_view()),
 
-        path('product/crud/<int:pk>/', GPDetailView.as_view()),
+        path('product/detail/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
         path('product/<int:pk>/images/', PatternListView.as_view()),
 

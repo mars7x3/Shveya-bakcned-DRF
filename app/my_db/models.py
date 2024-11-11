@@ -105,7 +105,7 @@ class Combination(models.Model):
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='combinations'
     )
-    operations = models.ManyToManyField(Nomenclature, related_name='combination')
+    operations = models.ManyToManyField('Operation')
     title = models.CharField(max_length=50)
 
     def __str__(self):
@@ -141,8 +141,8 @@ class OperationNom(models.Model):
 
 
 class Consumable(models.Model):
-    operation_nom = models.ForeignKey(OperationNom, on_delete=models.CASCADE, related_name='consumables')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='consumables')
+    operation_nom = models.ForeignKey(OperationNom, null=True, on_delete=models.CASCADE, related_name='consumables')
+    size = models.ForeignKey(Size, null=True, on_delete=models.CASCADE, related_name='consumables')
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     waste = models.DecimalField(max_digits=12, decimal_places=3)
 

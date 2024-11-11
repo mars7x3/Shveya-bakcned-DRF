@@ -43,6 +43,30 @@ class CombinationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CombinationCRUDSerializer(CombinationSerializer):
+    operations = serializers.PrimaryKeyRelatedField(
+        queryset=Operation.objects.all(),
+        required=False,
+        many=True
+
+    )
+
+    def create(self, validated_data):
+        operations_data = validated_data.pop('operations', [])
+        combination = super().create(validated_data)
+        if operations_data:
+            combination.operations.set(operations_data)
+        return combination
+
+    def update(self, instance, validated_data):
+        operations_data = validated_data.pop('operations', [])
+        combination = super().update(instance, validated_data)
+        combination.operations.delete()
+        if operations_data:
+            combination.operations.set(operations_data)
+        return combination
+
+
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
@@ -114,14 +138,6 @@ class PatternCRUDSerializer(serializers.Serializer):
     )
 
 
-class CombinationCRUDSerializer(CombinationSerializer):
-    operations = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Operation.objects.all(),
-        required=False
-    )
-
-
 class ConsumableCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
@@ -139,7 +155,7 @@ class OperationNomCRUDSerializer(serializers.ModelSerializer):
 
 
 class OperationCRUDSerializer(serializers.ModelSerializer):
-    op_noms = OperationNomCRUDSerializer(many=True)
+    op_noms = OperationNomCRUDSerializer(many=True, )
 
     class Meta:
         model = Operation
