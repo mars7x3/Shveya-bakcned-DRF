@@ -117,7 +117,8 @@ class PatternCRUDSerializer(serializers.Serializer):
 class CombinationCRUDSerializer(CombinationSerializer):
     operations = serializers.PrimaryKeyRelatedField(
         many=True,
-        queryset=Nomenclature.objects.all()
+        queryset=Operation.objects.all(),
+        required=False
     )
 
 
