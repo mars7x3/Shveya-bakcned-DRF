@@ -127,12 +127,6 @@ class OperationModelViewSet(mixins.CreateModelMixin,
     queryset = Operation.objects.all()
     serializer_class = OperationCRUDSerializer
 
-    def destroy(self, request, *args, **kwargs):
-        operation = self.get_object()
-        operation.is_active = False
-        operation.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
