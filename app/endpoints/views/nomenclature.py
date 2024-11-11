@@ -43,7 +43,6 @@ class MaterialListView(ListAPIView):
 
 
 class GPModelViewSet(mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
