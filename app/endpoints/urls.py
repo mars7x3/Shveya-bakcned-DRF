@@ -8,9 +8,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
-    OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView
-from .views.order import OrderListView
-from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet
+    OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
+from .views.order import OrderListView, OrderModelViewSet
+from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
 
@@ -25,6 +25,8 @@ router.register('product/crud', GPModelViewSet)
 router.register('product/combination/crud', CombinationModelViewSet)
 router.register('product/operation/crud', OperationModelViewSet)
 router.register('equipment/crud', EquipmentModelViewSet)
+router.register('order/crud', OrderModelViewSet)
+
 
 
 
@@ -48,6 +50,9 @@ urlpatterns = [
         path('user/staff/info/', StaffInfoView.as_view()),
 
         path('order/list/', OrderListView.as_view()),
+        path('order/clients/list/', ClientListView.as_view()),
+        path('order/products/list/', ProductListView.as_view()),
+
 
         path('product/list/', GPListView.as_view()),
         path('material/list/', MaterialListView.as_view()),
@@ -55,7 +60,6 @@ urlpatterns = [
         path('product/detail/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
         path('product/<int:pk>/images/', PatternListView.as_view()),
-
 
 
         path('', include(router.urls)),

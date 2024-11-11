@@ -132,3 +132,10 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
+
+
+class ProductListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Nomenclature.objects.filter(is_active=True, type=NomType.GP)
+    serializer_class = GPListSerializer
+

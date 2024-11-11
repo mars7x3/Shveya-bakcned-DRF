@@ -141,8 +141,7 @@ class PatternCRUDSerializer(serializers.Serializer):
 class ConsumableCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
-        fields = ['id', 'size', 'consumption', 'waste']
-        extra_kwargs = {'id': {'read_only': True, 'required': False}}
+        fields = ['size', 'consumption', 'waste']
 
 
 class OperationNomCRUDSerializer(serializers.ModelSerializer):
@@ -150,8 +149,7 @@ class OperationNomCRUDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OperationNom
-        fields = ['id', 'nomenclature', 'consumables']
-        extra_kwargs = {'id': {'read_only': True, 'required': False}}
+        fields = ['nomenclature', 'consumables']
 
 
 class OperationCRUDSerializer(serializers.ModelSerializer):
@@ -200,3 +198,5 @@ class OperationCRUDSerializer(serializers.ModelSerializer):
 
         Consumable.objects.bulk_create(consumable_list)
         return instance
+
+

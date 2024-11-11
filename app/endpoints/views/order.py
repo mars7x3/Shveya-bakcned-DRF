@@ -1,13 +1,15 @@
 from django.db.models import Q
+from rest_framework import viewsets, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
+from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.models import Order
-from serializers.order import OrderSerializer
+from serializers.order import OrderSerializer, OrderCRUDSerializer
 
 
 class OrderFilter(filters.FilterSet):
@@ -33,3 +35,13 @@ class OrderListView(ListAPIView):
     filterset_class = OrderFilter
     pagination_class = StandardPagination
 
+
+class OrderModelViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   GenericViewSet):
+
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Order.objects.select_related('client')
+    serializer_class = OrderCRUDSerializer

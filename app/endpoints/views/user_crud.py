@@ -1,6 +1,7 @@
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +12,7 @@ from my_db.enums import UserStatus
 from my_db.models import MyUser, StaffProfile, ClientProfile
 
 from serializers.user_crud import StaffSerializer, StaffCreateUpdateSerializer, MyUserCreateSerializer, \
-    MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer
+    MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer
 
 
 class StaffInfoView(APIView):
@@ -216,3 +217,8 @@ class ClientModelViewSet(viewsets.ModelViewSet):
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class ClientListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = ClientProfile.objects.all()
+    serializer_class = ClientListSerializer

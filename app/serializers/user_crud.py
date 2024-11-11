@@ -67,6 +67,9 @@ class ClientCreateUpdateSerializer(ClientSerializer):
 
 
 
-
+class ClientListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientProfile
+        fields = ['id', 'name', 'surname', 'email', 'phone', 'address']
 
 
