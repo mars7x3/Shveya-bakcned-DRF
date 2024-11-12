@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    OperationNom
+    OperationNom, SizeCategory
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -200,3 +200,22 @@ class OperationCRUDSerializer(serializers.ModelSerializer):
         return instance
 
 
+class SizeCategory2Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = SizeCategory
+        fields = ['id', 'title']
+
+
+class ProductListSerializer(serializers.ModelSerializer):
+    category = SizeCategory2Serializer()
+
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if instance.category:
+            rep['sizes'] = Size2Serializer(instance.category.sizes.all(), many=True).data
+
+        return rep

@@ -15,7 +15,7 @@ from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
-    PatternSerializer
+    PatternSerializer, ProductListSerializer
 from django_filters import rest_framework as filters
 
 
@@ -136,6 +136,11 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
 
 class ProductListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Nomenclature.objects.filter(is_active=True, type=NomType.GP)
-    serializer_class = GPListSerializer
+    queryset = (
+        Nomenclature.objects
+                .select_related('category')
+                .prefetch_related('category__sizes')
+                .filter(is_active=True, type=NomType.GP)
+    )
+    serializer_class = ProductListSerializer
 

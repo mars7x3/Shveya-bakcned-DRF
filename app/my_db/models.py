@@ -87,6 +87,7 @@ class Nomenclature(models.Model):
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    category = models.ForeignKey(SizeCategory, on_delete=models.SET_NULL, null=True, related_name='nomenclatures')
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'
