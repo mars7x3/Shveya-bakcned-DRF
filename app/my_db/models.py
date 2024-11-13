@@ -29,6 +29,9 @@ class StaffProfile(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-id']
+
 
 class ClientProfile(models.Model):
     user = models.OneToOneField(
@@ -45,6 +48,9 @@ class ClientProfile(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-id']
+
 # ______________________________ User end ______________________________
 
 
@@ -58,6 +64,9 @@ class Rank(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-id']
+
 
 class SizeCategory(models.Model):
     title = models.CharField(max_length=50)
@@ -65,6 +74,9 @@ class SizeCategory(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Size(models.Model):
@@ -74,6 +86,9 @@ class Size(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-id']
 
 # ______________________________ General end ______________________________
 
@@ -91,6 +106,9 @@ class Nomenclature(models.Model):
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Pattern(models.Model):
@@ -161,6 +179,9 @@ class Warehouse(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Quantity(models.Model):
     in_warehouse = models.ForeignKey(
@@ -217,6 +238,9 @@ class Order(models.Model):
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='products')
@@ -241,6 +265,9 @@ class Work(models.Model):
     status = models.IntegerField(choices=WorkStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class WorkDetail(models.Model):
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='details')
@@ -257,6 +284,9 @@ class Payment(models.Model):
     status = models.IntegerField(choices=PaymentStatus.choices)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']
 
 
 class PaymentFile(models.Model):
