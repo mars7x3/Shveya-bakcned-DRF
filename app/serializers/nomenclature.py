@@ -211,7 +211,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price']
+        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
