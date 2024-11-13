@@ -107,10 +107,14 @@ class PatternInline(NestedStackedInline):
     model = Pattern
     extra = 0
 
+class NomCountInline(NestedStackedInline):
+    model = NomCount
+    extra = 0
+
 
 @admin.register(Nomenclature)
 class NomenclatureAdmin(NestedModelAdmin):
-    inlines = (PatternInline, OperationInline)
+    inlines = (NomCountInline, PatternInline, OperationInline)
     list_display = ("id", "title", "vendor_code")
     list_display_links = ("id", "title", "vendor_code")
     search_fields = ("id", "title", "vendor_code")

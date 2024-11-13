@@ -48,7 +48,6 @@ class CombinationCRUDSerializer(CombinationSerializer):
         queryset=Operation.objects.all(),
         required=False,
         many=True
-
     )
 
     def create(self, validated_data):

@@ -15,7 +15,7 @@ from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
-    PatternSerializer, ProductListSerializer
+    PatternSerializer, ProductListSerializer, CombinationSerializer
 from django_filters import rest_framework as filters
 
 
@@ -110,6 +110,7 @@ class PatternCRUDView(APIView):
         return Response({"text": "Success!"}, status=status.HTTP_200_OK)
 
 
+@extend_schema(request=CombinationCRUDSerializer, responses=CombinationSerializer)
 class CombinationModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
@@ -117,6 +118,7 @@ class CombinationModelViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Combination.objects.all()
     serializer_class = CombinationCRUDSerializer
+
 
 
 class OperationModelViewSet(mixins.CreateModelMixin,
@@ -143,4 +145,5 @@ class ProductListView(ListAPIView):
                 .filter(is_active=True, type=NomType.GP)
     )
     serializer_class = ProductListSerializer
+
 
