@@ -110,7 +110,7 @@ class GPDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'category']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
@@ -211,7 +211,7 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category']
+        fields = ['id', 'vendor_code', 'title', 'cost_price']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
