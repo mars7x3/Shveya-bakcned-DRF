@@ -1,5 +1,6 @@
 from tracemalloc import Trace
 
+from django.db.models import Q
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
@@ -20,9 +21,14 @@ from django_filters import rest_framework as filters
 
 
 class GPListFilter(filters.FilterSet):
+    title = filters.CharFilter(method='filter_by_title', label='Product title or vendor code')
+
     class Meta:
         model = Nomenclature
         fields = ['title', 'is_active']
+
+    def filter_by_title(self, queryset, name, value):
+        return queryset.filter(Q(title__icontains=value) | Q(vendor_code__icontains=value))
 
 
 class GPListView(ListAPIView):
