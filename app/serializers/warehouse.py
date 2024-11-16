@@ -1,6 +1,7 @@
 from django.db.models import IntegerField
 from rest_framework import serializers
 
+from my_db.enums import NomType
 from my_db.models import Warehouse, StaffProfile, Nomenclature, NomCount
 
 
@@ -52,4 +53,11 @@ class MaterialSerializer(serializers.ModelSerializer):
         return rep
 
 
+class MaterialCRUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'unit']
 
+    def validate(self, attrs):
+        attrs['type'] = NomType.MATERIAL
+        return attrs

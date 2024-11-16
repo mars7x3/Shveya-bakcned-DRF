@@ -1,17 +1,20 @@
 from django.db.models import Q, Subquery, OuterRef
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
+from rest_framework.viewsets import GenericViewSet
+from yaml.serializer import Serializer
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import NomType
 from my_db.models import Warehouse, Nomenclature, NomCount
-from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer
+from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
+    MaterialCRUDSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -64,4 +67,15 @@ class WarehouseMaterialListView(ListAPIView):
             )
         else:
             return Nomenclature.objects.filter(type=NomType.MATERIAL)
+
+
+class MaterialModelViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   GenericViewSet):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Nomenclature.objects.filter(type=NomType.MATERIAL)
+    serializer_class = MaterialCRUDSerializer
+
 

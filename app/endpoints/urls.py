@@ -13,7 +13,7 @@ from .views.order import OrderListView, OrderModelViewSet
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
-from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView
+from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet
 
 router = DefaultRouter()
 
@@ -28,6 +28,8 @@ router.register('product/operation/crud', OperationModelViewSet)
 router.register('equipment/crud', EquipmentModelViewSet)
 router.register('order/crud', OrderModelViewSet)
 router.register('warehouse/crud', WarehouseModelViewSet)
+router.register('warehouse/material/crud', MaterialModelViewSet)
+
 
 
 urlpatterns = [
@@ -58,7 +60,7 @@ urlpatterns = [
         path('product/images/crud', PatternCRUDView.as_view()),
         path('product/<int:pk>/images/', PatternListView.as_view()),
 
-        path('warehouse/materials/', WarehouseMaterialListView.as_view()),
+        path('warehouse/materials/list/', WarehouseMaterialListView.as_view()),
 
         path('', include(router.urls)),
     ])),
