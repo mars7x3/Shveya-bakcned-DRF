@@ -6,14 +6,14 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
 from .views.order import OrderListView, OrderModelViewSet
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
-from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet
+from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
+    StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView
 
 router = DefaultRouter()
 
@@ -61,6 +61,14 @@ urlpatterns = [
         path('product/<int:pk>/images/', PatternListView.as_view()),
 
         path('warehouse/materials/list/', WarehouseMaterialListView.as_view()),
+        path('warehouse/input/', StockInputView.as_view()),
+        path('warehouse/output/', StockOutputView.as_view()),
+        path('warehouse/output/update/', StockOutputUpdateView.as_view()),
+        path('warehouse/defective/', StockDefectiveView.as_view()),
+        path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
+
+
+
 
         path('', include(router.urls)),
     ])),

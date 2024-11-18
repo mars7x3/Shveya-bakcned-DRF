@@ -61,3 +61,32 @@ class MaterialCRUDSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs['type'] = NomType.MATERIAL
         return attrs
+
+
+class StockInputSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    amount = serializers.IntegerField()
+    price = serializers.IntegerField(required=False)
+
+
+class StockOutputSerializer(serializers.Serializer):
+    output_warehouse_id = serializers.IntegerField()
+    products = StockInputSerializer(many=True)
+
+
+class StockDefectiveSerializer(serializers.Serializer):
+    comment = serializers.CharField(required=False)
+    products = StockInputSerializer(many=True)
+
+
+class StockDefectiveFileSerializer(serializers.Serializer):
+    quantity_id = serializers.IntegerField()
+    files = serializers.ListField(
+        child=serializers.FileField(allow_empty_file=False, required=False),
+        required=False
+    )
+
+
+class StockOutputUpdateSerializer(serializers.Serializer):
+    quantity_id = serializers.IntegerField()
+    status = serializers.IntegerField()

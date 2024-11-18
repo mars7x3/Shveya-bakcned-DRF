@@ -179,7 +179,7 @@ class Warehouse(models.Model):
     address = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.id}. {self.title}'
 
     class Meta:
         ordering = ['-id']
@@ -192,7 +192,8 @@ class Quantity(models.Model):
     out_warehouse = models.ForeignKey(
         Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='out_quants'
     )
-    status = models.IntegerField(choices=QuantityStatus.choices, default=QuantityStatus.ACTIVE)
+    status = models.IntegerField(choices=QuantityStatus.choices)
+    comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -204,11 +205,12 @@ class QuantityNomenclature(models.Model):
         Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='quantities'
     )
     amount = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 
 class QuantityFile(models.Model):
     quantity = models.ForeignKey(Quantity, on_delete=models.CASCADE, related_name='files')
-    image = WEBPField(upload_to=staff_image_folder)
+    file = models.FileField(upload_to='quantity_files')
 
 
 class QuantityHistory(models.Model):
