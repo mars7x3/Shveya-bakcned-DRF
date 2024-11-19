@@ -20,7 +20,7 @@ from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHi
     QuantityFile
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
     MaterialCRUDSerializer, StockInputSerializer, StockOutputSerializer, StockDefectiveSerializer, \
-    StockDefectiveFileSerializer, StockOutputUpdateSerializer
+    StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -152,6 +152,33 @@ class StockOutputView(APIView):
         return Response('Success!', status=status.HTTP_200_OK)
 
 
+class MovingListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsWarehouse]
+    serializer_class = MovingListSerializer
+
+    def get_queryset(self):
+        manager = self.request.user.staff_profile
+        warehouse = manager.warehouses.first()
+        movements = warehouse.in_quants.select_related('out_warehouse').filter(status=QuantityStatus.PROGRESSING)
+        return movements
+
+
+class MovingDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return Quantity.objects.prefetch_related('quantities').get(pk=pk)
+        except:
+            return Response('Quantity does not exist!', status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        responses=MovingSerializer(),
+    )
+    def get(self, request, pk):
+        quantity = self.get_object(pk)
+        serializer = MovingSerializer(quantity)
+        return Response(serializer.data)
+
+
 class StockDefectiveView(APIView):
     permission_classes = [IsAuthenticated, IsWarehouse]
 
@@ -191,7 +218,7 @@ class StockDefectiveView(APIView):
                     nomenclature_id=update["nomenclature_id"]
                 ).update(amount=F('amount') - update["amount"])
 
-        return Response('Success!', status=status.HTTP_200_OK)
+        return Response({"quantity_id": quantity.id}, status=status.HTTP_200_OK)
 
 
 class StockDefectiveFileView(APIView):
@@ -245,3 +272,5 @@ class StockOutputUpdateView(APIView):
                     ).update(amount=F('amount') + update.amount)
 
         return Response('Success!', status=status.HTTP_200_OK)
+
+

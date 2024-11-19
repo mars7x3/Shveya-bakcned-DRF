@@ -2,7 +2,7 @@ from django.db.models import IntegerField
 from rest_framework import serializers
 
 from my_db.enums import NomType
-from my_db.models import Warehouse, StaffProfile, Nomenclature, NomCount
+from my_db.models import Warehouse, StaffProfile, Nomenclature, NomCount, Quantity, QuantityNomenclature
 
 
 class WarehouseStaffSerializer(serializers.ModelSerializer):
@@ -90,3 +90,36 @@ class StockDefectiveFileSerializer(serializers.Serializer):
 class StockOutputUpdateSerializer(serializers.Serializer):
     quantity_id = serializers.IntegerField()
     status = serializers.IntegerField()
+
+
+class OutputWarehouseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        fields = ['id', 'title']
+
+
+class OutputWarehouseNomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title']
+
+
+class OutputWarehouseMaterialsSerializer(serializers.ModelSerializer):
+    nomenclature = OutputWarehouseNomSerializer()
+    class Meta:
+        model = QuantityNomenclature
+        fields = ['nomenclature', 'amount']
+
+
+class MovingSerializer(serializers.ModelSerializer):
+    quantities = OutputWarehouseMaterialsSerializer(many=True)
+    class Meta:
+        model = Quantity
+        fields = ['id', 'quantities']
+
+
+class MovingListSerializer(serializers.ModelSerializer):
+    out_warehouse = OutputWarehouseSerializer()
+    class Meta:
+        model = Quantity
+        fields = ['id', 'out_warehouse', 'created_at']
