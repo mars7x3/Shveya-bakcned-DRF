@@ -261,19 +261,12 @@ class StockDefectiveView(APIView):
         QuantityHistory.objects.create(quantity=quantity, staff_id=staff.id, staff_name=staff.name,
                                        staff_surname=staff.surname, status=quantity.status)
 
-        updates = []
-        for item in data:
-            updates.append({
-                "nomenclature_id": item["product_id"],
-                "amount": item["amount"]
-            })
-
         with transaction.atomic():
-            for update in updates:
+            for i in data['products']:
                 NomCount.objects.filter(
                     warehouse=staff.warehouses.first(),
-                    nomenclature_id=update["nomenclature_id"]
-                ).update(amount=F('amount') - update["amount"])
+                    nomenclature_id=i["product_id"]
+                ).update(amount=F('amount') - i["amount"])
 
         return Response({"quantity_id": quantity.id}, status=status.HTTP_200_OK)
 
