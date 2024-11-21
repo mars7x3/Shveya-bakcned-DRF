@@ -14,7 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 from yaml.serializer import Serializer
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse
+from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse, IsDirectorAndTechnologistAndWarehouse
 from my_db.enums import NomType, QuantityStatus
 from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHistory, QuantityNomenclature, \
     QuantityFile
@@ -125,7 +125,7 @@ class MaterialModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologistAndWarehouse]
     queryset = Nomenclature.objects.filter(type=NomType.MATERIAL)
     serializer_class = MaterialCRUDSerializer
 

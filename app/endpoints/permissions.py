@@ -17,8 +17,16 @@ class IsDirectorAndTechnologist(BasePermission):
         return False
 
 
+class IsDirectorAndTechnologistAndWarehouse(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.staff_profile.role in [StaffRole.DIRECTOR, StaffRole.TECHNOLOGIST, StaffRole.WAREHOUSE]:
+            return True
+        return False
+
+
 class IsWarehouse(BasePermission):
     def has_permission(self, request, view):
         if request.user.staff_profile.role == StaffRole.WAREHOUSE:
             return True
         return False
+

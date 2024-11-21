@@ -128,7 +128,7 @@ class MovingListSerializer(serializers.ModelSerializer):
 class MyMaterialNomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price']
+        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'is_active']
 
 
 class MyMaterialsSerializer(serializers.ModelSerializer):
