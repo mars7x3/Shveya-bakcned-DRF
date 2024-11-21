@@ -62,6 +62,15 @@ class MaterialCRUDSerializer(serializers.ModelSerializer):
         attrs['type'] = NomType.MATERIAL
         return attrs
 
+    def create(self, validated_data):
+        obj = super().create(validated_data)
+        create_data = []
+        for w in Warehouse.objects.all():
+            create_data.append(NomCount(warehouse=w, nomenclature=obj))
+
+        NomCount.objects.bulk_create(create_data)
+        return obj
+
 
 class StockInputSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
@@ -125,14 +134,13 @@ class MovingListSerializer(serializers.ModelSerializer):
         fields = ['id', 'out_warehouse', 'created_at']
 
 
-class MyMaterialNomSerializer(serializers.ModelSerializer):
+class MyMaterialsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
         fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'is_active']
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['amount'] = instance.filtered_counts[0].amount
+        return rep
 
-class MyMaterialsSerializer(serializers.ModelSerializer):
-    nomenclature = MyMaterialNomSerializer()
-    class Meta:
-        model = NomCount
-        fields = ['amount', 'nomenclature']

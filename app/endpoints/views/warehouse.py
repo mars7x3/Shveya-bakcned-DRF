@@ -1,7 +1,7 @@
 from tracemalloc import Trace
 
 from django.db import transaction
-from django.db.models import Q, Subquery, OuterRef, F
+from django.db.models import Q, Subquery, OuterRef, F, Prefetch
 from django.template.defaulttags import comment
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status, mixins
@@ -77,36 +77,19 @@ class WarehouseMaterialListView(ListAPIView):
 
 
 class MyMaterialListFilter(filters.FilterSet):
-    is_active = filters.BooleanFilter(method='filter_by_active', label='Активный или не активный')
     title = filters.CharFilter(method='filter_by_title_vendor_code', label='Название или артикул')
 
     class Meta:
-        model = NomCount
+        model = Nomenclature
         fields = ['title', 'is_active']
-
-    def filter_by_active(self, queryset, is_active, value):
-        return queryset.filter(nomenclature__is_active=value)
 
     def filter_by_title_vendor_code(self, queryset, title, value):
         return queryset.filter(
-            Q(nomenclature__title__icontains=value) |
-            Q(nomenclature__vendor_code__icontains=value)
+            Q(title__icontains=value) |
+            Q(vendor_code__icontains=value)
         )
 
-@extend_schema(
-    parameters=[
-        OpenApiParameter(
-            name="is_active",
-            type=bool,
-            description="Фильтр по активности (True/False).",
-        ),
-        OpenApiParameter(
-            name="title",
-            type=str,
-            description="Фильтр по названию или артикулу.",
-        ),
-    ]
-)
+
 class MyMaterialListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsWarehouse]
     serializer_class = MyMaterialsSerializer
@@ -116,8 +99,14 @@ class MyMaterialListView(ListAPIView):
 
     def get_queryset(self):
         manager = self.request.user.staff_profile
-        counts = manager.warehouses.first().counts.select_related('nomenclature').all()
-        return counts
+        queryset = Nomenclature.objects.prefetch_related(
+            Prefetch(
+                'counts',
+                queryset=NomCount.objects.filter(warehouse=manager.warehouses.first()),
+                to_attr='filtered_counts'
+            )
+        ).filter(type=NomType.MATERIAL)
+        return queryset
 
 
 class MaterialModelViewSet(mixins.CreateModelMixin,
