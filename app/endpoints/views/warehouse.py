@@ -156,14 +156,26 @@ class StockInputView(APIView):
                                        staff_surname=staff.surname, status=quantity.status)
 
         with transaction.atomic():
+            nom_count_updates = []
+            nomenclature_updates = []
+
             for item in data:
                 obj, created = NomCount.objects.get_or_create(
                     warehouse=quantity.in_warehouse,
                     nomenclature_id=item["product_id"],
+                    amount=item['amount'],
+                    defaults={"amount": item["amount"]}
                 )
                 if not created:
                     obj.amount += item["amount"]
-                    obj.save()
+                nom_count_updates.append(obj)
+
+                nomenclature = Nomenclature.objects.get(id=item['product_id'])
+                nomenclature.cost_price = (nomenclature.cost_price + item["price"]) / 2
+                nomenclature_updates.append(nomenclature)
+
+            NomCount.objects.bulk_update(nom_count_updates, ['amount'])
+            Nomenclature.objects.bulk_update(nomenclature_updates, ['cost_price'])
 
         return Response('Success!', status=status.HTTP_200_OK)
 
