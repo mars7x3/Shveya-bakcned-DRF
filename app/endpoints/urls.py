@@ -13,7 +13,8 @@ from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSe
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
-    StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, MovingDetailView
+    StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
+    MovingDetailView, MyMaterialListView
 
 router = DefaultRouter()
 
@@ -61,16 +62,14 @@ urlpatterns = [
         path('product/<int:pk>/images/', PatternListView.as_view()),
 
         path('warehouse/materials/list/', WarehouseMaterialListView.as_view()),
+        path('warehouse/my-materials/list/', MyMaterialListView.as_view()),
         path('warehouse/input/', StockInputView.as_view()),
         path('warehouse/output/', StockOutputView.as_view()),
         path('warehouse/output/update/', StockOutputUpdateView.as_view()),
         path('warehouse/movements/', MovingListView.as_view()),
         path('warehouse/movements/<int:pk>/', MovingDetailView.as_view()),
-
         path('warehouse/defective/', StockDefectiveView.as_view()),
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
-
-
 
 
         path('', include(router.urls)),

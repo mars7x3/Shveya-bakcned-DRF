@@ -20,7 +20,8 @@ from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHi
     QuantityFile
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
     MaterialCRUDSerializer, StockInputSerializer, StockOutputSerializer, StockDefectiveSerializer, \
-    StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer
+    StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer, \
+    MyMaterialsSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -73,6 +74,37 @@ class WarehouseMaterialListView(ListAPIView):
             )
         else:
             return Nomenclature.objects.filter(type=NomType.MATERIAL)
+
+
+class MyMaterialListFilter(filters.FilterSet):
+    is_active = filters.BooleanFilter(method='filter_by_active', label='Активный или не активный')
+    title = filters.CharFilter(method='filter_by_title_vendor_code', label='Название или артикул')
+
+    class Meta:
+        model = NomCount
+        fields = ['title', 'is_active']
+
+    def filter_by_active(self, queryset, warehouse, value):
+        return queryset.filter(nomenclature__is_active=value)
+
+    def filter_by_title_vendor_code(self, queryset, title, value):
+        return queryset.filter(
+            Q(nomenclature__title__icontains=value) |
+            Q(nomenclature__vendor_code__icontains=value)
+        )
+
+
+class MyMaterialListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsWarehouse]
+    serializer_class = MyMaterialsSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = MyMaterialListFilter
+    pagination_class = StandardPagination
+
+    def get_queryset(self):
+        manager = self.request.user.staff_profile
+        counts = manager.warehouses.first().counts.select_related('nomenclature').all()
+        return counts
 
 
 class MaterialModelViewSet(mixins.CreateModelMixin,

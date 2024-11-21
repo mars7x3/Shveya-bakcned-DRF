@@ -123,3 +123,16 @@ class MovingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quantity
         fields = ['id', 'out_warehouse', 'created_at']
+
+
+class MyMaterialNomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price']
+
+
+class MyMaterialsSerializer(serializers.ModelSerializer):
+    nomenclature = MyMaterialNomSerializer()
+    class Meta:
+        model = NomCount
+        fields = ['amount', 'nomenclature']
