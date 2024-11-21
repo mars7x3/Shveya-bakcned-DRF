@@ -3,7 +3,7 @@ from tracemalloc import Trace
 from django.db import transaction
 from django.db.models import Q, Subquery, OuterRef, F
 from django.template.defaulttags import comment
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status, mixins
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -84,7 +84,7 @@ class MyMaterialListFilter(filters.FilterSet):
         model = NomCount
         fields = ['title', 'is_active']
 
-    def filter_by_active(self, queryset, warehouse, value):
+    def filter_by_active(self, queryset, is_active, value):
         return queryset.filter(nomenclature__is_active=value)
 
     def filter_by_title_vendor_code(self, queryset, title, value):
@@ -93,7 +93,20 @@ class MyMaterialListFilter(filters.FilterSet):
             Q(nomenclature__vendor_code__icontains=value)
         )
 
-
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name="is_active",
+            type=bool,
+            description="Фильтр по активности (True/False).",
+        ),
+        OpenApiParameter(
+            name="title",
+            type=str,
+            description="Фильтр по названию или артикулу.",
+        ),
+    ]
+)
 class MyMaterialListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsWarehouse]
     serializer_class = MyMaterialsSerializer
