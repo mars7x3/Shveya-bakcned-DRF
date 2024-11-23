@@ -15,7 +15,7 @@ from yaml.serializer import Serializer
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse, IsDirectorAndTechnologistAndWarehouse, IsStaff
-from my_db.enums import NomType, QuantityStatus
+from my_db.enums import NomType, QuantityStatus, StaffRole
 from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHistory, QuantityNomenclature, \
     QuantityFile
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
@@ -316,6 +316,13 @@ class StockOutputUpdateView(APIView):
 class WarehouseListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = WarehouseListSerializerSerializer
-    queryset = Warehouse.objects.all()
 
+
+    def get_queryset(self):
+        manager = self.request.user.staff_profile
+        if manager.role == StaffRole.WAREHOUSE:
+            queryset = Warehouse.objects.exclude(id=manager.warehouses.first().id)
+        else:
+            queryset = Warehouse.objects.all()
+        return queryset
 

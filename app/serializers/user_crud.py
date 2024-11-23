@@ -43,6 +43,8 @@ class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
         fields = '__all__'
+        extra_kwargs = {'user': {'read_only': True, 'required': False}}
+
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
