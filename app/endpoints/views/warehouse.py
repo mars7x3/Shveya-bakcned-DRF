@@ -177,8 +177,8 @@ class StockOutputView(APIView):
         staff = request.user.staff_profile
         data = request.data
 
-        quantity = Quantity.objects.create(in_warehouse=data['output_warehouse_id'],
-                                           out_warehouse_id=staff.warehouses.first(),
+        quantity = Quantity.objects.create(in_warehouse_id=data['output_warehouse_id'],
+                                           out_warehouse=staff.warehouses.first(),
                                            status=QuantityStatus.PROGRESSING)
 
         create_data = []
