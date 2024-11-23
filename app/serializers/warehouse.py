@@ -141,7 +141,10 @@ class MyMaterialsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['amount'] = instance.filtered_counts[0].amount
+        if instance.filtered_counts:
+            rep['amount'] = instance.filtered_counts[0].amount
+        else:
+            rep['amount'] = 0
         return rep
 
 
@@ -149,3 +152,4 @@ class WarehouseListSerializerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
         fields = ['id', 'title', 'address']
+
