@@ -32,7 +32,14 @@ class StaffWarehouseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'address']
 
 
+class StaffRankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rank
+        fields = ['id', 'title']
+
+
 class StaffSerializer(serializers.ModelSerializer):
+    rank = StaffRankSerializer()
     class Meta:
         model = StaffProfile
         fields = '__all__'

@@ -144,3 +144,8 @@ class MyMaterialsSerializer(serializers.ModelSerializer):
         rep['amount'] = instance.filtered_counts[0].amount
         return rep
 
+
+class WarehouseListSerializerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        fields = ['id', 'title', 'address']

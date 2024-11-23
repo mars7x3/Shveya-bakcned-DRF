@@ -14,14 +14,14 @@ from rest_framework.viewsets import GenericViewSet
 from yaml.serializer import Serializer
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse, IsDirectorAndTechnologistAndWarehouse
+from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse, IsDirectorAndTechnologistAndWarehouse, IsStaff
 from my_db.enums import NomType, QuantityStatus
 from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHistory, QuantityNomenclature, \
     QuantityFile
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
     MaterialCRUDSerializer, StockInputSerializer, StockOutputSerializer, StockDefectiveSerializer, \
     StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer, \
-    MyMaterialsSerializer
+    MyMaterialsSerializer, WarehouseListSerializerSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -311,5 +311,11 @@ class StockOutputUpdateView(APIView):
                     ).update(amount=F('amount') + update.amount)
 
         return Response('Success!', status=status.HTTP_200_OK)
+
+
+class WarehouseListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    serializer_class = WarehouseListSerializerSerializer
+    queryset = Warehouse.objects.all()
 
 

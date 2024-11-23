@@ -14,7 +14,7 @@ from .views.general import RankListView, SizeListView, SizeModelViewSet, RankMod
     SizeCategoryModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
-    MovingDetailView, MyMaterialListView
+    MovingDetailView, MyMaterialListView, WarehouseListView
 
 router = DefaultRouter()
 
@@ -70,6 +70,8 @@ urlpatterns = [
         path('warehouse/movements/<int:pk>/', MovingDetailView.as_view()),
         path('warehouse/defective/', StockDefectiveView.as_view()),
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
+        path('warehouse/list/', WarehouseListView.as_view()),
+
 
 
         path('', include(router.urls)),
