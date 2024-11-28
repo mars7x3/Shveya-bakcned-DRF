@@ -9,8 +9,9 @@ from rest_framework.views import APIView
 
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import WorkStatus, PaymentStatus
-from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile
-from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer
+from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
+from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
+    SalaryCreateSerializer
 
 
 class PaymentCreateView(CreateAPIView):
@@ -78,3 +79,29 @@ class PaymentHistoryListView(APIView):
 
         serializer = WorkPaymentSerializer(works)
         return Response(serializer.data)
+
+
+class SalaryCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(
+        request=SalaryCreateSerializer(),
+        responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}}
+    )
+    def post(self, request):
+        serializer = SalaryCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        staff_id = serializer.validated_data.get('staff_id')
+        payment = Payment.objects.create(
+            staff_id=staff_id,
+            status=PaymentStatus.SALARY,
+            amount=serializer.validated_data.get('amount')
+        )
+
+        Work.objects.filter(
+            staff_id=staff_id,
+            status=WorkStatus.DONE,
+            payment__isnull=True
+        ).update(payment=payment)
+
+        return Response('Success!', status=status.HTTP_200_OK)

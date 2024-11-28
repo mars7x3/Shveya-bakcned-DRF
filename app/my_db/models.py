@@ -288,6 +288,7 @@ class Payment(models.Model):
     status = models.IntegerField(choices=PaymentStatus.choices)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    amount = models.IntegerField()
 
     class Meta:
         ordering = ['-id']

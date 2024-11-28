@@ -9,9 +9,9 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import WorkStatus, StaffRole
-from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment
+from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
-    WorkInputSerializer
+    WorkInputSerializer, WorkNomenclatureSerializer
 
 
 class WorkOutputView(APIView):
@@ -46,18 +46,23 @@ class WorkOperationListView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
     @extend_schema(
-        responses=WorkCombinationSerializer(),
+        responses=WorkNomenclatureSerializer(),
     )
     def get(self, request, pk):
-        combinations = Combination.objects.filter(
-            nomenclature__products__order_id=pk
+        nomenclatures = Nomenclature.objects.filter(
+            products__order_id=pk
         ).distinct().prefetch_related(
             Prefetch(
-                'operations',
-                queryset=Operation.objects.filter(is_active=True)
+                'combinations',
+                queryset=Combination.objects.prefetch_related(
+                    Prefetch(
+                        'operations',
+                        queryset=Operation.objects.filter(is_active=True)
+                    )
+                )
             )
         )
-        serializer = WorkCombinationSerializer(combinations, many=True)
+        serializer = WorkNomenclatureSerializer(nomenclatures, many=True)
         return Response(serializer.data)
 
 

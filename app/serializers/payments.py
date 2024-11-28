@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from my_db.models import PaymentFile, Payment, WorkDetail, Operation
+from my_db.models import PaymentFile, Payment, WorkDetail, Operation, StaffProfile
 
 
 class WorkPaymentFileCRUDSerializer(serializers.Serializer):
@@ -38,3 +38,8 @@ class SalaryInfoSerializer(serializers.Serializer):
             "works": GroupedWorkDetailSerializer(instance['works'], many=True).data,
             "payments": WorkPaymentSerializer(instance['payments'], many=True).data,
         }
+
+
+class SalaryCreateSerializer(serializers.Serializer):
+    staff_id = serializers.PrimaryKeyRelatedField(queryset=StaffProfile.objects.all())
+    amount = serializers.IntegerField()
