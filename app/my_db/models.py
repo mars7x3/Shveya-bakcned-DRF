@@ -276,7 +276,7 @@ class Work(models.Model):
 class WorkDetail(models.Model):
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='details')
     operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='details')
-    amount = models.IntegerField()
+    amount = models.IntegerField(default=0)
 
 # ______________________________ Work end ______________________________
 
@@ -288,7 +288,7 @@ class Payment(models.Model):
     status = models.IntegerField(choices=PaymentStatus.choices)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    amount = models.IntegerField()
+    amount = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['-id']

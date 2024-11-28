@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, F
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 
@@ -54,7 +54,7 @@ class SalaryInfoView(APIView):
                 work__payment__isnull=True,
             )
             .values("operation")
-            .annotate(total_amount=Sum("amount"))
+            .annotate(total_amount=Sum("amount"), price=F('operation__price'))
         )
         payments = Payment.objects.filter(
             staff_id=pk,
