@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
 from .views.order import OrderListView, OrderModelViewSet
+from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
@@ -77,9 +78,10 @@ urlpatterns = [
         path('work/staffs/list/', WorkStaffListView.as_view()),
         path('work/order-operations/<int:pk>/', WorkOperationListView.as_view()),
 
-
-
-
+        path('payment/create/', PaymentCreateView.as_view()),
+        path('payment/files/create/', PaymentFilesCreateView.as_view()),
+        path('payment/salary-info/<int:pk>/', SalaryInfoView.as_view()),
+        path('payment/history/list/<int:pk>/', PaymentHistoryListView.as_view()),
 
         path('', include(router.urls)),
     ])),

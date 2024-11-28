@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from my_db.models import StaffProfile, Combination, Operation
+from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile
 
 
 class OperationOutputSerializer(serializers.Serializer):
@@ -11,6 +11,12 @@ class OperationOutputSerializer(serializers.Serializer):
 class WorkOutputSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
     staff_ids = serializers.ListSerializer(child=serializers.IntegerField())
+    operations = OperationOutputSerializer(many=True)
+
+
+class WorkInputSerializer(serializers.Serializer):
+    order_id = serializers.IntegerField()
+    staff_id = serializers.IntegerField()
     operations = OperationOutputSerializer(many=True)
 
 
@@ -31,3 +37,5 @@ class WorkCombinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Combination
         fields = ['id', 'title', 'operations']
+
+

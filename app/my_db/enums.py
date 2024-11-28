@@ -53,3 +53,5 @@ class PaymentStatus(models.IntegerChoices):
     SALARY = 1, "ЗП"
     FINE = 2, "ШТРАФ"
     ADVANCE = 3, "АВАНС"
+    FINE_CHECKED = 4, "ШТРАФ - учтен"
+    ADVANCE_CHECKED = 5, "АВАНС - учтен"
