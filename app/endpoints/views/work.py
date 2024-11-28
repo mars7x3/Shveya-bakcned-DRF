@@ -1,13 +1,15 @@
+from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from endpoints.permissions import IsDirectorAndTechnologist
-from my_db.enums import WorkStatus
-from my_db.models import StaffProfile, Work, WorkDetail
-from serializers.work import WorkOutputSerializer
+from my_db.enums import WorkStatus, StaffRole
+from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation
+from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer
 
 
 class WorkOutputView(APIView):
@@ -30,3 +32,30 @@ class WorkOutputView(APIView):
         WorkDetail.objects.bulk_create(work_detail_create)
 
         return Response('Success!', status=status.HTTP_200_OK)
+
+
+class WorkStaffListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    serializer_class = WorkStaffListSerializer
+    queryset = StaffProfile.objects.filter(role__in=[StaffRole.SEAMSTRESS, StaffRole.CUTTER])
+
+
+class WorkOperationListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses=WorkCombinationSerializer(),
+    )
+    def get(self, request, pk):
+        combinations = Combination.objects.filter(
+            nomenclature__products__order_id=pk
+        ).distinct().prefetch_related(
+            Prefetch(
+                'operations',
+                queryset=Operation.objects.filter(is_active=True)
+            )
+        )
+        serializer = WorkCombinationSerializer(combinations, many=True)
+        return Response(serializer.data)
+
+
