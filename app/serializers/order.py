@@ -16,6 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
     completion_percentage = serializers.FloatField()
     total_cost = serializers.DecimalField(max_digits=12, decimal_places=2)
     total_revenue = serializers.DecimalField(max_digits=12, decimal_places=2)
+    profit = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -30,7 +31,11 @@ class OrderSerializer(serializers.ModelSerializer):
             'completion_percentage',
             'total_cost',
             'total_revenue',
+            'profit',
         ]
+
+    def get_profit(self, obj):
+        return obj.total_revenue - obj.total_cost
 
 
 
