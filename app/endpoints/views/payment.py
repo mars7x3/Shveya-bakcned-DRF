@@ -77,7 +77,7 @@ class PaymentHistoryListView(APIView):
     def get(self, request, pk):
         works = Payment.objects.filter(staff_id=pk)
 
-        serializer = WorkPaymentSerializer(works)
+        serializer = WorkPaymentSerializer(works, many=True)
         return Response(serializer.data)
 
 

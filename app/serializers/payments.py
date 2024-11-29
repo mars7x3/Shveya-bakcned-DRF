@@ -17,7 +17,7 @@ class WorkPaymentFileSerializer(serializers.ModelSerializer):
 
 
 class WorkPaymentSerializer(serializers.ModelSerializer):
-    payments = WorkPaymentFileSerializer(many=True, read_only=True)
+    files = WorkPaymentFileSerializer(many=True, read_only=True)
 
     class Meta:
         model = Payment
