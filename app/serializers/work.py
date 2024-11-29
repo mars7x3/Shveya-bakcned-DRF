@@ -27,9 +27,13 @@ class WorkStaffListSerializer(serializers.ModelSerializer):
 
 
 class WorkOperationSerializer(serializers.ModelSerializer):
+    required = serializers.IntegerField()
+    assigned = serializers.IntegerField()
+    completed = serializers.IntegerField()
+
     class Meta:
         model = Operation
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'required', 'assigned', 'completed']
 
 
 class WorkCombinationSerializer(serializers.ModelSerializer):
@@ -45,6 +49,6 @@ class WorkNomenclatureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'combinations']
+        fields = ['id', 'title', 'combinations']
 
 

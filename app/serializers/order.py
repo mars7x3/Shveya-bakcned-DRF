@@ -11,10 +11,27 @@ class OrderClientSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     client = OrderClientSerializer(read_only=True)
+    total_products = serializers.IntegerField()
+    completed_products = serializers.IntegerField()
+    completion_percentage = serializers.FloatField()
+    total_cost = serializers.DecimalField(max_digits=12, decimal_places=2)
+    total_revenue = serializers.DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = [
+            'id',
+            'client',
+            'status',
+            'deadline',
+            'created_at',
+            'total_products',
+            'completed_products',
+            'completion_percentage',
+            'total_cost',
+            'total_revenue',
+        ]
+
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):

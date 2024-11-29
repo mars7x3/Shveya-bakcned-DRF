@@ -24,8 +24,14 @@ class WorkPaymentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class WorkOperationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operation
+        fields = ['id', 'title']
+
+
 class GroupedWorkDetailSerializer(serializers.Serializer):
-    operation = serializers.PrimaryKeyRelatedField(queryset=Operation.objects.all())
+    operation = WorkOperationSerializer()
     total_amount = serializers.IntegerField()
     price = serializers.IntegerField()
 

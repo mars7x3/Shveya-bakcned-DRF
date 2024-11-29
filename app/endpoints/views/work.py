@@ -1,4 +1,4 @@
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Sum, F, Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets, mixins
 from rest_framework.generics import ListAPIView, CreateAPIView
@@ -57,11 +57,20 @@ class WorkOperationListView(APIView):
                 queryset=Combination.objects.prefetch_related(
                     Prefetch(
                         'operations',
-                        queryset=Operation.objects.filter(is_active=True)
+                        queryset=Operation.objects.filter(is_active=True).annotate(
+                            required=Sum(F('nomenclature__products__amounts__amount'), default=0),
+                            assigned=Sum('details__amount', default=0),
+                            completed=Sum(
+                                'details__amount',
+                                filter=Q(details__work__status=WorkStatus.DONE),
+                                default=0
+                            )
+                        )
                     )
                 )
             )
         )
+
         serializer = WorkNomenclatureSerializer(nomenclatures, many=True)
         return Response(serializer.data)
 
