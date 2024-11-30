@@ -1,3 +1,4 @@
+from django.db.models import Sum, F
 from rest_framework import serializers
 
 from my_db.models import PaymentFile, Payment, WorkDetail, Operation, StaffProfile
@@ -51,3 +52,25 @@ class SalaryInfoSerializer(serializers.Serializer):
 class SalaryCreateSerializer(serializers.Serializer):
     staff_id = serializers.PrimaryKeyRelatedField(queryset=StaffProfile.objects.all())
     amount = serializers.IntegerField()
+
+
+class AggregatedOperationSerializer(serializers.Serializer):
+    operation_title = serializers.CharField()
+    total_amount = serializers.IntegerField()
+
+
+class WorkPaymentDetailSerializer(serializers.ModelSerializer):
+    files = WorkPaymentFileSerializer(many=True, read_only=True)
+    operations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Payment
+        fields = ['id', 'status', 'comment', 'created_at', 'amount', 'operations', 'files']
+
+    def get_operations(self, obj):
+        operations = (
+            WorkDetail.objects.filter(work__payment=obj)
+            .values(operation_title=F('operation__title'))
+            .annotate(total_amount=Sum('amount'))
+        )
+        return AggregatedOperationSerializer(operations, many=True).data

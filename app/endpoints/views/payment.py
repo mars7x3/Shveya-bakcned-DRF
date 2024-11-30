@@ -1,8 +1,9 @@
 from django.db.models import Sum, F
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +12,7 @@ from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import WorkStatus, PaymentStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
-    SalaryCreateSerializer
+    SalaryCreateSerializer, WorkPaymentDetailSerializer
 
 
 class PaymentCreateView(CreateAPIView):
@@ -105,3 +106,10 @@ class SalaryCreateView(APIView):
         ).update(payment=payment)
 
         return Response('Success!', status=status.HTTP_200_OK)
+
+
+
+class PaymentDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Payment.objects.all()
+    serializer_class = WorkPaymentDetailSerializer
