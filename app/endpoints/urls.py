@@ -6,7 +6,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .views.dashboard import PlanCRUDView
+from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
 from .views.order import OrderListView, OrderModelViewSet
@@ -88,6 +88,8 @@ urlpatterns = [
         path('payment/salary-info/<int:pk>/', SalaryInfoView.as_view()),
         path('payment/history/list/<int:pk>/', PaymentHistoryListView.as_view()),
         path('payment/history/detail/<int:pk>/', PaymentDetailView.as_view()),
+
+        path('dashboard/statistic/', StatisticView.as_view()),
 
 
 
