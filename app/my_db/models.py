@@ -300,3 +300,15 @@ class PaymentFile(models.Model):
 
 # ______________________________ Payment end ______________________________
 
+
+# ______________________________ Plan ______________________________
+
+class Plan(models.Model):
+    income_amount = models.IntegerField(default=0)
+    order_amount = models.IntegerField(default=0)
+    date = models.DateField()
+
+    class Meta:
+        ordering = ['-id']
+
+# ______________________________ Plan end ______________________________

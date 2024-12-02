@@ -1,13 +1,19 @@
+import datetime
+
 from django.db.models import Sum, F
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import WorkStatus, PaymentStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
@@ -71,15 +77,24 @@ class SalaryInfoView(APIView):
 
 class PaymentHistoryListView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    pagination_class = StandardPagination
 
     @extend_schema(
         responses=WorkPaymentSerializer(),
     )
     def get(self, request, pk):
-        works = Payment.objects.filter(staff_id=pk)
+        from_date = request.query_params.get('from_date')
+        from_date = timezone.make_aware(datetime.datetime.strptime(from_date, "%d-%m-%Y"))
+        to_date = request.query_params.get('to_date')
+        to_date = timezone.make_aware(datetime.datetime.strptime(to_date, "%d-%m-%Y"))
 
-        serializer = WorkPaymentSerializer(works, many=True)
-        return Response(serializer.data)
+        payments = Payment.objects.filter(staff_id=pk, created_at__gte=from_date, created_at__lte=to_date)
+
+        paginator = StandardPagination()
+        paginated_payments = paginator.paginate_queryset(payments, request)
+
+        serializer = WorkPaymentSerializer(paginated_payments, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class SalaryCreateView(APIView):
