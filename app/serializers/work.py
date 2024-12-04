@@ -52,3 +52,10 @@ class WorkNomenclatureSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'combinations']
 
 
+class OperationSummarySerializer(serializers.Serializer):
+    order_id = serializers.IntegerField()
+    operation_id = serializers.IntegerField()
+    operation_title = serializers.CharField()
+    need_amount = serializers.IntegerField()
+    done_amount = serializers.IntegerField()
+    moderation_amount = serializers.IntegerField()

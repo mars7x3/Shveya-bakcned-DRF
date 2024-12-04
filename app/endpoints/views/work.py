@@ -11,7 +11,7 @@ from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import WorkStatus, StaffRole
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
-    WorkInputSerializer, WorkNomenclatureSerializer
+    WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer
 
 
 class WorkOutputView(APIView):
@@ -99,7 +99,7 @@ class WorkInputView(APIView):
 class MyWorkListView(APIView):
     permission_classes = [IsAuthenticated, IsStaff]
 
-    @extend_schema(request=WorkInputSerializer())
+    @extend_schema(request=OperationSummarySerializer())
     def get(self, request):
         staff = request.user.staff_profile
 
