@@ -51,6 +51,13 @@ class ClientProfile(models.Model):
     class Meta:
         ordering = ['-id']
 
+
+class ClientFile(models.Model):
+    client = models.OneToOneField(
+        ClientProfile, on_delete=models.CASCADE, related_name='files'
+    )
+    file = models.FileField(upload_to='client_files')
+
 # ______________________________ User end ______________________________
 
 

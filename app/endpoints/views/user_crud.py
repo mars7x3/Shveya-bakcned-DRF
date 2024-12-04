@@ -9,10 +9,11 @@ from django_filters import rest_framework as filters
 
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import UserStatus
-from my_db.models import MyUser, StaffProfile, ClientProfile
+from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
 from serializers.user_crud import StaffSerializer, StaffCreateUpdateSerializer, MyUserCreateSerializer, \
-    MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer
+    MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer, \
+    ClientFileCRUDSerializer
 
 
 class StaffInfoView(APIView):
@@ -222,3 +223,27 @@ class ClientListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = ClientProfile.objects.all()
     serializer_class = ClientListSerializer
+
+
+class ClientFileCRUDView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(
+        request=ClientFileCRUDSerializer,
+        responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}}
+    )
+    def post(self, request):
+        serializer = ClientFileCRUDSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        client_id = serializer.validated_data.get('client_id')
+        files = request.FILES.getlist('files')
+        delete_ids = serializer.validated_data.get('delete_ids', [])
+
+        create_data = [ClientFile(client_id=client_id, file=file) for file in files]
+        ClientFile.objects.bulk_create(create_data)
+
+        if delete_ids:
+            ClientFile.objects.filter(id__in=delete_ids).delete()
+
+        return Response({"text": "Success!"}, status=status.HTTP_200_OK)

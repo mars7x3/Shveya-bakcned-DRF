@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.enums import StaffRole
-from my_db.models import MyUser, StaffProfile, Rank, ClientProfile, Warehouse
+from my_db.models import MyUser, StaffProfile, Rank, ClientProfile, Warehouse, ClientFile
 from serializers.general import RankSerializer
 
 
@@ -40,6 +40,8 @@ class StaffRankSerializer(serializers.ModelSerializer):
 
 class StaffSerializer(serializers.ModelSerializer):
     rank = StaffRankSerializer()
+    user = MyUserSerializer(read_only=True)
+
     class Meta:
         model = StaffProfile
         fields = '__all__'
@@ -70,9 +72,15 @@ class StaffCreateUpdateSerializer(StaffSerializer):
         return attrs
 
 
+class ClientFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientFile
+        fields = ['file']
+
 
 class ClientSerializer(serializers.ModelSerializer):
     user = MyUserSerializer(read_only=True)
+    files = ClientFileSerializer(read_only=True, many=True)
 
     class Meta:
         model = ClientProfile
@@ -92,3 +100,16 @@ class ClientListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'surname', 'email', 'phone', 'address']
 
 
+class ClientFileCRUDSerializer(serializers.Serializer):
+    client_id = serializers.IntegerField(help_text="ID клиента, к которому добавляются изображения.")
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        required=False,
+        help_text="Список файлов для добавления к клиенту."
+    )
+    delete_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        help_text="Список ID файлов для удаления. PS: в свагере не работает это место, "
+                  "но если отправишь [1, 2], то сработает"
+    )

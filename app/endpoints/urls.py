@@ -12,7 +12,7 @@ from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, Com
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView
-from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView
+from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
@@ -55,6 +55,7 @@ urlpatterns = [
         path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
         path('user/staff/info/', StaffInfoView.as_view()),
+        path('user/client/files/', ClientFileCRUDView.as_view()),
 
         path('order/list/', OrderListView.as_view()),
         path('order/clients/list/', ClientListView.as_view()),
