@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsOwner
 from my_db.enums import WorkStatus, PaymentStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
@@ -151,3 +151,9 @@ class MyPaymentHistoryListView(APIView):
 
         serializer = WorkPaymentSerializer(paginated_payments, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class MyPaymentDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsOwner]
+    queryset = Payment.objects.all()
+    serializer_class = WorkPaymentDetailSerializer

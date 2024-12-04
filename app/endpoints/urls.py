@@ -11,14 +11,14 @@ from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, Com
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
-    SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView
+    SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
     MovingDetailView, MyMaterialListView, WarehouseListView
-from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView
+from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView
 
 router = DefaultRouter()
 
@@ -82,6 +82,7 @@ urlpatterns = [
         path('work/output/', WorkOutputView.as_view()),
         path('work/staffs/list/', WorkStaffListView.as_view()),
         path('work/order-operations/<int:pk>/', WorkOperationListView.as_view()),
+        path('work/history/list/my/', MyWorkListView.as_view()),
 
         path('payment/create/', PaymentCreateView.as_view()),
         path('payment/files/create/', PaymentFilesCreateView.as_view()),
@@ -89,8 +90,10 @@ urlpatterns = [
         path('payment/salary-info/<int:pk>/', SalaryInfoView.as_view()),
         path('payment/history/list/<int:pk>/', PaymentHistoryListView.as_view()),
         path('payment/history/list/my/', MyPaymentHistoryListView.as_view()),
-
         path('payment/history/detail/<int:pk>/', PaymentDetailView.as_view()),
+        path('payment/history/detail/my/<int:pk>/', MyPaymentDetailView.as_view()),
+
+
 
         path('dashboard/statistic/', StatisticView.as_view()),
 
