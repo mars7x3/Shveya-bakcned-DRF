@@ -76,6 +76,7 @@ class StockInputSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
     amount = serializers.IntegerField()
     price = serializers.IntegerField(required=False)
+    comment = serializers.CharField(required=False)
 
 
 class StockOutputSerializer(serializers.Serializer):
@@ -84,7 +85,6 @@ class StockOutputSerializer(serializers.Serializer):
 
 
 class StockDefectiveSerializer(serializers.Serializer):
-    comment = serializers.CharField(required=False)
     products = StockInputSerializer(many=True)
 
 

@@ -233,8 +233,7 @@ class StockDefectiveView(APIView):
         staff = request.user.staff_profile
         data = request.data
 
-        quantity = Quantity.objects.create(out_warehouse=staff.warehouses.first(), status=QuantityStatus.ACTIVE,
-                                           comment=data['comment'])
+        quantity = Quantity.objects.create(out_warehouse=staff.warehouses.first(), status=QuantityStatus.ACTIVE)
 
         create_data = []
         for i in data['products']:
@@ -243,6 +242,7 @@ class StockDefectiveView(APIView):
                     quantity=quantity,
                     nomenclature_id=i['product_id'],
                     amount=i['amount'],
+                    comment=i['comment']
                 )
             )
         QuantityNomenclature.objects.bulk_create(create_data)

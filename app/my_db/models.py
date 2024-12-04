@@ -200,7 +200,6 @@ class Quantity(models.Model):
         Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='out_quants'
     )
     status = models.IntegerField(choices=QuantityStatus.choices)
-    comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -213,6 +212,7 @@ class QuantityNomenclature(models.Model):
     )
     amount = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    comment = models.TextField(blank=True, null=True)
 
 
 class QuantityFile(models.Model):
