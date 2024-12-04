@@ -33,23 +33,29 @@ class OrderFilter(filters.FilterSet):
 class OrderListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Order.objects.annotate(
-        total_products=Sum('products__amounts__amount'),
-        completed_products=Sum(
-            'products__nomenclature__operations__details__amount',
-            filter=Q(products__nomenclature__operations__details__work__status=WorkStatus.DONE),
-            default=0
-        ),
-        total_cost=Sum(F('products__nomenclature__cost_price') * F('products__amounts__amount'),
-                       output_field=FloatField(), default=0),
-        total_revenue=Sum(F('products__price') * F('products__amounts__amount'), output_field=FloatField()),
         completion_percentage=ExpressionWrapper(
             (Sum(
-                'products__nomenclature__operations__details__amount',
-                filter=Q(products__nomenclature__operations__details__work__status=WorkStatus.DONE), default=0
-            ) * 100.0 / Sum('products__amounts__amount', default=0)),
+                F('products__nomenclature__operations__details__amount'),
+                filter=Q(products__nomenclature__operations__details__work__status=WorkStatus.DONE),
+                default=0
+            ) * 100.0) / Sum(
+                F('products__nomenclature__operations__details__amount') * F('products__amounts__amount'),
+                default=1
+            ),
             output_field=FloatField()
         ),
-    )
+        total_cost=Sum(
+            F('products__nomenclature__cost_price') * F('products__amounts__amount'),
+            output_field=FloatField(),
+            default=0
+        ),
+        total_revenue=Sum(
+            F('products__price') * F('products__amounts__amount'),
+            output_field=FloatField(),
+            default=0
+        )
+    ).order_by('-created_at')
+
     serializer_class = OrderSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = OrderFilter
