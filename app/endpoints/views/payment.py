@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import WorkStatus, PaymentStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
@@ -128,3 +128,26 @@ class PaymentDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Payment.objects.all()
     serializer_class = WorkPaymentDetailSerializer
+
+
+class MyPaymentHistoryListView(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    pagination_class = StandardPagination
+
+    @extend_schema(
+        responses=WorkPaymentSerializer(),
+    )
+    def get(self, request):
+        staff = request.user.staff_profile
+        from_date = request.query_params.get('from_date')
+        from_date = timezone.make_aware(datetime.datetime.strptime(from_date, "%d-%m-%Y"))
+        to_date = request.query_params.get('to_date')
+        to_date = timezone.make_aware(datetime.datetime.strptime(to_date, "%d-%m-%Y"))
+
+        payments = Payment.objects.filter(staff=staff, created_at__gte=from_date, created_at__lte=to_date)
+
+        paginator = StandardPagination()
+        paginated_payments = paginator.paginate_queryset(payments, request)
+
+        serializer = WorkPaymentSerializer(paginated_payments, many=True)
+        return paginator.get_paginated_response(serializer.data)

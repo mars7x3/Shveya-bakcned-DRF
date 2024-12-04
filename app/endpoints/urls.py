@@ -11,7 +11,7 @@ from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, Com
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
-    SalaryCreateView, PaymentDetailView
+    SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
 from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
@@ -88,6 +88,8 @@ urlpatterns = [
         path('payment/salary/create/', SalaryCreateView.as_view()),
         path('payment/salary-info/<int:pk>/', SalaryInfoView.as_view()),
         path('payment/history/list/<int:pk>/', PaymentHistoryListView.as_view()),
+        path('payment/history/list/my/', MyPaymentHistoryListView.as_view()),
+
         path('payment/history/detail/<int:pk>/', PaymentDetailView.as_view()),
 
         path('dashboard/statistic/', StatisticView.as_view()),

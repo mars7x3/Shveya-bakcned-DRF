@@ -58,11 +58,21 @@ class CombinationCRUDSerializer(CombinationSerializer):
         return combination
 
     def update(self, instance, validated_data):
-        operations_data = validated_data.pop('operations', [])
+        operations_data = validated_data.pop('operations', None)
         combination = super().update(instance, validated_data)
-        combination.operations.all().delete()
-        if operations_data:
-            combination.operations.set(operations_data)
+
+        if operations_data is not None:
+            current_operations = set(combination.operations.values_list('id', flat=True))
+            new_operations = set(operations_data)
+
+            to_add = new_operations - current_operations
+            to_remove = current_operations - new_operations
+
+            if to_remove:
+                combination.operations.remove(*to_remove)
+            if to_add:
+                combination.operations.add(*to_add)
+
         return combination
 
 
