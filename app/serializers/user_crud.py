@@ -75,7 +75,7 @@ class StaffCreateUpdateSerializer(StaffSerializer):
 class ClientFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientFile
-        fields = ['file']
+        fields = ['id', 'file']
 
 
 class ClientSerializer(serializers.ModelSerializer):
