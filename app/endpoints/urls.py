@@ -18,7 +18,8 @@ from .views.general import RankListView, SizeListView, SizeModelViewSet, RankMod
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
     MovingDetailView, MyMaterialListView, WarehouseListView
-from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView
+from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView, WorkInputView, \
+    MyWorkInputView, WorkModerationListView, WorkModerationView
 
 router = DefaultRouter()
 
@@ -80,9 +81,13 @@ urlpatterns = [
         path('warehouse/list/', WarehouseListView.as_view()),
 
         path('work/output/', WorkOutputView.as_view()),
+        path('work/input/', WorkInputView.as_view()),
+        path('work/input/my/', MyWorkInputView.as_view()),
         path('work/staffs/list/', WorkStaffListView.as_view()),
         path('work/order-operations/<int:pk>/', WorkOperationListView.as_view()),
         path('work/history/list/my/', MyWorkListView.as_view()),
+        path('work/moderation/list/', WorkModerationListView.as_view()),
+        path('work/moderation/update/', WorkModerationView.as_view()),
 
         path('payment/create/', PaymentCreateView.as_view()),
         path('payment/files/create/', PaymentFilesCreateView.as_view()),
@@ -92,8 +97,6 @@ urlpatterns = [
         path('payment/history/list/my/', MyPaymentHistoryListView.as_view()),
         path('payment/history/detail/<int:pk>/', PaymentDetailView.as_view()),
         path('payment/history/detail/my/<int:pk>/', MyPaymentDetailView.as_view()),
-
-
 
         path('dashboard/statistic/', StatisticView.as_view()),
 

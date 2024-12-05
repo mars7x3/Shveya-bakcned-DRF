@@ -1,4 +1,5 @@
-from django.db.models import Prefetch, Sum, F, Q, IntegerField, Value, Case, When
+from django.db.models import Prefetch, Sum, F, Q, IntegerField, Value, Case, When, CharField
+from django.db.models.functions import Concat
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets, mixins
 from rest_framework.generics import ListAPIView, CreateAPIView
@@ -11,13 +12,15 @@ from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import WorkStatus, StaffRole
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
-    WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer
+    WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
+    WorkModerationListSerializer, WorkModerationSerializer
 
 
 class WorkOutputView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
-    @extend_schema(request=WorkOutputSerializer())
+    @extend_schema(request=WorkOutputSerializer(),
+                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
     def post(self, request):
         data = request.data
         staffs = StaffProfile.objects.filter(id__in=data['staff_ids'])
@@ -78,7 +81,8 @@ class WorkOperationListView(APIView):
 class WorkInputView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
-    @extend_schema(request=WorkInputSerializer())
+    @extend_schema(request=WorkInputSerializer(),
+                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
     def post(self, request):
         data = request.data
         staff = StaffProfile.objects.get(id=data['staff_id'])
@@ -96,10 +100,33 @@ class WorkInputView(APIView):
         return Response('Success!', status=status.HTTP_200_OK)
 
 
+class MyWorkInputView(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    @extend_schema(request=MyWorkInputSerializer(),
+                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+    def post(self, request):
+        data = request.data
+        staff = request.user.staff_profile
+
+        work_detail_create = []
+        work = Work.objects.create(staff=staff, order_id=data['order_id'], status=WorkStatus.MODERATION)
+
+        for o in data['operations']:
+            work_detail_create.append(
+                WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
+            )
+
+        WorkDetail.objects.bulk_create(work_detail_create)
+
+        return Response('Success!', status=status.HTTP_200_OK)
+
+
 class MyWorkListView(APIView):
     permission_classes = [IsAuthenticated, IsStaff]
 
-    @extend_schema(request=OperationSummarySerializer())
+    @extend_schema(request=OperationSummarySerializer(),
+                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
     def get(self, request):
         staff = request.user.staff_profile
 
@@ -110,9 +137,17 @@ class MyWorkListView(APIView):
             .values(
                 "operation_id",
                 "operation__title",
-                "work__order_id"
+                "work__order_id",
+                "work__order__client__name",
+                "work__order__client__surname"
             )
             .annotate(
+                order_client=Concat(
+                    F("work__order__client__surname"),
+                    Value(" "),
+                    F("work__order__client__name"),
+                    output_field=CharField()
+                ),
                 need_amount=Sum(
                     Case(
                         When(work__status=WorkStatus.NEW, then=F("amount")),
@@ -142,12 +177,13 @@ class MyWorkListView(APIView):
         operation_mapping = {}
 
         for item in operations:
-            key = (item["operation_id"], item["operation__title"])  # Ключ для группировки
+            key = (item["operation_id"], item["operation__title"])
             if key not in operation_mapping:
                 operation_mapping[key] = {
                     "operation_id": item["operation_id"],
                     "operation_title": item["operation__title"],
                     "order_id": item["work__order_id"],
+                    "order_client": item.get("order_client", "N/A"),
                     "need_amount": item["need_amount"] or 0,
                     "done_amount": item["done_amount"] or 0,
                     "moderation_amount": item["moderation_amount"] or 0,
@@ -160,3 +196,23 @@ class MyWorkListView(APIView):
         result = list(operation_mapping.values())
 
         return Response(result)
+
+
+class WorkModerationListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Work.objects.filter(status=WorkStatus.MODERATION)
+    serializer_class = WorkModerationListSerializer
+
+
+class WorkModerationView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(request=WorkModerationSerializer(),
+                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+    def post(self, request):
+        data = request.data
+        work = Work.objects.get(id=data['work_id'])
+        work.status = WorkStatus.DONE
+        work.save()
+
+        return Response('Success!', status=status.HTTP_200_OK)
