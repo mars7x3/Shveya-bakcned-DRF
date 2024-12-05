@@ -138,7 +138,7 @@ class ClientProfileFilter(filters.FilterSet):
 
 class ClientModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = ClientProfile.objects.select_related('user')
+    queryset = ClientProfile.objects.select_related('user').prefetch_related('files')
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ClientProfileFilter
 

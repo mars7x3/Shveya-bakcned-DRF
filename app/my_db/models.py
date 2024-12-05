@@ -53,7 +53,7 @@ class ClientProfile(models.Model):
 
 
 class ClientFile(models.Model):
-    client = models.OneToOneField(
+    client = models.ForeignKey(
         ClientProfile, on_delete=models.CASCADE, related_name='files'
     )
     file = models.FileField(upload_to='client_files')
