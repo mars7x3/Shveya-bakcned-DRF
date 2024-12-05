@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work
+from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -73,12 +73,22 @@ class WorkStaffSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'surname']
 
 
+class OperationDetailSerializer(serializers.ModelSerializer):
+    operation_title = serializers.CharField(source='operation.title')
+    operation_id = serializers.IntegerField(source='operation.id')
+
+    class Meta:
+        model = WorkDetail
+        fields = ['operation_id', 'operation_title', 'amount']
+
+
 class WorkModerationListSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
+    details = OperationDetailSerializer(many=True)
 
     class Meta:
         model = Work
-        fields = ['id', 'staff', 'order', 'status', 'created_at']
+        fields = ['id', 'staff', 'order', 'status', 'created_at', 'details']
 
 
 class WorkModerationSerializer(serializers.Serializer):

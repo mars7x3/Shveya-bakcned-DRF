@@ -200,7 +200,12 @@ class MyWorkListView(APIView):
 
 class WorkModerationListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Work.objects.filter(status=WorkStatus.MODERATION)
+    queryset = Work.objects.filter(status=WorkStatus.MODERATION).prefetch_related(
+        Prefetch(
+            'details',
+            queryset=WorkDetail.objects.select_related('operation')
+        )
+    )
     serializer_class = WorkModerationListSerializer
 
 
