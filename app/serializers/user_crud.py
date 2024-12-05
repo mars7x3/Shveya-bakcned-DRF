@@ -102,8 +102,8 @@ class ClientListSerializer(serializers.ModelSerializer):
 
 class ClientFileCRUDSerializer(serializers.Serializer):
     client_id = serializers.IntegerField(help_text="ID клиента, к которому добавляются изображения.")
-    images = serializers.ListField(
-        child=serializers.ImageField(),
+    files = serializers.ListField(
+        child=serializers.FileField(),
         required=False,
         help_text="Список файлов для добавления к клиенту."
     )
