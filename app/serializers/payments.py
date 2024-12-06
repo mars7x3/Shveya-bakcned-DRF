@@ -25,28 +25,26 @@ class WorkPaymentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class WorkOperationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Operation
-        fields = ['id', 'title']
+class WorkOperationSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    price = serializers.IntegerField()
 
 
 class GroupedWorkDetailSerializer(serializers.Serializer):
     operation = WorkOperationSerializer()
     total_amount = serializers.IntegerField()
-    price = serializers.IntegerField()
 
+
+class WorkDetailPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'amount', 'status', 'created_at']
 
 
 class SalaryInfoSerializer(serializers.Serializer):
     works = GroupedWorkDetailSerializer(many=True)
-    payments = WorkPaymentSerializer(many=True)
-
-    def to_representation(self, instance):
-        return {
-            "works": GroupedWorkDetailSerializer(instance['works'], many=True).data,
-            "payments": WorkPaymentSerializer(instance['payments'], many=True).data,
-        }
+    payments = WorkDetailPaymentSerializer(many=True)
 
 
 class SalaryCreateSerializer(serializers.Serializer):

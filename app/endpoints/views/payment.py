@@ -54,19 +54,34 @@ class SalaryInfoView(APIView):
         responses=SalaryInfoSerializer(),
     )
     def get(self, request, pk):
-        works = (
+        works_queryset = (
             WorkDetail.objects.filter(
                 work__staff_id=pk,
                 work__status=WorkStatus.DONE,
                 work__payment__isnull=True,
             )
-            .values("operation")
-            .annotate(total_amount=Sum("amount"), price=F('operation__price'))
+            .select_related('operation')
+            .values('operation__id', 'operation__title', 'operation__price')
+            .annotate(total_amount=Sum('amount'))
         )
+
+        works = [
+            {
+                "operation": {
+                    "id": work["operation__id"],
+                    "title": work["operation__title"],
+                    "price": work["operation__price"],
+                },
+                "total_amount": work["total_amount"],
+            }
+            for work in works_queryset
+        ]
+
         payments = Payment.objects.filter(
             staff_id=pk,
             status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE]
         )
+
         data = {
             "works": works,
             "payments": payments,
