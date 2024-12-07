@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    OperationNom, SizeCategory
+    OperationNom, SizeCategory, EquipmentImages, EquipmentService, StaffProfile
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -23,10 +23,62 @@ class PatternSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
+class EquipmentImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentImages
+        fields = ['id', 'image']
+
+
+class EquipmentServiceStaffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffProfile
+        fields = ['id', 'name', 'surname']
+
+
+class EquipmentServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentService
+        fields = ['id', 'staff', 'text', 'price', 'created_at']
+
+
+class EquipmentServiceReadSerializer(EquipmentServiceSerializer):
+    staff = EquipmentServiceStaffSerializer()
+
+
 class EquipmentSerializer(serializers.ModelSerializer):
+    images = EquipmentImagesSerializer(many=True)
+    services = EquipmentServiceReadSerializer(many=True)
+
     class Meta:
         model = Equipment
-        fields = ['id', 'title']
+        fields = '__all__'
+
+
+class EquipmentCRUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = '__all__'
+
+
+class EquipmentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['id', 'title', 'price', 'is_active']
+
+
+class EquipmentImageCRUDSerializer(serializers.Serializer):
+    equipment_id = serializers.IntegerField(help_text="ID оборудования, к которому добавляются изображения.")
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        required=False,
+        help_text="Список файлов изображений для добавления к оборудованию."
+    )
+    delete_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        help_text="Список ID изображений для удаления. PS: в свагере не работает это место, "
+                  "но если отправишь [1, 2], то сработает"
+    )
 
 
 class CombinationOperationsSerializer(serializers.ModelSerializer):

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .compress import staff_image_folder, WEBPField
+from .compress import staff_image_folder, WEBPField, equipment_image_folder
 from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, WorkStatus, PaymentStatus
 
 
@@ -142,9 +142,33 @@ class Combination(models.Model):
 
 class Equipment(models.Model):
     title = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
+    is_active = models.BooleanField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    service_date = models.DateField(blank=True, null=True)
+    guarantee = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return self.title
+
+
+class EquipmentImages(models.Model):
+    equipment = models.ForeignKey(
+        Equipment, on_delete=models.CASCADE, related_name='images'
+    )
+    image = WEBPField(upload_to=equipment_image_folder, blank=True, null=True)
+
+
+class EquipmentService(models.Model):
+    equipment = models.ForeignKey(
+        Equipment, on_delete=models.CASCADE, related_name='services'
+    )
+    staff = models.ForeignKey(
+        StaffProfile, on_delete=models.CASCADE, related_name='services'
+    )
+    text = models.TextField()
+    price = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Operation(models.Model):

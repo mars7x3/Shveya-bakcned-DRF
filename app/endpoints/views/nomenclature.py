@@ -5,7 +5,7 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -13,10 +13,11 @@ from rest_framework.viewsets import GenericViewSet
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType
-from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment
+from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
-    PatternSerializer, ProductListSerializer, CombinationSerializer
+    PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
+    EquipmentListSerializer, EquipmentServiceSerializer, EquipmentServiceReadSerializer, EquipmentCRUDSerializer
 from django_filters import rest_framework as filters
 
 
@@ -140,6 +141,52 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return EquipmentListSerializer
+        if self.request.method in ['POST', 'PATCH', "PUT"]:
+            return EquipmentCRUDSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Equipment.objects.prefetch_related('images', 'services')
+        return Equipment.objects.all()
+
+
+class EquipmentImageCRUDView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(
+        request=EquipmentImageCRUDSerializer,
+        responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}}
+    )
+    def post(self, request):
+        serializer = EquipmentImageCRUDSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        equipment_id = serializer.validated_data.get('equipment_id')
+        images = request.FILES.getlist('images')
+        delete_ids = serializer.validated_data.get('delete_ids', [])
+
+        create_data = [EquipmentImages(equipment_id=equipment_id, image=image) for image in images]
+        EquipmentImages.objects.bulk_create(create_data)
+
+        if delete_ids:
+            EquipmentImages.objects.filter(id__in=delete_ids).delete()
+
+        return Response({"text": "Success!"}, status=status.HTTP_200_OK)
+
+
+class EquipmentServiceView(ListCreateAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = EquipmentService.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return EquipmentServiceSerializer
+        return EquipmentServiceReadSerializer
 
 
 class ProductListView(ListAPIView):

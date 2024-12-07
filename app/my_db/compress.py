@@ -28,3 +28,6 @@ def staff_image_folder(instance, filename):
 def client_image_folder(instance, filename):
     return 'users/{}.webp'.format(uuid.uuid4().hex)
 
+
+def equipment_image_folder(instance, filename):
+    return 'equipment/{}.webp'.format(uuid.uuid4().hex)

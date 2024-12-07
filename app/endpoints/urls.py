@@ -8,12 +8,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
-    OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView
+    OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
+    EquipmentImageCRUDView, EquipmentServiceView
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
-from .views.general import RankListView, SizeListView, SizeModelViewSet, RankModelViewSet, SizeCategoryListView, \
+from .views.general import RankListView, SizeListView, RankModelViewSet, SizeCategoryListView, \
     SizeCategoryModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
@@ -26,7 +27,6 @@ router = DefaultRouter()
 router.register('user/staff/crud', StaffModelViewSet)
 router.register('user/client/crud', ClientModelViewSet)
 router.register('general/rank/crud', RankModelViewSet)
-router.register('general/size/crud', SizeModelViewSet)
 router.register('general/size/category/crud', SizeCategoryModelViewSet)
 router.register('product/crud', GPModelViewSet)
 router.register('product/combination/crud', CombinationModelViewSet)
@@ -100,7 +100,8 @@ urlpatterns = [
 
         path('dashboard/statistic/', StatisticView.as_view()),
 
-
+        path('equipment/images/', EquipmentImageCRUDView.as_view()),
+        path('equipment/services/', EquipmentServiceView.as_view()),
 
         path('', include(router.urls)),
     ])),

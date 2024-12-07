@@ -15,11 +15,21 @@ class SizeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SizeCreateSerializer(serializers.Serializer):
+    title = serializers.CharField()
+
+
 class SizeCategorySerializer(serializers.ModelSerializer):
     sizes = SizeSerializer(many=True, read_only=True)
+    sizes_add = serializers.ListField(
+        child=SizeCreateSerializer(), required=False, write_only=True
+    )
+    sizes_delete = serializers.ListField(
+        child=serializers.IntegerField(), required=False, write_only=True
+    )
 
     class Meta:
         model = SizeCategory
-        fields = ['id', 'title', 'is_active', 'sizes']
+        fields = ['id', 'title', 'is_active', 'sizes', 'sizes_add', 'sizes_delete']
 
 
