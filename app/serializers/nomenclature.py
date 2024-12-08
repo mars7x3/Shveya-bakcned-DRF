@@ -38,7 +38,8 @@ class EquipmentServiceStaffSerializer(serializers.ModelSerializer):
 class EquipmentServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = EquipmentService
-        fields = ['id', 'staff', 'text', 'price', 'created_at']
+        fields = ['id', 'equipment', 'staff', 'text', 'price', 'created_at']
+        extra_kwargs = {'equipment': {'write_only': True, 'required': True}}
 
 
 class EquipmentServiceReadSerializer(EquipmentServiceSerializer):
