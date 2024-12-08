@@ -54,7 +54,7 @@ class SizeCategoryModelViewSet(viewsets.ModelViewSet):
         )
 
         if sizes_data:
-            create_data = [Size(category_id=size_category, title=size['title']) for size in sizes_data]
+            create_data = [Size(category=size_category, title=size['title']) for size in sizes_data]
             sizes = Size.objects.bulk_create(create_data)
             size_category.sizes.add(*sizes)
 
@@ -74,7 +74,7 @@ class SizeCategoryModelViewSet(viewsets.ModelViewSet):
         size_category.save()
 
         if sizes_data:
-            create_data = [Size(category_id=size_category, title=size['title']) for size in sizes_data]
+            create_data = [Size(category=size_category, title=size['title']) for size in sizes_data]
             sizes = Size.objects.bulk_create(create_data)
             size_category.sizes.add(*sizes)
 
