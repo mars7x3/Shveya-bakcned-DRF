@@ -66,7 +66,7 @@ class SizeCategoryModelViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         size_category = self.get_object()
-        sizes_data = request.data.get('sizes', [])
+        sizes_data = request.data.get('sizes_add', [])
         sizes_delete_data = request.data.get('sizes_delete', [])
 
         size_category.title = request.data.get('title', size_category.title)
