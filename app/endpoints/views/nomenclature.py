@@ -5,7 +5,7 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -107,8 +107,7 @@ class PatternCRUDView(APIView):
         product_id = serializer.validated_data.get('product_id')
         images = request.FILES.getlist('images')
         delete_ids = serializer.validated_data.get('delete_ids', [])
-        print('Erjigit')
-        print(images)
+
         create_data = [Pattern(nomenclature_id=product_id, image=image) for image in images]
         Pattern.objects.bulk_create(create_data)
 
@@ -169,8 +168,7 @@ class EquipmentImageCRUDView(APIView):
 
         equipment_id = serializer.validated_data.get('equipment_id')
         images = request.FILES.getlist('images')
-        print('Erjigit')
-        print(images)
+
         delete_ids = serializer.validated_data.get('delete_ids', [])
 
         create_data = [EquipmentImages(equipment_id=equipment_id, image=image) for image in images]
@@ -182,14 +180,10 @@ class EquipmentImageCRUDView(APIView):
         return Response({"text": "Success!"}, status=status.HTTP_200_OK)
 
 
-class EquipmentServiceView(ListCreateAPIView):
+class EquipmentServiceView(CreateAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = EquipmentService.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return EquipmentServiceSerializer
-        return EquipmentServiceReadSerializer
+    serializer_class = EquipmentServiceSerializer
 
 
 class ProductListView(ListAPIView):
