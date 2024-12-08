@@ -168,6 +168,8 @@ class EquipmentImageCRUDView(APIView):
 
         equipment_id = serializer.validated_data.get('equipment_id')
         images = request.FILES.getlist('images')
+        print('Erjigit')
+        print(images)
         delete_ids = serializer.validated_data.get('delete_ids', [])
 
         create_data = [EquipmentImages(equipment_id=equipment_id, image=image) for image in images]
