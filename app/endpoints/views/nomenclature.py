@@ -107,7 +107,8 @@ class PatternCRUDView(APIView):
         product_id = serializer.validated_data.get('product_id')
         images = request.FILES.getlist('images')
         delete_ids = serializer.validated_data.get('delete_ids', [])
-
+        print('Erjigit')
+        print(images)
         create_data = [Pattern(nomenclature_id=product_id, image=image) for image in images]
         Pattern.objects.bulk_create(create_data)
 
