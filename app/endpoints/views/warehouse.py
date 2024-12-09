@@ -151,11 +151,13 @@ class StockInputView(APIView):
             for item in data:
                 obj, created = NomCount.objects.get_or_create(
                     warehouse=quantity.in_warehouse,
-                    nomenclature_id=item["product_id"],
-                    amount=item['amount'],
-                    defaults={"amount": item["amount"]}
+                    nomenclature_id=item["product_id"]
                 )
-                if not created:
+                if created:
+                    obj.amount = item['amount']
+                    obj.save()
+
+                else:
                     obj.amount += item["amount"]
                 nom_count_updates.append(obj)
 
