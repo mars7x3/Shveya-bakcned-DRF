@@ -66,7 +66,6 @@ class StaffUpdateSerializer(StaffCreateSerializer):
     username = serializers.CharField(write_only=True, required=False)
     password = serializers.CharField(write_only=True, required=False)
     image_delete = serializers.BooleanField(default=False)
-    name = serializers.CharField(required=False)
     role = serializers.IntegerField(required=False)
 
     def validate(self, attrs):
@@ -105,17 +104,15 @@ class ClientUpdateSerializer(ClientCreateSerializer):
     username = serializers.CharField(write_only=True, required=False)
     password = serializers.CharField(write_only=True, required=False)
     image_delete = serializers.BooleanField(default=False)
-    name = serializers.CharField(required=False)
-    role = serializers.IntegerField(required=False)
 
     def validate(self, attrs):
         image_delete = attrs.get('image_delete', None)
 
         if image_delete:
-            staff_profile = self.instance
-            if staff_profile and staff_profile.image:
-                staff_profile.image.delete(save=False)
-                staff_profile.image = None
+            client_profile = self.instance
+            if client_profile and client_profile.image:
+                client_profile.image.delete(save=False)
+                client_profile.image = None
         return attrs
 
 
