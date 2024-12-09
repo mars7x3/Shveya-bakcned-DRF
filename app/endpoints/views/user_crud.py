@@ -13,7 +13,7 @@ from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
 from serializers.user_crud import StaffSerializer, StaffCreateUpdateSerializer, MyUserCreateSerializer, \
     MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer, \
-    ClientFileCRUDSerializer
+    ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer
 
 
 class StaffInfoView(APIView):
@@ -48,9 +48,13 @@ class StaffModelViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return StaffSerializer
-        return StaffCreateUpdateSerializer
+        elif self.request.method == 'POST':
+            return StaffCreateSerializer
+        else:
+            return StaffUpdateSerializer
 
-    @extend_schema(request=StaffCreateUpdateSerializer, responses=StaffSerializer)
+
+    @extend_schema(request=StaffCreateSerializer, responses=StaffSerializer)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -68,7 +72,7 @@ class StaffModelViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(request=StaffCreateUpdateSerializer, responses=StaffSerializer)
+    @extend_schema(request=StaffUpdateSerializer, responses=StaffSerializer)
     def update(self, request, *args, **kwargs):
         staff_profile = self.get_object()
         serializer = self.get_serializer(staff_profile, data=request.data)
@@ -91,7 +95,7 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         serializer = StaffSerializer(staff_profile, context=self.get_renderer_context())
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @extend_schema(request=StaffCreateUpdateSerializer, responses=StaffSerializer)
+    @extend_schema(request=StaffUpdateSerializer, responses=StaffSerializer)
     def partial_update(self, request, *args, **kwargs):
         staff_profile = self.get_object()
         serializer = self.get_serializer(staff_profile, data=request.data, partial=True)

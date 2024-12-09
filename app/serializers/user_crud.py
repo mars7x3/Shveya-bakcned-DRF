@@ -55,11 +55,16 @@ class StaffSerializer(serializers.ModelSerializer):
         return rep
 
 
-class StaffCreateUpdateSerializer(StaffSerializer):
+class StaffCreateSerializer(StaffSerializer):
     rank = serializers.PrimaryKeyRelatedField(queryset=Rank.objects.all(), required=False)
+    username = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    image = serializers.ImageField(required=False, allow_null=True)
+
+
+class StaffUpdateSerializer(StaffSerializer):
     username = serializers.CharField(write_only=True, required=False)
     password = serializers.CharField(write_only=True, required=False)
-    image = serializers.ImageField(required=False, allow_null=True)
     image_delete = serializers.BooleanField(default=False)
 
     def validate(self, attrs):
