@@ -56,9 +56,9 @@ class StaffSerializer(serializers.ModelSerializer):
 
 
 class StaffCreateUpdateSerializer(StaffSerializer):
-    rank = serializers.PrimaryKeyRelatedField(queryset=Rank.objects.all())
-    username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
+    rank = serializers.PrimaryKeyRelatedField(queryset=Rank.objects.all(), required=False)
+    username = serializers.CharField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
     image = serializers.ImageField(required=False, allow_null=True)
     image_delete = serializers.BooleanField(default=False)
 
