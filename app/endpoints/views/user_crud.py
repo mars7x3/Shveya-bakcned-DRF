@@ -12,8 +12,9 @@ from my_db.enums import UserStatus
 from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
 from serializers.user_crud import StaffSerializer, MyUserCreateSerializer, \
-    MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer, \
-    ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer
+    MyUserUpdateSerializer, ClientSerializer, MyUserSerializer, ClientListSerializer, \
+    ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer, ClientUpdateSerializer, \
+    ClientCreateSerializer
 
 
 class StaffInfoView(APIView):
@@ -149,9 +150,12 @@ class ClientModelViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return ClientSerializer
-        return ClientCreateUpdateSerializer
+        elif self.request.method == 'POST':
+            return ClientCreateSerializer
+        else:
+            return ClientUpdateSerializer
 
-    @extend_schema(request=ClientCreateUpdateSerializer, responses=ClientSerializer)
+    @extend_schema(request=ClientCreateSerializer, responses=ClientSerializer)
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -169,7 +173,7 @@ class ClientModelViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(request=ClientCreateUpdateSerializer, responses=ClientSerializer)
+    @extend_schema(request=ClientUpdateSerializer, responses=ClientSerializer)
     def update(self, request, *args, **kwargs):
         client_profile = self.get_object()
         serializer = self.get_serializer(client_profile, data=request.data)
@@ -192,7 +196,7 @@ class ClientModelViewSet(viewsets.ModelViewSet):
         serializer = ClientSerializer(client_profile, context=self.get_renderer_context())
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @extend_schema(request=ClientCreateUpdateSerializer, responses=ClientSerializer)
+    @extend_schema(request=ClientUpdateSerializer, responses=ClientSerializer)
     def partial_update(self, request, *args, **kwargs):
         client_profile = self.get_object()
         serializer = self.get_serializer(client_profile, data=request.data, partial=True)
