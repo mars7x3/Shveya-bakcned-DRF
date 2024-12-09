@@ -60,11 +60,12 @@ class StaffCreateUpdateSerializer(StaffSerializer):
     username = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
     image = serializers.ImageField(required=False, allow_null=True)
+    image_delete = serializers.BooleanField(default=False)
 
     def validate(self, attrs):
-        image = attrs.get('image', None)
+        image_delete = attrs.get('image_delete', None)
 
-        if image is None:
+        if image_delete:
             staff_profile = self.instance
             if staff_profile and staff_profile.image:
                 staff_profile.image.delete(save=False)
