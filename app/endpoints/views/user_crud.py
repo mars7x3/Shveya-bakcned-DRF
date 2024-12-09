@@ -11,7 +11,7 @@ from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import UserStatus
 from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
-from serializers.user_crud import StaffSerializer, StaffCreateUpdateSerializer, MyUserCreateSerializer, \
+from serializers.user_crud import StaffSerializer, MyUserCreateSerializer, \
     MyUserUpdateSerializer, ClientSerializer, ClientCreateUpdateSerializer, MyUserSerializer, ClientListSerializer, \
     ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer
 
