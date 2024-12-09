@@ -191,7 +191,7 @@ class ProductListView(ListAPIView):
     queryset = (
         Nomenclature.objects
                 .select_related('category')
-                .prefetch_related('category__sizes')
+                .prefetch_related('category__sizes', 'operations')
                 .filter(is_active=True, type=NomType.GP)
     )
     serializer_class = ProductListSerializer

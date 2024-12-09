@@ -270,10 +270,15 @@ class SizeCategory2Serializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     category = SizeCategory2Serializer()
+    time = serializers.SerializerMethodField()
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category']
+        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category', 'time']
+
+    def get_time(self, obj):
+        # Суммируем время всех связанных операций
+        return sum(operation.time for operation in obj.operations.all())
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
