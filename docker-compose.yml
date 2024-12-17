@@ -45,6 +45,33 @@ services:
     networks:
       - app_network
 
+  celery:
+    build: ./
+    command: celery -A main_conf worker --loglevel=info
+    restart: always
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+    env_file:
+      - ./app/.env
+    depends_on:
+      - web
+      - rabbitmq
+    networks:
+      - app_network
+      - db_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - db_network
+
 volumes:
   static_volume:
   media_volume:
