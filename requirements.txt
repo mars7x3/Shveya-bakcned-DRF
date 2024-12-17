@@ -12,5 +12,5 @@ drf-spectacular
 gunicorn
 django-nested-admin
 celery==5.3.6
-kombu==5.3.3
+kombu>=5.3.4,<6.0
 django-celery-beat==2.5.0
