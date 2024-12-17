@@ -45,53 +45,6 @@ services:
     networks:
       - app_network
 
-  celery:
-    build: ./
-    command: celery -A main_conf worker --loglevel=info
-    restart: always
-    volumes:
-      - static_volume:/usr/src/app/static
-      - media_volume:/usr/src/app/media
-    env_file:
-      - ./app/.env
-    depends_on:
-      - web
-      - redis
-    networks:
-      - app_network
-      - db_network
-
-  celery-beat:
-    build: ./
-    command: celery -A main_conf beat --loglevel=info
-    restart: always
-    volumes:
-      - static_volume:/usr/src/app/static
-      - media_volume:/usr/src/app/media
-    env_file:
-      - ./app/.env
-    depends_on:
-      - web
-      - redis
-    networks:
-      - app_network
-      - db_network
-
-  redis:
-    image: 'redis:alpine'
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    restart: always
-    expose:
-      - 6379
-    ports:
-      - "6377:6379"
-    hostname: redis
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    networks:
-      - app_network
-      - db_network
-
 volumes:
   static_volume:
   media_volume:
