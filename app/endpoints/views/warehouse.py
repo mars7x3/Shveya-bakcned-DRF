@@ -1,7 +1,7 @@
 from tracemalloc import Trace
 
 from django.db import transaction
-from django.db.models import Q, Subquery, OuterRef, F, Prefetch
+from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Sum
 from django.template.defaulttags import comment
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status, mixins
@@ -162,7 +162,18 @@ class StockInputView(APIView):
                 nom_count_updates.append(obj)
 
                 nomenclature = Nomenclature.objects.get(id=item['product_id'])
-                nomenclature.cost_price = (nomenclature.cost_price + item["price"]) / 2
+
+                total_amount_before = NomCount.objects.filter(nomenclature_id=item['product_id']).aggregate(
+                    total_amount=Sum('amount')
+                )['total_amount'] or 0
+                if total_amount_before > 0:
+                    total_amount_before -= item['amount']
+                total_cost_before = total_amount_before * nomenclature.cost_price
+
+                total_amount_after = obj.amount
+                total_cost_after = total_cost_before + (item['amount'] * item['price'])
+
+                nomenclature.cost_price = total_cost_after / total_amount_after
                 nomenclature_updates.append(nomenclature)
 
             NomCount.objects.bulk_update(nom_count_updates, ['amount'])
