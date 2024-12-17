@@ -72,7 +72,7 @@ services:
       - ./app/.env
     depends_on:
       - web
-      - rabbitmq
+      - redis
     networks:
       - app_network
       - db_network
