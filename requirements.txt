@@ -11,4 +11,6 @@ drf-extra-fields~=3.5.0
 drf-spectacular
 gunicorn
 django-nested-admin
-celery~=5.2.7
+celery==5.3.6
+kombu==5.3.3
+django-celery-beat==2.5.0

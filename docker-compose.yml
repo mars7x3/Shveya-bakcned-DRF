@@ -61,6 +61,22 @@ services:
       - app_network
       - db_network
 
+  celery-beat:
+    build: ./
+    command: celery -A main_conf beat --loglevel=info
+    restart: always
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+    env_file:
+      - ./app/.env
+    depends_on:
+      - web
+      - rabbitmq
+    networks:
+      - app_network
+      - db_network
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
