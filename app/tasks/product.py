@@ -27,8 +27,9 @@ def change_product_cost_price():
 
             total_cost += operation.price + Decimal(materials_cost)
 
-        product.cost_price = total_cost
-        update_list.append(product)
+        if product.cost_price != total_cost:
+            product.cost_price = total_cost
+            update_list.append(product)
 
     Nomenclature.objects.bulk_update(update_list, ['cost_price'])
     print(f"[{timezone.now()}] Cost prices for finished products updated successfully.")
