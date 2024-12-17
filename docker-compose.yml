@@ -77,15 +77,19 @@ services:
       - app_network
       - db_network
 
-  rabbitmq:
-    image: rabbitmq:3-management
+  redis:
+    image: 'redis:alpine'
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: always
+    expose:
+      - 6379
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "6377:6379"
+    hostname: redis
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
+      - app_network
       - db_network
 
 volumes:
