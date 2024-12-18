@@ -135,6 +135,16 @@ class SalaryCreateView(APIView):
             payment__isnull=True
         ).update(payment=payment)
 
+        Payment.objects.filter(
+            staff=staff,
+            status=PaymentStatus.FINE
+        ).update(status=PaymentStatus.FINE_CHECKED)
+
+        Payment.objects.filter(
+            staff=staff,
+            status=PaymentStatus.ADVANCE
+        ).update(status=PaymentStatus.ADVANCE_CHECKED)
+
         return Response('Success!', status=status.HTTP_200_OK)
 
 
