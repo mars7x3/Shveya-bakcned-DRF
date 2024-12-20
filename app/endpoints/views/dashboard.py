@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
@@ -57,14 +57,14 @@ class StatisticView(APIView):
         ).select_related('staff')
 
         payments_aggregation = payments_qs.aggregate(
-            fine=Sum('amount', filter=F('status') in [
-                PaymentStatus.FINE, PaymentStatus.FINE_CHECKED
-            ]),  # Общая сумма штрафов
-            done=Sum('amount', filter=F('status') in [
+            fine=Sum('amount', filter=Q(status__in=[
+        PaymentStatus.FINE, PaymentStatus.FINE_CHECKED
+            ])),  # Общая сумма штрафов
+            done=Sum('amount', filter=Q(status__in=[
                 PaymentStatus.SALARY,
                 PaymentStatus.ADVANCE,
                 PaymentStatus.ADVANCE_CHECKED,
-            ]),  # Общая сумма заработка
+            ])),  # Общая сумма заработка
         )
 
         staff_count = work_qs.values('staff').distinct().count()
