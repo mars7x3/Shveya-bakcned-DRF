@@ -45,37 +45,37 @@ services:
     networks:
       - app_network
 
-#  celery:
-#    build: ./
-#    command: celery -A main_conf worker -B --loglevel=info
-#    restart: always
-#    volumes:
-#      - static_volume:/usr/src/app/static
-#      - media_volume:/usr/src/app/media
-#    depends_on:
-#      - postgres
-#    networks:
-#      - app_network
-#      - db_network
-#
-#  redis:
-#    image: 'redis:alpine'
-#    command: redis-server --requirepass 951753010203
-#    restart: always
-#    ports:
-#      - "6379:6379"
-#    hostname: redis
-#    volumes:
-#      - redis_data:/bitnami/redis/data
-#    networks:
-#      - app_network
+  celery:
+    build: ./
+    command: celery -A main_conf worker -B --loglevel=info
+    restart: always
+    volumes:
+      - static_volume:/usr/src/app/static
+      - media_volume:/usr/src/app/media
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+      - db_network
+
+  redis:
+    image: 'redis:alpine'
+    command: redis-server --requirepass 951753010203
+    restart: always
+    ports:
+      - "6379:6379"
+    hostname: redis
+    volumes:
+      - redis_data:/bitnami/redis/data
+    networks:
+      - app_network
 
 volumes:
   static_volume:
   media_volume:
   postgres_data:
     driver: local
-#  redis_data:
+  redis_data:
 
 networks:
   db_network:
