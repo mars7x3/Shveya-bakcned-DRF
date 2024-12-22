@@ -192,5 +192,11 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
 }
 
+REDIS_HOST = config("REDIS_HOST", default='localhost')
+REDIS_PASSWORD = config("REDIS_PASSWORD", default='')
+REDIS_PORT = config("REDIS_PORT", default=6379)
+REDIS_URL = f'redis://default:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/'
 
+BROKER_URL = REDIS_URL + '0'
+CELERY_RESULT_BACKEND = BROKER_URL
 
