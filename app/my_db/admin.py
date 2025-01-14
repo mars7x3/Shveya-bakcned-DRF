@@ -63,9 +63,6 @@ class ClientProfileAdmin(admin.ModelAdmin):
 
 # ______________________________ General ______________________________
 
-admin.site.register(SizeCategory)
-
-
 @admin.register(Rank)
 class RankAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "percent")

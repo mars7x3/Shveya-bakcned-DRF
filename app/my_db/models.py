@@ -20,8 +20,7 @@ class StaffProfile(models.Model):
     )
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50, blank=True, null=True)
-    phone = models.CharField(max_length=50, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=50)
     role = models.IntegerField(choices=StaffRole.choices)
     salary = models.IntegerField(default=0)
     image = WEBPField(upload_to=staff_image_folder, blank=True, null=True)
@@ -40,8 +39,7 @@ class ClientProfile(models.Model):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50, blank=True, null=True)
     company_title = models.CharField(max_length=50, blank=True, null=True)
-    phone = models.CharField(max_length=50, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=50)
     address = models.CharField(max_length=50, blank=True, null=True)
     image = WEBPField(upload_to=staff_image_folder, blank=True, null=True)
 
@@ -75,21 +73,9 @@ class Rank(models.Model):
         ordering = ['-id']
 
 
-class SizeCategory(models.Model):
-    title = models.CharField(max_length=50)
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        ordering = ['-id']
-
-
 class Size(models.Model):
     title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
-    category = models.ForeignKey(SizeCategory, on_delete=models.CASCADE, blank=True, null=True, related_name='sizes')
 
     def __str__(self):
         return self.title
@@ -109,9 +95,6 @@ class Nomenclature(models.Model):
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
-    category = models.ForeignKey(
-        SizeCategory, on_delete=models.SET_NULL, blank=True, null=True, related_name='nomenclatures'
-    )
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'

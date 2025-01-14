@@ -33,3 +33,6 @@ def change_product_cost_price():
 
     Nomenclature.objects.bulk_update(update_list, ['cost_price'])
     print(f"[{timezone.now()}] Cost prices for finished products updated successfully.")
+
+
+

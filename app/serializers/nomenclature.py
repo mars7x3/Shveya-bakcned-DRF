@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    OperationNom, SizeCategory, EquipmentImages, EquipmentService, StaffProfile
+    OperationNom, EquipmentImages, EquipmentService, StaffProfile
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -172,13 +172,13 @@ class GPDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'category']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'category']
+        fields = ['id', 'vendor_code', 'is_active', 'title']
 
     def validate(self, attrs):
         attrs['type'] = NomType.GP
@@ -262,27 +262,14 @@ class OperationCRUDSerializer(serializers.ModelSerializer):
         return instance
 
 
-class SizeCategory2Serializer(serializers.ModelSerializer):
-    class Meta:
-        model = SizeCategory
-        fields = ['id', 'title']
-
-
 class ProductListSerializer(serializers.ModelSerializer):
-    category = SizeCategory2Serializer()
     time = serializers.SerializerMethodField()
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price', 'category', 'time']
+        fields = ['id', 'vendor_code', 'title', 'cost_price', 'time']
 
     def get_time(self, obj):
         # Суммируем время всех связанных операций
         return sum(operation.time for operation in obj.operations.all())
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        if instance.category:
-            rep['sizes'] = Size2Serializer(instance.category.sizes.all(), many=True).data
-
-        return rep

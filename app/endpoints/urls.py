@@ -14,8 +14,7 @@ from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
-from .views.general import RankListView, SizeListView, RankModelViewSet, SizeCategoryListView, \
-    SizeCategoryModelViewSet
+from .views.general import RankListView, SizeListView, RankModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
     MovingDetailView, MyMaterialListView, WarehouseListView
@@ -27,7 +26,6 @@ router = DefaultRouter()
 router.register('user/staff/crud', StaffModelViewSet)
 router.register('user/client/crud', ClientModelViewSet)
 router.register('general/rank/crud', RankModelViewSet)
-router.register('general/size/category/crud', SizeCategoryModelViewSet)
 router.register('product/crud', GPModelViewSet)
 router.register('product/combination/crud', CombinationModelViewSet)
 router.register('product/operation/crud', OperationModelViewSet)
@@ -50,7 +48,6 @@ urlpatterns = [
 
         path('general/ranks/', RankListView.as_view()),
         path('general/sizes/', SizeListView.as_view()),
-        path('general/size/categories/', SizeCategoryListView.as_view()),
 
         path('token/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
         path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

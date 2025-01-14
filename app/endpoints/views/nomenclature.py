@@ -190,8 +190,7 @@ class ProductListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = (
         Nomenclature.objects
-                .select_related('category')
-                .prefetch_related('category__sizes', 'operations')
+                .prefetch_related('operations')
                 .filter(is_active=True, type=NomType.GP)
     )
     serializer_class = ProductListSerializer

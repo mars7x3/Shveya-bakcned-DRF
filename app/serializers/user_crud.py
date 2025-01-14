@@ -119,7 +119,7 @@ class ClientUpdateSerializer(ClientCreateSerializer):
 class ClientListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientProfile
-        fields = ['id', 'name', 'surname', 'email', 'phone', 'address']
+        fields = ['id', 'name', 'surname', 'phone', 'address']
 
 
 class ClientFileCRUDSerializer(serializers.Serializer):
