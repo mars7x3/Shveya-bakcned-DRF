@@ -364,6 +364,9 @@ class CalOperation(models.Model):
     operation = models.ForeignKey(
         Operation, on_delete=models.SET_NULL, related_name='cal_operations', blank=True, null=True
     )
+    rank = models.ForeignKey(
+        Rank, on_delete=models.SET_NULL, blank=True, null=True, related_name='cal_operations'
+    )
     title = models.CharField(max_length=50)
     time = models.IntegerField(default=0)  # secs
     price = models.DecimalField(max_digits=12, decimal_places=3)

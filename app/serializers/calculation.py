@@ -32,9 +32,11 @@ class ConsumableDetailSerializer(serializers.ModelSerializer):
 
 
 class CalOperationSerializer(serializers.ModelSerializer):
+    rank = OperationRankSerializer(required=False)
+
     class Meta:
         model = CalOperation
-        fields = ['id', 'operation', 'title', 'time', 'price']
+        fields = ['id', 'operation', 'title', 'time', 'price', 'rank']
 
 
 class CalConsumableSerializer(serializers.ModelSerializer):
