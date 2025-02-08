@@ -42,7 +42,7 @@ class CalOperationSerializer(serializers.ModelSerializer):
 class CalConsumableSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalConsumable
-        fields = ['id', 'nomenclature', 'title', 'consumption', 'unit']
+        fields = ['id', 'nomenclature', 'title', 'consumption', 'unit', 'price']
 
 
 class CalPriceSerializer(serializers.ModelSerializer):

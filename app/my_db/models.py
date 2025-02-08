@@ -382,6 +382,7 @@ class CalConsumable(models.Model):
     title = models.CharField(max_length=50)
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
 
 class CalPrice(models.Model):
