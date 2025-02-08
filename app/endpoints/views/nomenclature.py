@@ -5,7 +5,7 @@ from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -194,5 +194,6 @@ class ProductListView(ListAPIView):
                 .filter(is_active=True, type=NomType.GP)
     )
     serializer_class = ProductListSerializer
+
 
 

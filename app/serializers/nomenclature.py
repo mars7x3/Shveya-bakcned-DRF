@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    OperationNom, EquipmentImages, EquipmentService, StaffProfile
+     EquipmentImages, EquipmentService, StaffProfile
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -146,33 +146,24 @@ class ConsumableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Consumable
-        fields = ['id', 'size', 'consumption', 'waste']
-
-
-class OperationNomSerializer(serializers.ModelSerializer):
-    nomenclature = NomenclatureSerializer()
-    consumables = ConsumableSerializer(many=True)
-
-    class Meta:
-        model = OperationNom
-        fields = ['id', 'nomenclature', 'consumables']
+        fields = ['id', 'size', 'consumption']
 
 
 class OperationSerializer(serializers.ModelSerializer):
-    op_noms = OperationNomSerializer(many=True)
 
     class Meta:
         model = Operation
-        fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active', 'op_noms']
+        fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active']
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
     combinations = CombinationSerializer(read_only=True, many=True)
     operations = OperationSerializer(read_only=True, many=True)
+    consumables = ConsumableSerializer(read_only=True, many=True)
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'consumables']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
@@ -203,23 +194,13 @@ class PatternCRUDSerializer(serializers.Serializer):
 class ConsumableCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
-        fields = ['size', 'consumption', 'waste']
-
-
-class OperationNomCRUDSerializer(serializers.ModelSerializer):
-    consumables = ConsumableCRUDSerializer(many=True)
-
-    class Meta:
-        model = OperationNom
-        fields = ['nomenclature', 'consumables']
+        fields = ['size', 'consumption']
 
 
 class OperationCRUDSerializer(serializers.ModelSerializer):
-    op_noms = OperationNomCRUDSerializer(many=True, )
-
     class Meta:
         model = Operation
-        fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active', 'op_noms']
+        fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active']
 
     def create(self, validated_data):
         op_noms_data = validated_data.pop('op_noms')
@@ -228,12 +209,12 @@ class OperationCRUDSerializer(serializers.ModelSerializer):
         consumable_list = []
         for op_nom_data in op_noms_data:
             consumables_data = op_nom_data.pop('consumables')
-            op_nom = OperationNom.objects.create(operation=operation, **op_nom_data)
-
-            for consumable_data in consumables_data:
-                consumable_list.append(
-                    Consumable(operation_nom=op_nom, **consumable_data)
-                )
+            # op_nom = OperationNom.objects.create(operation=operation, **op_nom_data)
+            #
+            # for consumable_data in consumables_data:
+            #     consumable_list.append(
+            #         Consumable(operation_nom=op_nom, **consumable_data)
+            #     )
         Consumable.objects.bulk_create(consumable_list)
 
         return operation
@@ -251,12 +232,8 @@ class OperationCRUDSerializer(serializers.ModelSerializer):
 
         for op_nom_data in op_noms_data:
             consumables_data = op_nom_data.pop('consumables')
-            op_nom = OperationNom.objects.create(operation=instance, **op_nom_data)
-
-            op_nom.consumables.all().delete()
-
-            for consumable_data in consumables_data:
-                consumable_list.append(Consumable(operation_nom=op_nom, **consumable_data))
+            # for consumable_data in consumables_data:
+            #     consumable_list.append(Consumable(operation_nom=op_nom, **consumable_data))
 
         Consumable.objects.bulk_create(consumable_list)
         return instance
@@ -272,4 +249,6 @@ class ProductListSerializer(serializers.ModelSerializer):
     def get_time(self, obj):
         # Суммируем время всех связанных операций
         return sum(operation.time for operation in obj.operations.all())
+
+
 

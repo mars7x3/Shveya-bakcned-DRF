@@ -27,6 +27,8 @@ class NomUnit(models.IntegerChoices):
     SM = 2, "СМ"
     M2 = 3, "М2"
     L = 4, "ЛИТР"
+    U = 5, "ШТ."
+
 
 
 class OrderStatus(models.IntegerChoices):
@@ -55,3 +57,42 @@ class PaymentStatus(models.IntegerChoices):
     ADVANCE = 3, "АВАНС"
     FINE_CHECKED = 4, "ШТРАФ - учтен"
     ADVANCE_CHECKED = 5, "АВАНС - учтен"
+
+data = {
+    "title": "str",
+    "vendor_code": "str",
+    "cost_price": 10,
+    "price": 10,
+    "created_at": "str",
+    "combinations": [
+        {
+            "title": "str",
+            "operations": [
+                {
+                    "title": "str",
+                    "time": "str",
+                    "price": 10
+                }
+            ]
+        }
+    ],
+    "operations": [
+        {
+            "title": "str",
+            "time": "str",
+            "price": 10
+        }
+    ],
+    "consumables": [
+        {
+            "title": "str",
+            "consumption": 10
+        }
+    ],
+    "prices": [
+        {
+            "title": "str",
+            "price": 10
+        }
+    ]
+}

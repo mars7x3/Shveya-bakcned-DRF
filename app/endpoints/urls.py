@@ -6,6 +6,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from .views.calculation import OperationTitleListView, ConsumableTitleListView, OperationDetailView, \
+    ConsumableDetailView, CalculationViewSet
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
@@ -34,6 +36,8 @@ router.register('order/crud', OrderModelViewSet)
 router.register('warehouse/crud', WarehouseModelViewSet)
 router.register('warehouse/material/crud', MaterialModelViewSet)
 router.register('dashboard/plan/crud', PlanCRUDView)
+router.register('calculation/crud', CalculationViewSet)
+
 
 
 
@@ -61,6 +65,8 @@ urlpatterns = [
 
         path('product/list/', GPListView.as_view()),
         path('material/list/', MaterialListView.as_view()),
+
+
 
         path('product/detail/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
@@ -99,6 +105,11 @@ urlpatterns = [
 
         path('equipment/images/', EquipmentImageCRUDView.as_view()),
         path('equipment/services/', EquipmentServiceView.as_view()),
+
+        path('calculation/operations/titles/', OperationTitleListView.as_view()),
+        path('calculation/operations/detail/<int:pk>/', OperationDetailView.as_view()),
+        path('calculation/consumables/titles/', ConsumableTitleListView.as_view()),
+        path('calculation/consumables/detail/<int:pk>/', ConsumableDetailView.as_view()),
 
         path('', include(router.urls)),
     ])),

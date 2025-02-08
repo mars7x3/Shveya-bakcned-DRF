@@ -83,6 +83,18 @@ class Size(models.Model):
     class Meta:
         ordering = ['-id']
 
+
+class Color(models.Model):
+    title = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-id']
+
+
 # ______________________________ General end ______________________________
 
 
@@ -112,12 +124,17 @@ class Pattern(models.Model):
 
 # ______________________________ Nomenclature Operation ______________________________
 
+class CombinationFile(models.Model):
+    title = models.CharField(max_length=100)
+
+
 class Combination(models.Model):
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='combinations'
     )
     operations = models.ManyToManyField('Operation')
     title = models.CharField(max_length=50)
+    file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f'{self.id}. {self.title}'
@@ -159,7 +176,7 @@ class Operation(models.Model):
     time = models.IntegerField(default=0)  # secs
     price = models.DecimalField(max_digits=12, decimal_places=3)
     nomenclature = models.ForeignKey(
-        Nomenclature, on_delete=models.CASCADE, related_name='operations'
+        Nomenclature, on_delete=models.SET_NULL, related_name='operations', blank=True, null=True
     )
     equipment = models.ForeignKey(
         Equipment, on_delete=models.SET_NULL, blank=True, null=True, related_name='operations'
@@ -168,18 +185,17 @@ class Operation(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-class OperationNom(models.Model):
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='op_noms')
-    nomenclature = models.ForeignKey(
-        Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='op_noms'
-    )
-
-
 class Consumable(models.Model):
-    operation_nom = models.ForeignKey(OperationNom, null=True, on_delete=models.CASCADE, related_name='consumables')
-    size = models.ForeignKey(Size, null=True, on_delete=models.CASCADE, related_name='consumables')
+    gp_nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='gp_consumables', blank=True, null=True
+    )
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='consumables', blank=True, null=True
+    )
+    color = models.ForeignKey(
+        Color, on_delete=models.SET_NULL, related_name='consumables', blank=True, null=True
+    )
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
-    waste = models.DecimalField(max_digits=12, decimal_places=3)
 
 
 # ______________________________ Nomenclature Operation end ______________________________
@@ -326,3 +342,50 @@ class Plan(models.Model):
         ordering = ['-id']
 
 # ______________________________ Plan end ______________________________
+
+
+# ______________________________ Calculation ______________________________
+
+class Calculation(models.Model):
+    vendor_code = models.CharField(max_length=50)
+    client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, blank=True, null=True)
+    title = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+    price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CalOperation(models.Model):
+    calculation = models.ForeignKey(
+        Calculation, on_delete=models.CASCADE, related_name='cal_operations'
+    )
+    operation = models.ForeignKey(
+        Operation, on_delete=models.SET_NULL, related_name='cal_operations', blank=True, null=True
+    )
+    title = models.CharField(max_length=50)
+    time = models.IntegerField(default=0)  # secs
+    price = models.DecimalField(max_digits=12, decimal_places=3)
+
+
+class CalConsumable(models.Model):
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='cal_consumables', blank=True, null=True
+    )
+    calculation = models.ForeignKey(
+        Calculation, on_delete=models.CASCADE, related_name='cal_consumables'
+    )
+    title = models.CharField(max_length=50)
+    consumption = models.DecimalField(max_digits=12, decimal_places=3)
+
+
+class CalPrice(models.Model):
+    calculation = models.ForeignKey(
+        Calculation, on_delete=models.CASCADE, related_name='cal_prices'
+    )
+    title = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=12, decimal_places=3)
+
+
+# ______________________________ Calculation end ______________________________

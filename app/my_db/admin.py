@@ -89,21 +89,15 @@ class ConsumableInline(NestedStackedInline):
     extra = 0
 
 
-class OperationNomInline(NestedStackedInline):
-    model = OperationNom
-    extra = 0
-    inlines = [ConsumableInline]
-
-
 class OperationInline(NestedStackedInline):
     model = Operation
     extra = 0
-    inlines = [OperationNomInline]
 
 
 class PatternInline(NestedStackedInline):
     model = Pattern
     extra = 0
+
 
 class NomCountInline(NestedStackedInline):
     model = NomCount
@@ -112,10 +106,11 @@ class NomCountInline(NestedStackedInline):
 
 @admin.register(Nomenclature)
 class NomenclatureAdmin(NestedModelAdmin):
-    inlines = (NomCountInline, PatternInline, OperationInline)
-    list_display = ("id", "title", "vendor_code")
-    list_display_links = ("id", "title", "vendor_code")
-    search_fields = ("id", "title", "vendor_code")
+    pass
+    # inlines = (NomCountInline, PatternInline, OperationInline)
+    # list_display = ("id", "title", "vendor_code")
+    # list_display_links = ("id", "title", "vendor_code")
+    # search_fields = ("id", "title", "vendor_code")
 
 # ______________________________ Nomenclature end ______________________________
 
