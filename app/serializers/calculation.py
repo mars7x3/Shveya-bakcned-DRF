@@ -17,8 +17,8 @@ class OperationNomenclatureSerializer(serializers.ModelSerializer):
 
 
 class OperationDetailSerializer(serializers.ModelSerializer):
-    nomenclature = OperationNomenclatureSerializer()
-    rank = OperationRankSerializer()
+    nomenclature = OperationNomenclatureSerializer(read_only=True)
+    rank = OperationRankSerializer(read_only=True)
 
     class Meta:
         model = Operation
@@ -32,11 +32,11 @@ class ConsumableDetailSerializer(serializers.ModelSerializer):
 
 
 class CalOperationSerializer(serializers.ModelSerializer):
-    rank = OperationRankSerializer(required=False)
+    rank_info = OperationRankSerializer(read_only=True)
 
     class Meta:
         model = CalOperation
-        fields = ['id', 'operation', 'title', 'time', 'price', 'rank']
+        fields = ['id', 'operation', 'title', 'time', 'price', 'rank', 'rank_info']
 
 
 class CalConsumableSerializer(serializers.ModelSerializer):
