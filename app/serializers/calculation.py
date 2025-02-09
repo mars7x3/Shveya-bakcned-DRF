@@ -61,12 +61,12 @@ class CalculationSerializer(serializers.ModelSerializer):
     cal_operations = CalOperationSerializer(many=True, required=False)
     cal_consumables = CalConsumableSerializer(many=True, required=False)
     cal_prices = CalPriceSerializer(many=True, required=False)
-    client = CalClientSerializer(read_only=True)
+    client_info = CalClientSerializer(read_only=True)
 
     class Meta:
         model = Calculation
         fields = ['id', 'vendor_code', 'client', 'title', 'count', 'is_active', 'price', 'cost_price', 'created_at',
-                  'cal_operations', 'cal_consumables', 'cal_prices']
+                  'cal_operations', 'cal_consumables', 'cal_prices', 'client_info']
         read_only_fields = ['created_at']
 
     def create(self, validated_data):
