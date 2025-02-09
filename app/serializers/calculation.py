@@ -54,7 +54,7 @@ class CalPriceSerializer(serializers.ModelSerializer):
 class CalClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientProfile
-        fields = ['name', 'surname', 'company_title', 'phone', 'address', 'image']
+        fields = ['id', 'name', 'surname', 'company_title', 'phone', 'address', 'image']
 
 
 class CalculationSerializer(serializers.ModelSerializer):
@@ -119,3 +119,12 @@ class CalculationSerializer(serializers.ModelSerializer):
         ])
 
         return instance
+
+
+class CalculationListSerializer(serializers.ModelSerializer):
+    client_info = CalClientSerializer(read_only=True)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'vendor_code', 'title', 'created_at', 'client_info']
+        read_only_fields = ['created_at']
