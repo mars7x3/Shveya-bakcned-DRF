@@ -347,7 +347,7 @@ class Plan(models.Model):
 # ______________________________ Calculation ______________________________
 
 class Calculation(models.Model):
-    vendor_code = models.CharField(max_length=50)
+    vendor_code = models.CharField(max_length=50, blank=True, null=True)
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
@@ -369,7 +369,7 @@ class CalOperation(models.Model):
     )
     title = models.CharField(max_length=50)
     time = models.IntegerField(default=0)  # secs
-    price = models.DecimalField(max_digits=12, decimal_places=3)
+    price = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
 
 
 class CalConsumable(models.Model):
@@ -382,7 +382,7 @@ class CalConsumable(models.Model):
     title = models.CharField(max_length=50)
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
-    price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 
 class CalPrice(models.Model):
