@@ -248,7 +248,7 @@ class CombinationFileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CombinationFile
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'combinations']
 
 
 class CombinationFileCRUDSerializer(serializers.ModelSerializer):

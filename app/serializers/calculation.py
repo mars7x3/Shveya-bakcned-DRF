@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
     ClientProfile
+from utils.get_or_none import serialize_instance
 
 
 class OperationRankSerializer(serializers.ModelSerializer):
@@ -35,9 +36,10 @@ class CalOperationSerializer(serializers.ModelSerializer):
     rank_info = serializers.SerializerMethodField()
 
     def get_rank_info(self, obj):
-        if obj.rank:
-            return {"id": obj.rank.id, "title": obj.rank.title}
-        return None
+        return serialize_instance(
+            obj.rank,
+            ["id", "title"]
+        )
 
     class Meta:
         model = CalOperation
@@ -69,10 +71,10 @@ class CalculationSerializer(serializers.ModelSerializer):
     client_info = serializers.SerializerMethodField()
 
     def get_client_info(self, obj):
-        if obj.client:
-            return {"id": obj.client.id, "name": obj.client.name, "surname": obj.client.surename,
-                    "company_title": obj.client.company_title, "phone": obj.client.phone}
-        return None
+        return serialize_instance(
+            obj.client,
+            ["id", "name", "surename", "company_title", "phone"]
+        )
 
     class Meta:
         model = Calculation
