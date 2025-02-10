@@ -19,7 +19,7 @@ from serializers.nomenclature import GPListSerializer, GPDetailSerializer, Patte
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
     EquipmentListSerializer, EquipmentServiceSerializer, EquipmentServiceReadSerializer, EquipmentCRUDSerializer, \
-    CombinationFileCRUDSerializer, CombinationFileDetailSerializer, OperationRetrieveSerializer
+    OperationRetrieveSerializer
 from django_filters import rest_framework as filters
 
 
@@ -214,18 +214,4 @@ class ProductListView(ListAPIView):
     serializer_class = ProductListSerializer
 
 
-class CombinationFileCRUDVIew(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = CombinationFile.objects.all()
-    serializer_class = CombinationFileCRUDSerializer
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return CombinationFileDetailSerializer
-        return CombinationFileCRUDSerializer
-
-    def get_queryset(self):
-        if self.action == 'retrieve':
-            return CombinationFile.objects.prefetch_related('combinations')
-        return CombinationFile.objects.all()
 

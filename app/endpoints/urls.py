@@ -11,10 +11,11 @@ from .views.calculation import OperationTitleListView, ConsumableTitleListView, 
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
-    EquipmentImageCRUDView, EquipmentServiceView, CombinationFileCRUDVIew
+    EquipmentImageCRUDView, EquipmentServiceView
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
+from .views.sample import CombinationFileCRUDVIew, SampleCombinationListView, SampleOperationListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
 from .views.general import RankListView, SizeListView, RankModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
@@ -31,13 +32,17 @@ router.register('general/rank/crud', RankModelViewSet)
 router.register('product/crud', GPModelViewSet)
 router.register('product/combination/crud', CombinationModelViewSet)
 router.register('product/operation/crud', OperationModelViewSet)
-router.register('product/combination-files/crud', CombinationFileCRUDVIew)
 router.register('equipment/crud', EquipmentModelViewSet)
 router.register('order/crud', OrderModelViewSet)
 router.register('warehouse/crud', WarehouseModelViewSet)
 router.register('warehouse/material/crud', MaterialModelViewSet)
 router.register('dashboard/plan/crud', PlanCRUDView)
 router.register('calculation/crud', CalculationViewSet)
+router.register('sample/combination-files/crud', CombinationFileCRUDVIew)
+router.register('sample/combinations/list', SampleCombinationListView)
+router.register('sample/operations/list', SampleOperationListView)
+
+
 
 
 

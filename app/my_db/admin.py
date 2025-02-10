@@ -82,6 +82,7 @@ class SizeAdmin(admin.ModelAdmin):
 admin.site.register(Combination)
 admin.site.register(Equipment)
 admin.site.register(Operation)
+admin.site.register(CombinationFile)
 
 
 class ConsumableInline(NestedStackedInline):

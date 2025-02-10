@@ -243,15 +243,4 @@ class ProductListSerializer(serializers.ModelSerializer):
         return sum(operation.time for operation in obj.operations.all())
 
 
-class CombinationFileDetailSerializer(serializers.ModelSerializer):
-    combinations = CombinationSerializer(many=True, read_only=True)
 
-    class Meta:
-        model = CombinationFile
-        fields = ['id', 'title', 'combinations']
-
-
-class CombinationFileCRUDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CombinationFile
-        fields = ['id', 'title']

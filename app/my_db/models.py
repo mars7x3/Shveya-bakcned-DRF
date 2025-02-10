@@ -130,11 +130,13 @@ class CombinationFile(models.Model):
 
 class Combination(models.Model):
     nomenclature = models.ForeignKey(
-        Nomenclature, on_delete=models.CASCADE, related_name='combinations'
+        Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='combinations'
     )
-    operations = models.ManyToManyField('Operation')
+    operations = models.ManyToManyField('Operation', related_name='combinations')
     title = models.CharField(max_length=50)
-    file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True)
+    file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True,
+                             related_name='combinations')
+    is_sample = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.id}. {self.title}'
@@ -183,6 +185,7 @@ class Operation(models.Model):
     )
     rank = models.ForeignKey(Rank, on_delete=models.SET_NULL, blank=True, null=True, related_name='operations')
     is_active = models.BooleanField(default=True)
+    is_sample = models.BooleanField(default=False)
 
 
 class Consumable(models.Model):
