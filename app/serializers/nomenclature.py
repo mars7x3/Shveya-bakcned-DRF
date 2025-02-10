@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-     EquipmentImages, EquipmentService, StaffProfile
+    EquipmentImages, EquipmentService, StaffProfile, CombinationFile
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -197,46 +197,38 @@ class ConsumableCRUDSerializer(serializers.ModelSerializer):
         fields = ['size', 'consumption']
 
 
+class OperationRankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rank
+        fields = ['id', 'title']
+
+
+class OperationNomenclatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code', 'title']
+
+
 class OperationCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
         fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active']
 
-    def create(self, validated_data):
-        op_noms_data = validated_data.pop('op_noms')
-        operation = Operation.objects.create(**validated_data)
 
-        consumable_list = []
-        for op_nom_data in op_noms_data:
-            consumables_data = op_nom_data.pop('consumables')
-            # op_nom = OperationNom.objects.create(operation=operation, **op_nom_data)
-            #
-            # for consumable_data in consumables_data:
-            #     consumable_list.append(
-            #         Consumable(operation_nom=op_nom, **consumable_data)
-            #     )
-        Consumable.objects.bulk_create(consumable_list)
+class OperationEquipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['id', 'title']
 
-        return operation
 
-    def update(self, instance, validated_data):
-        op_noms_data = validated_data.pop('op_noms')
+class OperationRetrieveSerializer(serializers.ModelSerializer):
+    nomenclature = OperationNomenclatureSerializer(read_only=True)
+    rank = OperationRankSerializer(read_only=True)
+    equipment = OperationEquipmentSerializer(read_only=True)
 
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-
-        instance.op_noms.all().delete()
-
-        consumable_list = []
-
-        for op_nom_data in op_noms_data:
-            consumables_data = op_nom_data.pop('consumables')
-            # for consumable_data in consumables_data:
-            #     consumable_list.append(Consumable(operation_nom=op_nom, **consumable_data))
-
-        Consumable.objects.bulk_create(consumable_list)
-        return instance
+    class Meta:
+        model = Operation
+        fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active']
 
 
 class ProductListSerializer(serializers.ModelSerializer):
@@ -251,4 +243,15 @@ class ProductListSerializer(serializers.ModelSerializer):
         return sum(operation.time for operation in obj.operations.all())
 
 
+class CombinationFileDetailSerializer(serializers.ModelSerializer):
+    combinations = CombinationSerializer(many=True, read_only=True)
 
+    class Meta:
+        model = CombinationFile
+        fields = ['id', 'title']
+
+
+class CombinationFileCRUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CombinationFile
+        fields = ['id', 'title']

@@ -32,7 +32,12 @@ class ConsumableDetailSerializer(serializers.ModelSerializer):
 
 
 class CalOperationSerializer(serializers.ModelSerializer):
-    rank_info = OperationRankSerializer(read_only=True)
+    rank_info = serializers.SerializerMethodField()
+
+    def get_rank_info(self, obj):
+        if obj.rank:
+            return {"id": obj.rank.id, "title": obj.rank.title}
+        return None
 
     class Meta:
         model = CalOperation
@@ -61,7 +66,13 @@ class CalculationSerializer(serializers.ModelSerializer):
     cal_operations = CalOperationSerializer(many=True, required=False)
     cal_consumables = CalConsumableSerializer(many=True, required=False)
     cal_prices = CalPriceSerializer(many=True, required=False)
-    client_info = CalClientSerializer(read_only=True)
+    client_info = serializers.SerializerMethodField()
+
+    def get_client_info(self, obj):
+        if obj.client:
+            return {"id": obj.client.id, "name": obj.client.name, "surname": obj.client.surename,
+                    "company_title": obj.client.company_title, "phone": obj.client.phone}
+        return None
 
     class Meta:
         model = Calculation
@@ -122,9 +133,9 @@ class CalculationSerializer(serializers.ModelSerializer):
 
 
 class CalculationListSerializer(serializers.ModelSerializer):
-    client_info = CalClientSerializer(read_only=True)
+    client = CalClientSerializer(read_only=True)
 
     class Meta:
         model = Calculation
-        fields = ['id', 'vendor_code', 'title', 'created_at', 'client_info']
+        fields = ['id', 'vendor_code', 'title', 'created_at', 'client']
         read_only_fields = ['created_at']

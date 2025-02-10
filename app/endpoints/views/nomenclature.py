@@ -13,11 +13,13 @@ from rest_framework.viewsets import GenericViewSet
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType
-from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService
+from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
+    CombinationFile
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
-    EquipmentListSerializer, EquipmentServiceSerializer, EquipmentServiceReadSerializer, EquipmentCRUDSerializer
+    EquipmentListSerializer, EquipmentServiceSerializer, EquipmentServiceReadSerializer, EquipmentCRUDSerializer, \
+    CombinationFileCRUDSerializer, CombinationFileDetailSerializer, OperationRetrieveSerializer
 from django_filters import rest_framework as filters
 
 
@@ -127,14 +129,30 @@ class CombinationModelViewSet(mixins.CreateModelMixin,
     serializer_class = CombinationCRUDSerializer
 
 
+class OperationListFilter(filters.FilterSet):
+    title = filters.CharFilter(field_name="title", lookup_expr="icontains")
 
-class OperationModelViewSet(mixins.CreateModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   GenericViewSet):
+    class Meta:
+        model = Operation
+        fields = ['title']
+
+
+class OperationModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Operation.objects.all()
-    serializer_class = OperationCRUDSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = OperationListFilter
+    pagination_class = StandardPagination
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OperationRetrieveSerializer
+        return OperationCRUDSerializer
+
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Operation.objects.select_related('nomenclature', 'rank')
+        return Operation.objects.all()
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
@@ -196,4 +214,18 @@ class ProductListView(ListAPIView):
     serializer_class = ProductListSerializer
 
 
+class CombinationFileCRUDVIew(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = CombinationFile.objects.all()
+    serializer_class = CombinationFileCRUDSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return CombinationFileDetailSerializer
+        return CombinationFileCRUDSerializer
+
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return CombinationFile.objects.prefetch_related('combinations')
+        return CombinationFile.objects.all()
 

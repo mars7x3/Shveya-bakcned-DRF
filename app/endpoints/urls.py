@@ -11,7 +11,7 @@ from .views.calculation import OperationTitleListView, ConsumableTitleListView, 
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
-    EquipmentImageCRUDView, EquipmentServiceView
+    EquipmentImageCRUDView, EquipmentServiceView, CombinationFileCRUDVIew
 from .views.order import OrderListView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
@@ -31,6 +31,7 @@ router.register('general/rank/crud', RankModelViewSet)
 router.register('product/crud', GPModelViewSet)
 router.register('product/combination/crud', CombinationModelViewSet)
 router.register('product/operation/crud', OperationModelViewSet)
+router.register('product/combination-files/crud', CombinationFileCRUDVIew)
 router.register('equipment/crud', EquipmentModelViewSet)
 router.register('order/crud', OrderModelViewSet)
 router.register('warehouse/crud', WarehouseModelViewSet)
