@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    EquipmentImages, EquipmentService, StaffProfile, CombinationFile
+    EquipmentImages, EquipmentService, StaffProfile, CombinationFile, Price
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -150,30 +150,60 @@ class ConsumableSerializer(serializers.ModelSerializer):
 
 
 class OperationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Operation
         fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active']
+
+
+class PriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Price
+        fields = ['id', 'title', 'price']
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
     combinations = CombinationSerializer(read_only=True, many=True)
     operations = OperationSerializer(read_only=True, many=True)
     consumables = ConsumableSerializer(read_only=True, many=True)
+    prices = PriceSerializer(read_only=True, many=True)
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'consumables']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'consumables', 'prices']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
+    prices = PriceSerializer(required=False, many=True)
+
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'prices']
 
     def validate(self, attrs):
         attrs['type'] = NomType.GP
         return attrs
+
+    def create(self, validated_data):
+        prices_data = validated_data.pop('prices', [])
+        nomenclature = Nomenclature.objects.create(**validated_data)
+        self._update_prices(nomenclature, prices_data)
+        return nomenclature
+
+    def update(self, instance, validated_data):
+        prices_data = validated_data.pop('prices', [])
+        instance = super().update(instance, validated_data)
+        self._update_prices(instance, prices_data)
+        return instance
+
+    def _update_prices(self, nomenclature, prices_data):
+        price_ids = [price_data.get('id') for price_data in prices_data if 'id' in price_data]
+        nomenclature.prices.exclude(id__in=price_ids).delete()
+        for price_data in prices_data:
+            price_id = price_data.pop('id', None)
+            if price_id:
+                Price.objects.filter(id=price_id, nomenclature=nomenclature).update(**price_data)
+            else:
+                Price.objects.create(nomenclature=nomenclature, **price_data)
 
 
 class PatternCRUDSerializer(serializers.Serializer):

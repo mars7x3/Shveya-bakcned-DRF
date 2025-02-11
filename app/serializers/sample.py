@@ -38,6 +38,7 @@ class RankSerializer(serializers.ModelSerializer):
 class OperationDetailSerializer(serializers.ModelSerializer):
     rank = RankSerializer()
     equipment = EquipmentSerializer()
+
     class Meta:
         model = Operation
         fields = ['id', 'title', 'time', 'price', 'equipment', 'rank', 'is_sample', 'is_active']

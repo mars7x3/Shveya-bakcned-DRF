@@ -201,6 +201,13 @@ class Consumable(models.Model):
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
 
 
+class Price(models.Model):
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='prices',
+    )
+    title = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=12, decimal_places=3)
+
 # ______________________________ Nomenclature Operation end ______________________________
 
 

@@ -42,12 +42,6 @@ router.register('sample/combination-files/crud', CombinationFileCRUDVIew)
 router.register('sample/combinations/list', SampleCombinationListView)
 router.register('sample/operations/list', SampleOperationListView)
 
-
-
-
-
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
 
