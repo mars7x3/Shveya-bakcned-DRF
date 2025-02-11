@@ -21,9 +21,10 @@ class CombinationFileCRUDVIew(viewsets.ModelViewSet):
         return CombinationFileCRUDSerializer
 
     def get_queryset(self):
+        queryset = CombinationFile.objects.all()
         if self.action == 'retrieve':
-            return self.queryset.prefetch_related('combinations')
-        return self.queryset
+            return queryset.prefetch_related('combinations')
+        return queryset
 
 
 class CombinationListFilter(filters.FilterSet):
@@ -47,9 +48,10 @@ class SampleCombinationListView(viewsets.ReadOnlyModelViewSet):
         return CombinationListSerializer
 
     def get_queryset(self):
+        queryset = Combination.objects.filter(is_sample=True).select_related('file')
         if self.action == 'retrieve':
-            return self.queryset.prefetch_related('operations')
-        return self.queryset
+            return queryset.prefetch_related('operations')
+        return queryset
 
 
 class OperationListFilter(filters.FilterSet):
@@ -73,8 +75,9 @@ class SampleOperationListView(viewsets.ReadOnlyModelViewSet):
         return OperationListSerializer
 
     def get_queryset(self):
+        queryset = Operation.objects.filter(is_sample=True)
         if self.action == 'retrieve':
-            return self.queryset.select_related('equipment', 'rank')
-        return self.queryset
+            return queryset.select_related('equipment', 'rank')
+        return queryset
 
 
