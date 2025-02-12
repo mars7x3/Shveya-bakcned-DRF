@@ -189,11 +189,11 @@ class Operation(models.Model):
 
 
 class Consumable(models.Model):
-    gp_nomenclature = models.ForeignKey(
-        Nomenclature, on_delete=models.CASCADE, related_name='gp_consumables', blank=True, null=True
-    )
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='consumables', blank=True, null=True
+    )
+    material_nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='material_consumables', blank=True, null=True
     )
     color = models.ForeignKey(
         Color, on_delete=models.SET_NULL, related_name='consumables', blank=True, null=True

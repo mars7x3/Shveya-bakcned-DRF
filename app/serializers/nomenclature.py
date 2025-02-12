@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from my_db.enums import NomType
@@ -135,30 +136,52 @@ class NomenclatureSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'unit']
 
 
-class Size2Serializer(serializers.ModelSerializer):
+class ColorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Size
+        model = Nomenclature
         fields = ['id', 'title']
 
 
 class ConsumableSerializer(serializers.ModelSerializer):
-    size = Size2Serializer()
+    color = ColorSerializer(read_only=True)
+    nomenclature = NomenclatureSerializer(read_only=True)
 
     class Meta:
         model = Consumable
-        fields = ['id', 'size', 'consumption']
+        fields = ['id', 'nomenclature', 'color', 'consumption']
+
+
+class ConsumableCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consumable
+        fields = ['material_nomenclature', 'color', 'consumption']
+
+
+class EquipmentReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['id', 'title']
 
 
 class OperationSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer(read_only=True)
+    equipment = EquipmentReadSerializer(read_only=True)
+
     class Meta:
         model = Operation
         fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active']
 
 
+class OperationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operation
+        fields = ['id', 'title', 'price', 'time', 'equipment', 'rank', 'is_active']
+
+
 class PriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Price
-        fields = ['id', 'title', 'price']
+        fields = ['title', 'price']
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
@@ -169,15 +192,28 @@ class GPDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'combinations', 'operations', 'consumables', 'prices']
+        fields = ['id', 'vendor_code', 'cost_price', 'is_active', 'title',
+                  'prices', 'combinations', 'operations', 'consumables']
+
+
+class CombinationCreateSerializer(serializers.ModelSerializer):
+    operations = OperationCreateSerializer(required=False, many=True)
+
+    class Meta:
+        model = Combination
+        fields = ['id', 'operations', 'title']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):
     prices = PriceSerializer(required=False, many=True)
+    operations = OperationCreateSerializer(required=False, many=True)
+    consumables = ConsumableCreateSerializer(required=False, many=True)
+    combinations =  CombinationCreateSerializer(required=False, many=True)
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'prices']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'cost_price',
+                  'prices', 'operations', 'consumables', 'combinations']
 
     def validate(self, attrs):
         attrs['type'] = NomType.GP
@@ -185,25 +221,68 @@ class GPCRUDSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         prices_data = validated_data.pop('prices', [])
+        consumables_data = validated_data.pop('consumables', [])
+        operations_data = validated_data.pop('operations', [])
+        combinations_data = validated_data.pop('combinations', [])
+
         nomenclature = Nomenclature.objects.create(**validated_data)
-        self._update_prices(nomenclature, prices_data)
+
+        create_data = [Price(nomenclature=nomenclature, **data) for data in prices_data]
+        Price.objects.bulk_create(create_data)
+
+        create_data = [Consumable(nomenclature=nomenclature, **data) for data in consumables_data]
+        Consumable.objects.bulk_create(create_data)
+
+        create_data = [Operation(nomenclature=nomenclature, **data) for data in operations_data]
+        Operation.objects.bulk_create(create_data)
+
+
+        for data in combinations_data:
+            c_operations_data = data.pop('operations')
+            create_data = [Operation(nomenclature=nomenclature, **data) for data in c_operations_data]
+            c_operations = Operation.objects.bulk_create(create_data)
+            operations_ids = [op.id for op in c_operations]
+
+            combination = Combination.objects.create(nomenclature=nomenclature, **data)
+            combination.operations.set(operations_ids)
+
         return nomenclature
 
     def update(self, instance, validated_data):
         prices_data = validated_data.pop('prices', [])
-        instance = super().update(instance, validated_data)
-        self._update_prices(instance, prices_data)
-        return instance
+        consumables_data = validated_data.pop('consumables', [])
+        operations_data = validated_data.pop('operations', [])
+        combinations_data = validated_data.pop('combinations', [])
 
-    def _update_prices(self, nomenclature, prices_data):
-        price_ids = [price_data.get('id') for price_data in prices_data if 'id' in price_data]
-        nomenclature.prices.exclude(id__in=price_ids).delete()
-        for price_data in prices_data:
-            price_id = price_data.pop('id', None)
-            if price_id:
-                Price.objects.filter(id=price_id, nomenclature=nomenclature).update(**price_data)
-            else:
-                Price.objects.create(nomenclature=nomenclature, **price_data)
+        nomenclature = super().update(instance, validated_data)
+
+        with transaction.atomic():
+            nomenclature.prices.all().delete()
+            nomenclature.combinations.all().delete()
+            nomenclature.operations.all().delete()
+            nomenclature.consumables.all().delete()
+
+        create_data = [Price(nomenclature=nomenclature, **data) for data in prices_data]
+        Price.objects.bulk_create(create_data)
+
+        create_data = [Consumable(nomenclature=nomenclature, **data) for data in consumables_data]
+        Consumable.objects.bulk_create(create_data)
+
+        create_data = [Operation(nomenclature=nomenclature, **data) for data in operations_data]
+        Operation.objects.bulk_create(create_data)
+
+
+        for data in combinations_data:
+            c_operations_data = data.pop('operations')
+            create_data = [Operation(nomenclature=nomenclature, **data) for data in c_operations_data]
+            c_operations = Operation.objects.bulk_create(create_data)
+            operations_ids = [op.id for op in c_operations]
+
+            combination = Combination.objects.create(nomenclature=nomenclature, **data)
+            combination.operations.set(operations_ids)
+            combination.save()
+
+        return nomenclature
 
 
 class PatternCRUDSerializer(serializers.Serializer):

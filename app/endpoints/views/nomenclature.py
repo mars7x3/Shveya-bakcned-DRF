@@ -65,7 +65,8 @@ class GPDetailView(APIView):
 
     def get_object(self, pk):
         try:
-            return Nomenclature.objects.prefetch_related('operations', 'patterns', 'combinations', 'prices').get(pk=pk)
+            return Nomenclature.objects.prefetch_related('operations', 'combinations', 'prices',
+                                                         'consumables').get(pk=pk)
         except:
             return Response('Product does not exist!', status=status.HTTP_404_NOT_FOUND)
 

@@ -83,6 +83,7 @@ admin.site.register(Combination)
 admin.site.register(Equipment)
 admin.site.register(Operation)
 admin.site.register(CombinationFile)
+admin.site.register(Color)
 
 
 class ConsumableInline(NestedStackedInline):
