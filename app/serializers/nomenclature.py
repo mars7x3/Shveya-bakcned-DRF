@@ -242,7 +242,7 @@ class OperationNomenclatureSerializer(serializers.ModelSerializer):
 class OperationCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
-        fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active']
+        fields = ['id', 'title', 'time', 'price', 'nomenclature', 'equipment', 'rank', 'is_active', 'is_sample']
 
 
 class OperationEquipmentSerializer(serializers.ModelSerializer):
