@@ -1,6 +1,6 @@
 from tracemalloc import Trace
 
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
@@ -65,8 +65,18 @@ class GPDetailView(APIView):
 
     def get_object(self, pk):
         try:
-            return Nomenclature.objects.prefetch_related('operations', 'combinations', 'prices',
-                                                         'consumables').get(pk=pk)
+            return Nomenclature.objects.prefetch_related(
+                        Prefetch(
+                            "operations",
+                            queryset=Operation.objects.exclude(
+                                id__in=Combination.operations.through.objects.values_list("operation_id", flat=True)
+                            ),
+                            to_attr="nom_operations"
+                        ),
+                        "combinations",
+                        "prices",
+                        "consumables"
+                    ).get(pk=pk)
         except:
             return Response('Product does not exist!', status=status.HTTP_404_NOT_FOUND)
 
