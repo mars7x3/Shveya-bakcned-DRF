@@ -159,11 +159,11 @@ class ColorSerializer(serializers.ModelSerializer):
 
 class ConsumableSerializer(serializers.ModelSerializer):
     color = ColorSerializer(read_only=True)
-    nomenclature = NomenclatureSerializer(read_only=True)
+    material_nomenclature = NomenclatureSerializer(read_only=True)
 
     class Meta:
         model = Consumable
-        fields = ['id', 'nomenclature', 'color', 'consumption']
+        fields = ['id', 'material_nomenclature', 'color', 'consumption']
 
 
 class ConsumableCreateSerializer(serializers.ModelSerializer):
