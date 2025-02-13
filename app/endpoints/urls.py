@@ -17,7 +17,7 @@ from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryList
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.sample import CombinationFileCRUDVIew, SampleCombinationListView, SampleOperationListView
 from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
-from .views.general import RankListView, SizeListView, RankModelViewSet
+from .views.general import RankListView, SizeListView, RankModelViewSet, ColorModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
     MovingDetailView, MyMaterialListView, WarehouseListView
