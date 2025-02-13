@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from my_db.models import Rank, Size
+from my_db.models import Rank, Size, Color
 
 
 class RankSerializer(serializers.ModelSerializer):
@@ -18,3 +18,8 @@ class SizeSerializer(serializers.ModelSerializer):
 class SizeCreateSerializer(serializers.Serializer):
     title = serializers.CharField()
 
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = '__all__'

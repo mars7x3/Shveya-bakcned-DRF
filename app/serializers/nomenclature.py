@@ -89,8 +89,29 @@ class CombinationOperationsSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
+class NomenclatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'unit']
+
+
+class EquipmentReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = ['id', 'title']
+
+
+class OperationSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer(read_only=True)
+    equipment = EquipmentReadSerializer(read_only=True)
+
+    class Meta:
+        model = Operation
+        fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active']
+
+
 class CombinationSerializer(serializers.ModelSerializer):
-    operations = CombinationOperationsSerializer(many=True)
+    operations = OperationSerializer(many=True)
 
     class Meta:
         model = Combination
@@ -130,12 +151,6 @@ class CombinationCRUDSerializer(CombinationSerializer):
         return combination
 
 
-class NomenclatureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Nomenclature
-        fields = ['id', 'title', 'unit']
-
-
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
@@ -155,21 +170,6 @@ class ConsumableCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
         fields = ['material_nomenclature', 'color', 'consumption']
-
-
-class EquipmentReadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Equipment
-        fields = ['id', 'title']
-
-
-class OperationSerializer(serializers.ModelSerializer):
-    nomenclature = NomenclatureSerializer(read_only=True)
-    equipment = EquipmentReadSerializer(read_only=True)
-
-    class Meta:
-        model = Operation
-        fields = ['id', 'title', 'price', 'time', 'nomenclature', 'equipment', 'rank', 'is_active']
 
 
 class OperationCreateSerializer(serializers.ModelSerializer):

@@ -5,8 +5,8 @@ from rest_framework.response import Response
 
 
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
-from my_db.models import Rank, Size
-from serializers.general import SizeSerializer, RankSerializer
+from my_db.models import Rank, Size, Color
+from serializers.general import SizeSerializer, RankSerializer, ColorSerializer
 
 
 class RankListView(ListAPIView):
@@ -31,4 +31,10 @@ class RankModelViewSet(viewsets.ModelViewSet):
         rank.is_active = False
         rank.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ColorModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Color.objects.all()
+    serializer_class = ColorSerializer
 
