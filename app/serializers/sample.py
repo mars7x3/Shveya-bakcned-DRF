@@ -50,14 +50,8 @@ class OperationListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class CombOperationListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Operation
-        fields = ['id', 'title']
-
-
 class CombinationDetailSerializer(serializers.ModelSerializer):
-    operations = CombOperationListSerializer(many=True)
+    operations = OperationDetailSerializer(many=True)
     file = CombinationFileCRUDSerializer()
 
     class Meta:
