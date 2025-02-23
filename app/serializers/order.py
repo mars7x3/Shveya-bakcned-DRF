@@ -32,7 +32,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class OrderProductAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount']
+        fields = ['size', 'amount', 'color']
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProduct
-        fields = ['nomenclature', 'price', 'amounts']
+        fields = ['nomenclature', 'price', 'amounts', 'cost_price']
 
 
 class OrderCRUDSerializer(serializers.ModelSerializer):
@@ -75,8 +75,8 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
         for key, value in validated_data.items():
             setattr(instance, key, value)
         instance.save()
-        instance.products.all().delete()
 
+        instance.products.all().delete()
         order_products_list = []
         for product_data in products_data:
             amounts_data = product_data.pop('amounts')

@@ -280,6 +280,7 @@ class Order(models.Model):
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='orders')
     status = models.IntegerField(choices=OrderStatus.choices, default=OrderStatus.NEW)
     deadline = models.DateTimeField()
+    true_deadline = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -290,12 +291,16 @@ class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='products')
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='products')
     price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    true_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    true_cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 
 class OrderProductAmount(models.Model):
     order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE, related_name='amounts')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='amounts')
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL, blank=True, null=True, related_name='amounts')
     amount = models.IntegerField(default=0)
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL,blank=True, null=True, related_name='amounts')
 
 # ______________________________ Order end ______________________________
 
@@ -404,3 +409,4 @@ class CalPrice(models.Model):
 
 
 # ______________________________ Calculation end ______________________________
+
