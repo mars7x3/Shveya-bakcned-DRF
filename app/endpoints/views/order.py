@@ -63,7 +63,6 @@ class OrderListView(ListAPIView):
 
 
 class OrderModelViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
