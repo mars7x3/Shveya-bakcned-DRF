@@ -21,6 +21,18 @@ class SizeListView(ListAPIView):
     queryset = Size.objects.all()
 
 
+class SizeModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Size.objects.all()
+    serializer_class = SizeSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        size = self.get_object()
+        size.is_active = False
+        size.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class RankModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Rank.objects.all()

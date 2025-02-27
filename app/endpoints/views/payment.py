@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsOwner
-from my_db.enums import WorkStatus, PaymentStatus
+from my_db.enums import PaymentStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
     SalaryCreateSerializer, WorkPaymentDetailSerializer
@@ -57,7 +57,7 @@ class SalaryInfoView(APIView):
         works_queryset = (
             WorkDetail.objects.filter(
                 work__staff_id=pk,
-                work__status=WorkStatus.DONE,
+                #work__status=WorkStatus.DONE,
                 work__payment__isnull=True,
             )
             .select_related('operation')
@@ -131,7 +131,7 @@ class SalaryCreateView(APIView):
 
         Work.objects.filter(
             staff=staff,
-            status=WorkStatus.DONE,
+            #status=WorkStatus.DONE,
             payment__isnull=True
         ).update(payment=payment)
 

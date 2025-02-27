@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
-from my_db.enums import WorkStatus, StaffRole
+from my_db.enums import StaffRole
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
@@ -27,7 +27,7 @@ class WorkOutputView(APIView):
 
         work_detail_create = []
         for staff in staffs:
-            work = Work.objects.create(staff=staff, order_id=data['order_id'], status=WorkStatus.NEW)
+            work = Work.objects.create(staff=staff, order_id=data['order_id'])
 
             for o in data['operations']:
                 work_detail_create.append(
@@ -65,7 +65,6 @@ class WorkOperationListView(APIView):
                             assigned=Sum('details__amount', default=0),
                             completed=Sum(
                                 'details__amount',
-                                filter=Q(details__work__status=WorkStatus.DONE),
                                 default=0
                             )
                         )
@@ -88,7 +87,7 @@ class WorkInputView(APIView):
         staff = StaffProfile.objects.get(id=data['staff_id'])
 
         work_detail_create = []
-        work = Work.objects.create(staff=staff, order_id=data['order_id'], status=WorkStatus.DONE)
+        work = Work.objects.create(staff=staff, order_id=data['order_id'])
 
         for o in data['operations']:
             work_detail_create.append(
@@ -110,7 +109,7 @@ class MyWorkInputView(APIView):
         staff = request.user.staff_profile
 
         work_detail_create = []
-        work = Work.objects.create(staff=staff, order_id=data['order_id'], status=WorkStatus.MODERATION)
+        work = Work.objects.create(staff=staff, order_id=data['order_id'])
 
         for o in data['operations']:
             work_detail_create.append(
@@ -148,27 +147,6 @@ class MyWorkListView(APIView):
                     F("work__order__client__name"),
                     output_field=CharField()
                 ),
-                need_amount=Sum(
-                    Case(
-                        When(work__status=WorkStatus.NEW, then=F("amount")),
-                        default=Value(0),
-                        output_field=IntegerField()
-                    )
-                ),
-                done_amount=Sum(
-                    Case(
-                        When(work__status=WorkStatus.DONE, then=F("amount")),
-                        default=Value(0),
-                        output_field=IntegerField()
-                    )
-                ),
-                moderation_amount=Sum(
-                    Case(
-                        When(work__status=WorkStatus.MODERATION, then=F("amount")),
-                        default=Value(0),
-                        output_field=IntegerField()
-                    )
-                )
             )
             .order_by("-work__order_id")
         )
@@ -200,7 +178,7 @@ class MyWorkListView(APIView):
 
 class WorkModerationListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Work.objects.filter(status=WorkStatus.MODERATION).prefetch_related(
+    queryset = Work.objects.all().prefetch_related(
         Prefetch(
             'details',
             queryset=WorkDetail.objects.select_related('operation')
@@ -217,7 +195,6 @@ class WorkModerationView(APIView):
     def post(self, request):
         data = request.data
         work = Work.objects.get(id=data['work_id'])
-        work.status = WorkStatus.DONE
         work.save()
 
         return Response('Success!', status=status.HTTP_200_OK)

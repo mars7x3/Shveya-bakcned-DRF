@@ -28,7 +28,7 @@ class NomUnit(models.IntegerChoices):
     M2 = 3, "М2"
     L = 4, "ЛИТР"
     U = 5, "ШТ."
-
+    R = 6, "РУЛОН"
 
 
 class OrderStatus(models.IntegerChoices):
@@ -44,11 +44,9 @@ class QuantityStatus(models.IntegerChoices):
     INACTIVE = 3, "НЕАКТИВЕН"
 
 
-class WorkStatus(models.IntegerChoices):
+class PartyStatus(models.IntegerChoices):
     NEW = 1, "НОВЫЙ"
-    MODERATION = 2, "МОДЕРАЦИЯ"
-    DONE = 3, "ГОТОВ"
-    PAYED = 4, "ОПЛАЧЕН"
+    MODERATED = 2, "ПРОВЕРЕН"
 
 
 class PaymentStatus(models.IntegerChoices):
@@ -58,41 +56,3 @@ class PaymentStatus(models.IntegerChoices):
     FINE_CHECKED = 4, "ШТРАФ - учтен"
     ADVANCE_CHECKED = 5, "АВАНС - учтен"
 
-data = {
-    "title": "str",
-    "vendor_code": "str",
-    "cost_price": 10,
-    "price": 10,
-    "created_at": "str",
-    "combinations": [
-        {
-            "title": "str",
-            "operations": [
-                {
-                    "title": "str",
-                    "time": "str",
-                    "price": 10
-                }
-            ]
-        }
-    ],
-    "operations": [
-        {
-            "title": "str",
-            "time": "str",
-            "price": 10
-        }
-    ],
-    "consumables": [
-        {
-            "title": "str",
-            "consumption": 10
-        }
-    ],
-    "prices": [
-        {
-            "title": "str",
-            "price": 10
-        }
-    ]
-}

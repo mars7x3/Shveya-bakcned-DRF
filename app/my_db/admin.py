@@ -175,11 +175,11 @@ class WorkDetailInline(NestedStackedInline):
     extra = 0
 
 
-@admin.register(Work)
-class WorkAdmin(NestedModelAdmin):
-    inlines = (WorkDetailInline,)
-    list_display = ("id", "staff", "order", "status", "created_at")
-    list_display_links = ("id", "staff", "order", "status", "created_at")
+# @admin.register(Work)
+# class WorkAdmin(NestedModelAdmin):
+#     inlines = (WorkDetailInline,)
+#     list_display = ("id", "staff", "order", "status", "created_at")
+#     list_display_links = ("id", "staff", "order", "status", "created_at")
 
 # ______________________________ Work end ______________________________
 

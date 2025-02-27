@@ -6,27 +6,23 @@ from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct
 class OrderClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = ClientProfile
-        fields = ('name', 'surname', 'company_title')
+        fields = ('id', 'name', 'surname', 'company_title', 'phone')
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderListSerializer(serializers.ModelSerializer):
     client = OrderClientSerializer(read_only=True)
-    completion_percentage = serializers.FloatField()
-    total_cost = serializers.DecimalField(max_digits=12, decimal_places=2)
-    total_revenue = serializers.DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
         model = Order
-        fields = [
-            'id',
-            'client',
-            'status',
-            'deadline',
-            'created_at',
-            'total_cost',
-            'total_revenue',
-            'completion_percentage'
-        ]
+        fields = ['id', 'client', 'status', 'deadline', 'created_at']
+
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    client = OrderClientSerializer(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):

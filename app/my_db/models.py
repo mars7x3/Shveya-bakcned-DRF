@@ -2,7 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from .compress import staff_image_folder, WEBPField, equipment_image_folder
-from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, WorkStatus, PaymentStatus
+from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, PaymentStatus, \
+    PartyStatus
 
 
 # ______________________________ User ______________________________
@@ -307,11 +308,33 @@ class OrderProductAmount(models.Model):
 
 # ______________________________ Work ______________________________
 
+class Party(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='parties')
+    nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='parties')
+    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='parties')
+    number = models.IntegerField()
+    status = models.IntegerField(choices=PartyStatus.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class PartyDetail(models.Model):
+    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='details')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='party_details')
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='party_details')
+    plan = models.IntegerField(default=0)
+    amount = models.IntegerField(default=0)
+
+
+class PartyConsumable(models.Model):
+    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='consumptions')
+    nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
+    consumption = models.DecimalField(decimal_places=3, max_digits=12, default=0)
+
+
 class Work(models.Model):
     staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='works')
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='works')
+    party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name='works')
     payment = models.ForeignKey('Payment', on_delete=models.CASCADE, blank=True, null=True, related_name='works')
-    status = models.IntegerField(choices=WorkStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -320,8 +343,11 @@ class Work(models.Model):
 
 class WorkDetail(models.Model):
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='details')
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='details')
+    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='works')
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL,blank=True, null=True, related_name='work_details')
     amount = models.IntegerField(default=0)
+
 
 # ______________________________ Work end ______________________________
 

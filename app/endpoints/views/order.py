@@ -6,13 +6,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist
-from my_db.enums import WorkStatus
 from my_db.models import Order
-from serializers.order import OrderSerializer, OrderCRUDSerializer
+from serializers.order import OrderListSerializer, OrderCRUDSerializer, OrderDetailSerializer
 
 
 class OrderFilter(filters.FilterSet):
@@ -30,36 +31,17 @@ class OrderFilter(filters.FilterSet):
             Q(client__company_title__icontains=value))
 
 
-class OrderListView(ListAPIView):
+class OrderReadView(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Order.objects.annotate(
-        completion_percentage=ExpressionWrapper(
-            (Sum(
-                F('products__nomenclature__operations__details__amount'),
-                filter=Q(products__nomenclature__operations__details__work__status=WorkStatus.DONE),
-                default=0
-            ) * 100.0) / Sum(
-                F('products__nomenclature__operations__details__amount') * F('products__amounts__amount'),
-                default=1
-            ),
-            output_field=FloatField()
-        ),
-        total_cost=Sum(
-            F('products__nomenclature__cost_price') * F('products__amounts__amount'),
-            output_field=FloatField(),
-            default=0
-        ),
-        total_revenue=Sum(
-            F('products__price') * F('products__amounts__amount'),
-            output_field=FloatField(),
-            default=0
-        )
-    ).order_by('-created_at')
-
-    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = OrderFilter
     pagination_class = StandardPagination
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return OrderDetailSerializer
+        return OrderListSerializer
 
 
 class OrderModelViewSet(mixins.CreateModelMixin,
@@ -70,3 +52,4 @@ class OrderModelViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     queryset = Order.objects.select_related('client')
     serializer_class = OrderCRUDSerializer
+
