@@ -161,7 +161,6 @@ class OrderProductInline(NestedStackedInline):
 
 @admin.register(Order)
 class OrderAdmin(NestedModelAdmin):
-    inlines = (OrderProductInline,)
     list_display = ("id", "status", "deadline", "created_at")
     list_display_links = ("id", "status", "deadline", "created_at")
 

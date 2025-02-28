@@ -321,8 +321,8 @@ class PartyDetail(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='details')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='party_details')
     size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='party_details')
-    plan = models.IntegerField(default=0)
-    amount = models.IntegerField(default=0)
+    plan_amount = models.IntegerField(default=0)
+    true_amount = models.IntegerField(default=0)
 
 
 class PartyConsumable(models.Model):

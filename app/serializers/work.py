@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail
+from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
+    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -88,8 +89,73 @@ class WorkModerationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Work
-        fields = ['id', 'staff', 'order', 'status', 'created_at', 'details']
+        fields = ['id', 'staff', 'created_at', 'details']
 
 
 class WorkModerationSerializer(serializers.Serializer):
     work_id = serializers.IntegerField()
+
+
+class PartyConsumableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartyConsumable
+        fields = ['nomenclature', 'consumption']
+
+
+class PartyDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartyDetail
+        fields = ['color', 'size', 'plan_amount', 'true_amount']
+
+
+class PartyCreateSerializer(serializers.ModelSerializer):
+    details = PartyDetailSerializer(many=True)
+    consumptions = PartyConsumableSerializer(many=True)
+
+    class Meta:
+        model = Party
+        fields = ['order', 'nomenclature', 'number', 'details', 'consumptions']
+
+
+class NomenclatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code']
+
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id', 'title']
+
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = ['id', 'title']
+
+
+class OrderProductAmountSerializer(serializers.ModelSerializer):
+    color = ColorSerializer()
+    size = SizeSerializer()
+
+    class Meta:
+        model = OrderProductAmount
+        fields = ['size', 'amount', 'color']
+
+
+class OrderProductSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer(read_only=True)
+    amounts = OrderProductAmountSerializer(many=True)
+
+    class Meta:
+        model = OrderProduct
+        fields = ['nomenclature', 'amounts']
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    products = OrderProductSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'products']

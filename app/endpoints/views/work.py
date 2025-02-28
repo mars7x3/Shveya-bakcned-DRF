@@ -8,12 +8,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
-from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
-from my_db.enums import StaffRole
-from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter
+from my_db.enums import StaffRole, OrderStatus
+from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
-    WorkModerationListSerializer, WorkModerationSerializer
+    WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer
 
 
 class WorkOutputView(APIView):
@@ -198,3 +198,24 @@ class WorkModerationView(APIView):
         work.save()
 
         return Response('Success!', status=status.HTTP_200_OK)
+
+
+class OrderInfoListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Order.objects.filter(status=OrderStatus.PROGRESS).prefetch_related(
+        'products__nomenclature', 'products__amounts'
+    )
+    serializer_class = OrderSerializer
+
+
+class PartyCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Party.objects.all()
+    serializer_class = PartyCreateSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(staff=self.request.user.staff_profile)
+
+
+
+

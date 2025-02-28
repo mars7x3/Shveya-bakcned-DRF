@@ -37,3 +37,10 @@ class IsOwner(BasePermission):
             return True
         return False
 
+
+class IsCutter(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.staff_profile.role == StaffRole.CUTTER:
+            return True
+        return False
+
