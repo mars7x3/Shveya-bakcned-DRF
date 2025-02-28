@@ -21,7 +21,7 @@ from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHi
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
     MaterialCRUDSerializer, StockInputSerializer, StockOutputSerializer, StockDefectiveSerializer, \
     StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer, \
-    MyMaterialsSerializer, WarehouseListSerializerSerializer
+    MyMaterialsSerializer, WarehouseListSerializer, QuantityHistoryListSerializer, QuantityHistoryDetailSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -328,8 +328,7 @@ class StockOutputUpdateView(APIView):
 
 class WarehouseListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsStaff]
-    serializer_class = WarehouseListSerializerSerializer
-
+    serializer_class = WarehouseListSerializer
 
     def get_queryset(self):
         manager = self.request.user.staff_profile
@@ -338,4 +337,27 @@ class WarehouseListView(ListAPIView):
         else:
             queryset = Warehouse.objects.all()
         return queryset
+
+
+class QuantityHistoryListView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    pagination_class = StandardPagination
+    queryset = QuantityHistory.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return QuantityHistoryDetailSerializer
+        return QuantityHistoryListSerializer
+
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return QuantityHistory.objects.select_related(
+                'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
+        return QuantityHistory.objects.select_related(
+            'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
+
+
+
+
+
 

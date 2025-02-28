@@ -20,9 +20,9 @@ from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSe
 from .views.general import RankListView, SizeListView, RankModelViewSet, ColorModelViewSet, SizeModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
-    MovingDetailView, MyMaterialListView, WarehouseListView
+    MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView
 from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView, WorkInputView, \
-    MyWorkInputView, WorkModerationListView, WorkModerationView, PartyCreateView, OrderInfoListView, WorkCreateView
+    MyWorkInputView, WorkModerationListView, WorkModerationView, PartyCreateView, OrderInfoListView
 
 router = DefaultRouter()
 
@@ -39,6 +39,8 @@ router.register('order/crud', OrderModelViewSet)
 router.register('order/list', OrderReadView)
 router.register('warehouse/crud', WarehouseModelViewSet)
 router.register('warehouse/material/crud', MaterialModelViewSet)
+router.register('warehouse/history/list', QuantityHistoryListView)
+
 router.register('dashboard/plan/crud', PlanCRUDView)
 router.register('calculation/crud', CalculationViewSet)
 router.register('sample/combination-files/crud', CombinationFileCRUDVIew)
@@ -83,6 +85,7 @@ urlpatterns = [
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
         path('warehouse/list/', WarehouseListView.as_view()),
 
+
         path('work/output/', WorkOutputView.as_view()),
         path('work/input/', WorkInputView.as_view()),
         path('work/input/my/', MyWorkInputView.as_view()),
@@ -93,7 +96,6 @@ urlpatterns = [
         path('work/moderation/update/', WorkModerationView.as_view()),
         path('work/party/create/', PartyCreateView.as_view()),
         path('work/order-info/list/', OrderInfoListView.as_view()),
-        path('work/create/', WorkCreateView.as_view()),
 
 
         path('payment/create/', PaymentCreateView.as_view()),

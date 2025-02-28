@@ -217,9 +217,6 @@ class PartyCreateView(CreateAPIView):
         serializer.save(staff=self.request.user.staff_profile)
 
 
-class WorkCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Work.objects.all()
-    serializer_class = WorkSerializer
+
 
 

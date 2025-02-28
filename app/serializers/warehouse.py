@@ -2,7 +2,8 @@ from django.db.models import IntegerField
 from rest_framework import serializers
 
 from my_db.enums import NomType
-from my_db.models import Warehouse, StaffProfile, Nomenclature, NomCount, Quantity, QuantityNomenclature
+from my_db.models import Warehouse, StaffProfile, Nomenclature, NomCount, Quantity, QuantityNomenclature, \
+    QuantityHistory, QuantityFile
 
 
 class WarehouseStaffSerializer(serializers.ModelSerializer):
@@ -148,8 +149,63 @@ class MyMaterialsSerializer(serializers.ModelSerializer):
         return rep
 
 
-class WarehouseListSerializerSerializer(serializers.ModelSerializer):
+class WarehouseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Warehouse
         fields = ['id', 'title', 'address']
 
+
+class QuantitySerializer(serializers.ModelSerializer):
+    in_warehouse = WarehouseListSerializer()
+    out_warehouse = WarehouseListSerializer()
+
+    class Meta:
+        model = Quantity
+        fields = ['in_warehouse', 'out_warehouse']
+
+
+class QuantityHistoryListSerializer(serializers.ModelSerializer):
+    quantity = QuantitySerializer()
+
+    class Meta:
+        model = QuantityHistory
+        fields = ['id', 'staff_id', 'staff_name', 'staff_surname', 'status', 'created_at', 'quantity']
+
+
+class NomenclatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code', 'unit']
+
+
+class QuantityNomenclatureSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = QuantityNomenclature
+        fields = ['nomenclature', 'amount', 'price', 'comment']
+
+
+class QuantityFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuantityFile
+        fields = ['file']
+
+
+class QuantityDetailSerializer(serializers.ModelSerializer):
+    in_warehouse = WarehouseListSerializer()
+    out_warehouse = WarehouseListSerializer()
+    quantities = QuantityNomenclatureSerializer(many=True)
+    files = QuantityFileSerializer(many=True)
+
+    class Meta:
+        model = Quantity
+        fields = ['in_warehouse', 'out_warehouse', 'quantities', 'files', 'status', 'created_at']
+
+
+class QuantityHistoryDetailSerializer(serializers.ModelSerializer):
+    quantity = QuantityDetailSerializer()
+
+    class Meta:
+        model = QuantityHistory
+        fields = ['id', 'staff_id', 'staff_name', 'staff_surname', 'status', 'created_at', 'quantity']
