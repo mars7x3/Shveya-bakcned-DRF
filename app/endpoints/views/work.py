@@ -201,7 +201,7 @@ class WorkModerationView(APIView):
 
 
 class OrderInfoListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsCutter]
     queryset = Order.objects.filter(status=OrderStatus.PROGRESS).prefetch_related(
         'products__nomenclature', 'products__amounts'
     )
@@ -209,7 +209,7 @@ class OrderInfoListView(ListAPIView):
 
 
 class PartyCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsCutter]
     queryset = Party.objects.all()
     serializer_class = PartyCreateSerializer
 
