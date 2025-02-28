@@ -169,6 +169,8 @@ class OrderAdmin(NestedModelAdmin):
 
 # ______________________________ Work ______________________________
 
+admin.site.register(Party)
+
 class WorkDetailInline(NestedStackedInline):
     model = WorkDetail
     extra = 0

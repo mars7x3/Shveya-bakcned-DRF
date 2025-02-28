@@ -123,6 +123,14 @@ class NomenclatureSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'vendor_code']
 
 
+class PartyListSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = Party
+        fields = ['id', 'order', 'nomenclature', 'number', 'status', 'created_at']
+
+
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
