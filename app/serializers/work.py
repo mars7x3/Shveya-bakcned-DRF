@@ -159,3 +159,17 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'products']
+
+
+class WorkDetailSerializer(serializers.Serializer):
+    operation = serializers.IntegerField()
+    color = serializers.IntegerField()
+    size = serializers.IntegerField()
+    amount = serializers.IntegerField()
+
+
+class WorkSerializer(serializers.Serializer):
+    party = serializers.IntegerField()
+    nomenclature = serializers.IntegerField()
+    details = WorkDetailSerializer(many=True)
+

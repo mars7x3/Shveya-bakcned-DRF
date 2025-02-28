@@ -14,7 +14,6 @@ class StaffRole(models.IntegerChoices):
     CUTTER = 5, 'КРОЙЩИК'
 
 
-
 class NomType(models.IntegerChoices):
     MATERIAL = 1, 'СЫРЬЕ'
     PF_1 = 2, "ПФ1"

@@ -13,7 +13,7 @@ from my_db.enums import StaffRole, OrderStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
-    WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer
+    WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer, WorkSerializer
 
 
 class WorkOutputView(APIView):
@@ -217,5 +217,9 @@ class PartyCreateView(CreateAPIView):
         serializer.save(staff=self.request.user.staff_profile)
 
 
+class WorkCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializer
 
 
