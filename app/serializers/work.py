@@ -140,7 +140,7 @@ class SizeSerializer(serializers.ModelSerializer):
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Color
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'code']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):
