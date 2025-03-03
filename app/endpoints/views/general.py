@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
+from my_db.enums import PartyStatus
 from my_db.models import Rank, Size, Color
 from serializers.general import SizeSerializer, RankSerializer, ColorSerializer
 
@@ -28,8 +29,13 @@ class SizeModelViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         size = self.get_object()
-        size.is_active = False
-        size.save()
+        works = size.work_details.filter(work__payment__isnull=True)
+        parties = size.party_details.filter(party__status=PartyStatus.MODERATED)
+        if works:
+            return Response({"text": "У данного цвета есть не оплаченные работы сотрудников!"})
+        if parties:
+            return Response({"text": "У данного цвета есть активные наряды!"})
+        self.perform_destroy(size)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

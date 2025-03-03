@@ -88,6 +88,7 @@ class Size(models.Model):
 class Color(models.Model):
     title = models.CharField(max_length=50)
     is_active = models.BooleanField(default=True)
+    code = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -320,7 +321,7 @@ class Party(models.Model):
 class PartyDetail(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='details')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='party_details')
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='party_details')
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL, blank=True, null=True, related_name='party_details')
     plan_amount = models.IntegerField(default=0)
     true_amount = models.IntegerField(default=0)
 
