@@ -31,3 +31,7 @@ def client_image_folder(instance, filename):
 
 def equipment_image_folder(instance, filename):
     return 'equipment/{}.webp'.format(uuid.uuid4().hex)
+
+
+def nom_image_folder(instance, filename):
+    return 'nomenclatures/{}.webp'.format(uuid.uuid4().hex)

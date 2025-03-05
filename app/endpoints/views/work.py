@@ -2,7 +2,7 @@ from django.db.models import Prefetch, Sum, F, Q, IntegerField, Value, Case, Whe
 from django.db.models.functions import Concat
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets, mixins
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,11 +11,12 @@ from rest_framework.viewsets import GenericViewSet
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter
 from my_db.enums import StaffRole, OrderStatus
-from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order
+from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order, \
+    OrderProduct
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
     WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer, WorkSerializer, \
-    PartyListSerializer
+    PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer
 
 
 class WorkOutputView(APIView):
@@ -204,9 +205,7 @@ class WorkModerationView(APIView):
 
 class OrderInfoListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsCutter]
-    queryset = Order.objects.filter(status=OrderStatus.PROGRESS).prefetch_related(
-        'products__nomenclature', 'products__amounts'
-    )
+    queryset = Order.objects.filter(status=OrderStatus.PROGRESS).prefetch_related('products__nomenclature')
     serializer_class = OrderSerializer
 
 
@@ -228,5 +227,20 @@ class PartyListView(ListAPIView):
     def get_queryset(self):
         return self.request.user.staff_profile.parties.all()
 
+
+class ProductInfoView(APIView):
+    permission_classes = [IsAuthenticated, IsCutter]
+
+    def post(self, request):
+        order_id = request.data.get('order')
+        product_id = request.data.get('product')
+
+        product = (OrderProduct.objects.filter(
+            nomenclature_id=product_id, order_id=order_id
+        ).select_related('nomenclature')
+                   .prefetch_related('amounts__size', 'amounts__color', 'nomenclature__consumables').first())
+
+        serializer = ProductInfoSerializer(product, context=self.get_renderer_context())
+        return Response(serializer.data)
 
 

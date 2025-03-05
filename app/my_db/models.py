@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .compress import staff_image_folder, WEBPField, equipment_image_folder
+from .compress import staff_image_folder, WEBPField, equipment_image_folder, nom_image_folder
 from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, PaymentStatus, \
     PartyStatus
 
@@ -109,6 +109,7 @@ class Nomenclature(models.Model):
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
+    image = WEBPField(upload_to=nom_image_folder, blank=True, null=True)
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'
@@ -313,8 +314,8 @@ class Party(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='parties')
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='parties')
     staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='parties')
-    number = models.IntegerField()
-    status = models.IntegerField(choices=PartyStatus.choices)
+    number = models.CharField()
+    status = models.IntegerField(choices=PartyStatus.choices, default=PartyStatus.NEW)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -330,6 +331,7 @@ class PartyConsumable(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='consumptions')
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
     consumption = models.DecimalField(decimal_places=3, max_digits=12, default=0)
+    defect = models.DecimalField(decimal_places=3, max_digits=12, default=0)
 
 
 class Work(models.Model):

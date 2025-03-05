@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
-    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color
+    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, Consumable
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -99,7 +99,7 @@ class WorkModerationSerializer(serializers.Serializer):
 class PartyConsumableSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartyConsumable
-        fields = ['nomenclature', 'consumption']
+        fields = ['nomenclature', 'consumption', 'defect']
 
 
 class PartyDetailSerializer(serializers.ModelSerializer):
@@ -110,11 +110,11 @@ class PartyDetailSerializer(serializers.ModelSerializer):
 
 class PartyCreateSerializer(serializers.ModelSerializer):
     details = PartyDetailSerializer(many=True)
-    consumptions = PartyConsumableSerializer(many=True)
+    consumables = PartyConsumableSerializer(many=True)
 
     class Meta:
         model = Party
-        fields = ['order', 'nomenclature', 'number', 'details', 'consumptions']
+        fields = ['order', 'nomenclature', 'number', 'details', 'consumables']
 
 
 class NomenclatureSerializer(serializers.ModelSerializer):
@@ -154,19 +154,25 @@ class OrderProductAmountSerializer(serializers.ModelSerializer):
 
 class OrderProductSerializer(serializers.ModelSerializer):
     nomenclature = NomenclatureSerializer(read_only=True)
-    amounts = OrderProductAmountSerializer(many=True)
 
     class Meta:
         model = OrderProduct
-        fields = ['nomenclature', 'amounts']
+        fields = ['nomenclature']
+
+
+class ClientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientProfile
+        fields = ['name', 'surname', 'company_title']
 
 
 class OrderSerializer(serializers.ModelSerializer):
     products = OrderProductSerializer(many=True)
+    client = ClientSerializer()
 
     class Meta:
         model = Order
-        fields = ['id', 'products']
+        fields = ['id', 'created_at', 'products', 'client']
 
 
 class WorkDetailSerializer(serializers.Serializer):
@@ -180,4 +186,31 @@ class WorkSerializer(serializers.Serializer):
     party = serializers.IntegerField()
     nomenclature = serializers.IntegerField()
     details = WorkDetailSerializer(many=True)
+
+
+class ConsumableSerializer(serializers.ModelSerializer):
+    material_nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = Consumable
+        fields = ['material_nomenclature', 'consumption']
+
+
+class NomenclatureInfoSerializer(serializers.ModelSerializer):
+    consumables = ConsumableSerializer(many=True)
+
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code', 'image', 'consumables']
+
+
+class ProductInfoSerializer(serializers.ModelSerializer):
+    amounts = OrderProductAmountSerializer(many=True)
+    nomenclature = NomenclatureInfoSerializer()
+
+    class Meta:
+        model = OrderProduct
+        fields = ['nomenclature', 'amounts']
+
+
 
