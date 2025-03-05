@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct
+from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
+    Color
 
 
 class OrderClientSerializer(serializers.ModelSerializer):
@@ -10,20 +11,74 @@ class OrderClientSerializer(serializers.ModelSerializer):
 
 
 class OrderListSerializer(serializers.ModelSerializer):
-    client = OrderClientSerializer(read_only=True)
+    client = OrderClientSerializer()
 
     class Meta:
         model = Order
         fields = ['id', 'client', 'status', 'deadline', 'created_at']
 
 
+class NomenclatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code']
+
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = ['id', 'title', 'code']
+
+
+class SizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id', 'title']
+
+
+class GETOrderProductAmountSerializer(serializers.ModelSerializer):
+    size = SizeSerializer()
+    color = ColorSerializer()
+
+    class Meta:
+        model = OrderProductAmount
+        fields = ['size', 'amount', 'done', 'color']
+
+
+class GETOrderProductSerializer(serializers.ModelSerializer):
+    amounts = GETOrderProductAmountSerializer(many=True)
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = OrderProduct
+        fields = ['nomenclature', 'price', 'true_price', 'cost_price', 'true_cost_price', 'amounts']
+
+
+class GETPartyDetailSerializer(serializers.ModelSerializer):
+    size = SizeSerializer()
+    color = ColorSerializer()
+
+    class Meta:
+        model = PartyDetail
+        fields = ['size', 'plan_amount', 'true_amount', 'color']
+
+
+class GETPartySerializer(serializers.ModelSerializer):
+    details = GETPartyDetailSerializer(many=True)
+
+    class Meta:
+        model = Party
+        fields = ['nomenclature', 'staff', 'number', 'status', 'created_at', 'details']
+
+
 class OrderDetailSerializer(serializers.ModelSerializer):
-    client = OrderClientSerializer(read_only=True)
+    client = OrderClientSerializer()
+    products = GETOrderProductSerializer(many=True)
+    parties = GETPartySerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline',
-                  ]
+        fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline', 'products', 'parties']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):

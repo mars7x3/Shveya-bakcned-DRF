@@ -43,6 +43,12 @@ class OrderReadView(viewsets.ReadOnlyModelViewSet):
             return OrderDetailSerializer
         return OrderListSerializer
 
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Order.objects.all().prefetch_related('parties__details__size', 'parties__details__color',
+                                                        'products__amounts__size', 'products__amounts__color')
+        return Order.objects.all()
+
 
 class OrderModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,

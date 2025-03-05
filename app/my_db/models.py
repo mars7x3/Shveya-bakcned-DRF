@@ -303,6 +303,7 @@ class OrderProductAmount(models.Model):
     order_product = models.ForeignKey(OrderProduct, on_delete=models.CASCADE, related_name='amounts')
     size = models.ForeignKey(Size, on_delete=models.SET_NULL, blank=True, null=True, related_name='amounts')
     amount = models.IntegerField(default=0)
+    done = models.IntegerField(default=0)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL,blank=True, null=True, related_name='amounts')
 
 # ______________________________ Order end ______________________________
