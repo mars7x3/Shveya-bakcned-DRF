@@ -192,7 +192,7 @@ class GPDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'cost_price', 'is_active', 'title', 'image'
+        fields = ['id', 'vendor_code', 'cost_price', 'is_active', 'title', 'image',
                   'prices', 'combinations', 'nom_operations', 'consumables']
 
 
@@ -212,7 +212,7 @@ class GPCRUDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'cost_price', 'image'
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'cost_price', 'image',
                   'prices', 'operations', 'consumables', 'combinations']
 
     def validate(self, attrs):
