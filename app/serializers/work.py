@@ -116,6 +116,21 @@ class PartyCreateSerializer(serializers.ModelSerializer):
         model = Party
         fields = ['order', 'nomenclature', 'number', 'details', 'consumables']
 
+    def create(self, validated_data):
+        details = validated_data.pop('details', [])
+        consumables = validated_data.pop('consumables', [])
+
+        party = Party.objects.create(**validated_data)
+
+        PartyDetail.objects.bulk_create([
+            PartyDetail(party=party, **data) for data in details
+        ])
+        PartyConsumable.objects.bulk_create([
+            PartyConsumable(party=party, **consumable) for consumable in consumables
+        ])
+
+        return party
+
 
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
