@@ -99,7 +99,7 @@ class WorkModerationSerializer(serializers.Serializer):
 class PartyConsumableSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartyConsumable
-        fields = ['nomenclature', 'consumption', 'defect']
+        fields = ['nomenclature', 'consumption', 'defect', 'left']
 
 
 class PartyDetailSerializer(serializers.ModelSerializer):

@@ -333,6 +333,7 @@ class PartyConsumable(models.Model):
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
     consumption = models.DecimalField(decimal_places=3, max_digits=12, default=0)
     defect = models.DecimalField(decimal_places=3, max_digits=12, default=0)
+    left = models.DecimalField(decimal_places=3, max_digits=12, default=0)
 
 
 class Work(models.Model):
