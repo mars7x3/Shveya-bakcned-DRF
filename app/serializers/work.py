@@ -110,15 +110,15 @@ class PartyDetailSerializer(serializers.ModelSerializer):
 
 class PartyCreateSerializer(serializers.ModelSerializer):
     details = PartyDetailSerializer(many=True)
-    consumables = PartyConsumableSerializer(many=True)
+    consumptions = PartyConsumableSerializer(many=True)
 
     class Meta:
         model = Party
-        fields = ['order', 'nomenclature', 'number', 'details', 'consumables']
+        fields = ['order', 'nomenclature', 'number', 'details', 'consumptions']
 
     def create(self, validated_data):
         details = validated_data.pop('details', [])
-        consumables = validated_data.pop('consumables', [])
+        consumptions = validated_data.pop('consumptions', [])
 
         party = Party.objects.create(**validated_data)
 
@@ -126,7 +126,7 @@ class PartyCreateSerializer(serializers.ModelSerializer):
             PartyDetail(party=party, **data) for data in details
         ])
         PartyConsumable.objects.bulk_create([
-            PartyConsumable(party=party, **consumable) for consumable in consumables
+            PartyConsumable(party=party, **consumable) for consumable in consumptions
         ])
 
         return party
