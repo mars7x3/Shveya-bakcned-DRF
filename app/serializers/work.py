@@ -131,6 +131,27 @@ class PartyCreateSerializer(serializers.ModelSerializer):
 
         return party
 
+    def update(self, instance, validated_data):
+        details = validated_data.pop('details', [])
+        consumptions = validated_data.pop('consumptions', [])
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        instance.details.all().delete()
+        instance.consumptions.all().delete()
+
+        PartyDetail.objects.bulk_create([
+            PartyDetail(party=instance, **data) for data in details
+        ])
+        PartyConsumable.objects.bulk_create([
+            PartyConsumable(party=instance, **consumable) for consumable in consumptions
+        ])
+
+        return instance
+
+
 
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -156,6 +177,33 @@ class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Color
         fields = ['id', 'title', 'code']
+
+
+class PartyConsumableInfoSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = PartyConsumable
+        fields = ['nomenclature', 'consumption', 'defect', 'left']
+
+
+class PartyDetailInfoSerializer(serializers.ModelSerializer):
+    color = ColorSerializer()
+    size = SizeSerializer()
+
+    class Meta:
+        model = PartyDetail
+        fields = ['color', 'size', 'plan_amount', 'true_amount']
+
+
+class PartyGETInfoSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer()
+    details = PartyDetailInfoSerializer(many=True)
+    consumptions = PartyConsumableInfoSerializer(many=True)
+
+    class Meta:
+        model = Party
+        fields = ['id', 'order', 'nomenclature', 'number', 'status', 'created_at', 'details', 'consumptions']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):
@@ -203,20 +251,10 @@ class WorkSerializer(serializers.Serializer):
     details = WorkDetailSerializer(many=True)
 
 
-class ConsumableSerializer(serializers.ModelSerializer):
-    material_nomenclature = NomenclatureSerializer()
-
-    class Meta:
-        model = Consumable
-        fields = ['material_nomenclature', 'consumption']
-
-
 class NomenclatureInfoSerializer(serializers.ModelSerializer):
-    consumables = ConsumableSerializer(many=True)
-
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'image', 'consumables']
+        fields = ['id', 'title', 'vendor_code', 'image']
 
 
 class ProductInfoSerializer(serializers.ModelSerializer):

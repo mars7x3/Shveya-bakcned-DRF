@@ -9,14 +9,15 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor
 from my_db.enums import StaffRole, OrderStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order, \
     OrderProduct
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
     WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer, WorkSerializer, \
-    PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer
+    PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
+    PartyGETInfoSerializer
 
 
 class WorkOutputView(APIView):
@@ -218,14 +219,19 @@ class PartyCreateView(CreateAPIView):
         serializer.save(staff=self.request.user.staff_profile)
 
 
-class PartyListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsCutter]
+class PartyListView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, IsAuthor]
     queryset = Party.objects.all()
-    serializer_class = PartyListSerializer
     pagination_class = StandardPagination
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return PartyGETInfoSerializer
+        return PartyListSerializer
+
     def get_queryset(self):
-        return self.request.user.staff_profile.parties.all()
+        queryset = self.request.user.staff_profile.parties.all()
+        return queryset
 
 
 class ProductInfoView(APIView):
@@ -238,7 +244,7 @@ class ProductInfoView(APIView):
         product = (OrderProduct.objects.filter(
             nomenclature_id=product_id, order_id=order_id
         ).select_related('nomenclature')
-                   .prefetch_related('amounts__size', 'amounts__color', 'nomenclature__consumables').first())
+                   .prefetch_related('amounts__size', 'amounts__color').first())
 
         serializer = ProductInfoSerializer(product, context=self.get_renderer_context())
         return Response(serializer.data)

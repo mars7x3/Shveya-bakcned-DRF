@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
-    Color
+    Color, StaffProfile
 
 
 class OrderClientSerializer(serializers.ModelSerializer):
@@ -63,8 +63,15 @@ class GETPartyDetailSerializer(serializers.ModelSerializer):
         fields = ['size', 'plan_amount', 'true_amount', 'color']
 
 
+class StaffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffProfile
+        fields = ['name', 'surname']
+
+
 class GETPartySerializer(serializers.ModelSerializer):
     details = GETPartyDetailSerializer(many=True)
+    staff = StaffSerializer()
 
     class Meta:
         model = Party

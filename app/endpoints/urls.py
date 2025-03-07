@@ -41,6 +41,7 @@ router.register('order/list', OrderReadView)
 router.register('warehouse/crud', WarehouseModelViewSet)
 router.register('warehouse/material/crud', MaterialModelViewSet)
 router.register('warehouse/history/list', QuantityHistoryListView)
+router.register('work/party/list', PartyListView)
 
 router.register('dashboard/plan/crud', PlanCRUDView)
 router.register('calculation/crud', CalculationViewSet)
@@ -96,7 +97,6 @@ urlpatterns = [
         path('work/moderation/list/', WorkModerationListView.as_view()),
         path('work/moderation/update/', WorkModerationView.as_view()),
         path('work/party/create/', PartyCreateView.as_view()),
-        path('work/party/list/', PartyListView.as_view()),
         path('work/order-info/list/', OrderInfoListView.as_view()),
         path('work/product-info/', ProductInfoView.as_view()),
 
