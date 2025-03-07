@@ -39,10 +39,21 @@ class SizeSerializer(serializers.ModelSerializer):
 class GETOrderProductAmountSerializer(serializers.ModelSerializer):
     size = SizeSerializer()
     color = ColorSerializer()
+    cut = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount', 'done', 'color']
+        fields = ['size', 'amount', 'done', 'color', 'cut']
+
+    def get_cut(self, obj):
+        order = obj.order_product.order
+        nomenclature = obj.order_product.nomenclature
+
+        return sum(
+            detail.true_amount
+            for party in order.parties.filter(nomenclature=nomenclature)
+            for detail in party.details.filter(color=obj.color, size=obj.size)
+        )
 
 
 class GETOrderProductSerializer(serializers.ModelSerializer):
