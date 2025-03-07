@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from django_filters import rest_framework as filters
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
 from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
@@ -29,7 +29,7 @@ class OperationDetailView(RetrieveAPIView):
 
 
 class ConsumableTitleListView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     def get(self, request):
         operations = list(Nomenclature.objects.filter(
@@ -39,7 +39,7 @@ class ConsumableTitleListView(APIView):
 
 
 class ConsumableDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Nomenclature.objects.filter(is_active=True)
     serializer_class = ConsumableDetailSerializer
 
