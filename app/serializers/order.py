@@ -110,7 +110,8 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProduct
-        fields = ['nomenclature', 'price', 'amounts', 'cost_price']
+        fields = ['nomenclature', 'price', 'amounts', 'cost_price', 'true_price', 'price', 'cost_price',
+                  'true_cost_price']
 
 
 class OrderCRUDSerializer(serializers.ModelSerializer):
@@ -120,7 +121,7 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['deadline', 'client', 'products', 'status']
-        extra_kwargs = {'status': {'read_only': True, 'required': False}}
+        extra_kwargs = {'status': {'read_only': True}}
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
