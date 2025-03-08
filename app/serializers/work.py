@@ -108,7 +108,7 @@ class PartyDetailSerializer(serializers.ModelSerializer):
         fields = ['color', 'size', 'plan_amount', 'true_amount']
 
 
-class PartyCreateSerializer(serializers.ModelSerializer):
+class PartyCreateUpdateSerializer(serializers.ModelSerializer):
     details = PartyDetailSerializer(many=True)
     consumptions = PartyConsumableSerializer(many=True)
 
@@ -156,7 +156,7 @@ class PartyCreateSerializer(serializers.ModelSerializer):
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code']
+        fields = ['id', 'title', 'vendor_code', 'unit']
 
 
 class PartyListSerializer(serializers.ModelSerializer):

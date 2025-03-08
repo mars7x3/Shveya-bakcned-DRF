@@ -15,9 +15,9 @@ from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation,
     OrderProduct
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
-    WorkModerationListSerializer, WorkModerationSerializer, PartyCreateSerializer, OrderSerializer, WorkSerializer, \
+    WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, WorkSerializer, \
     PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
-    PartyGETInfoSerializer
+    PartyGETInfoSerializer, PartyCreateUpdateSerializer
 
 
 class WorkOutputView(APIView):
@@ -210,10 +210,12 @@ class OrderInfoListView(ListAPIView):
     serializer_class = OrderSerializer
 
 
-class PartyCreateView(CreateAPIView):
+class PartyCreateCRUDView(mixins.CreateModelMixin,
+                   mixins.UpdateModelMixin,
+                   GenericViewSet):
     permission_classes = [IsAuthenticated, IsCutter]
     queryset = Party.objects.all()
-    serializer_class = PartyCreateSerializer
+    serializer_class = PartyCreateUpdateSerializer
 
     def perform_create(self, serializer):
         serializer.save(staff=self.request.user.staff_profile)
