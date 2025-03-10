@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
-    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, Consumable
+    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
+    Consumable, WorkBlank
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -89,7 +90,7 @@ class WorkModerationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Work
-        fields = ['id', 'staff', 'created_at', 'details']
+        fields = ['id', 'staff', 'details']
 
 
 class WorkModerationSerializer(serializers.Serializer):
@@ -294,4 +295,60 @@ class WorkCreateSerializer(serializers.Serializer):
     product = serializers.IntegerField()
     size = serializers.IntegerField()
     color = serializers.IntegerField()
-    works = WorkLCreateDetailSerializer(many=True)
+    details = WorkLCreateDetailSerializer(many=True)
+
+
+class WorkBlankCRUDSerializer(serializers.ModelSerializer):
+    works = WorkCreateSerializer(many=True)
+
+    class Meta:
+        model = WorkBlank
+        fields = ['id', 'works']
+
+    def create(self, validated_data):
+        party_id = validated_data['party']
+        size_id = validated_data['size']
+        color_id = validated_data['color']
+
+        blank = WorkBlank.objects.create(**validated_data)
+
+        create_data = []
+        for data in validated_data['details']:
+            work = Work.objects.create(blank=blank, staff_id=data['staff'], party_id=party_id)
+            create_data.append(
+                WorkDetail(
+                    work=work,
+                    operation_id=data['operation'],
+                    color_id=color_id,
+                    size_id=size_id,
+                    amount=data['amount']
+                )
+            )
+
+        WorkDetail.objects.bulk_create(create_data)
+
+        return blank
+
+    def update(self, instance, validated_data):
+        party_id = validated_data['party']
+        size_id = validated_data['size']
+        color_id = validated_data['color']
+
+        create_data = []
+        for data in validated_data['details']:
+            work = Work.objects.create(blank=instance, staff_id=data['staff'], party_id=party_id)
+            create_data.append(
+                WorkDetail(
+                    work=work,
+                    operation_id=data['operation'],
+                    color_id=color_id,
+                    size_id=size_id,
+                    amount=data['amount']
+                )
+            )
+
+        WorkDetail.objects.bulk_create(create_data)
+
+        return instance
+
+

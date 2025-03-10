@@ -339,14 +339,20 @@ class PartyConsumable(models.Model):
     left = models.DecimalField(decimal_places=3, max_digits=12, default=0)
 
 
-class Work(models.Model):
-    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='works')
-    party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name='works')
-    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, blank=True, null=True, related_name='works')
+class WorkBlank(models.Model):
+    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='blanks')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-id']
+
+
+class Work(models.Model):
+    blank = models.ForeignKey(WorkBlank, on_delete=models.CASCADE, blank=True, null=True, related_name='works')
+    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='works')
+    party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name='works')
+    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, blank=True, null=True, related_name='works')
 
 
 class WorkDetail(models.Model):

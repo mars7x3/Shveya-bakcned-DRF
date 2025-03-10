@@ -12,12 +12,13 @@ from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor, IsController
 from my_db.enums import StaffRole, OrderStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order, \
-    OrderProduct
+    OrderProduct, WorkBlank
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
     WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, WorkSerializer, \
     PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
-    PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, WorkCreateSerializer
+    PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, WorkCreateSerializer, \
+    WorkBlankCRUDSerializer
 
 
 class WorkOutputView(APIView):
@@ -277,35 +278,18 @@ class ProductOperationListView(APIView):
         return Response(operations)
 
 
-class WorkCreateView(APIView):
+class WorkCreateView(mixins.CreateModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   GenericViewSet):
     permission_classes = [IsAuthenticated, IsController]
+    queryset = WorkBlank.objects.all()
+    serializer_class = WorkBlankCRUDSerializer
 
-    @extend_schema(
-        request=WorkCreateSerializer,
-    )
-    def post(self, request):
-        serializer = WorkCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            validated_data = serializer.validated_data
-            party_id = validated_data['party']
-            size_id = validated_data['size']
-            color_id = validated_data['color']
 
-            create_data = []
-            for data in validated_data['works']:
-                work = Work.objects.create(staff_id=data['staff'], party_id=party_id)
-                create_data.append(
-                    WorkDetail(
-                        work=work,
-                        operation_id=data['operation'],
-                        color_id=color_id,
-                        size_id=size_id,
-                        amount=data['amount']
-                    )
-                )
 
-            WorkDetail.objects.bulk_create(create_data)
-            return Response({'text': 'Success!'}, status=status.HTTP_200_OK)
+
+
 
 
 
