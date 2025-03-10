@@ -319,6 +319,9 @@ class Party(models.Model):
     status = models.IntegerField(choices=PartyStatus.choices, default=PartyStatus.NEW)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class PartyDetail(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='details')

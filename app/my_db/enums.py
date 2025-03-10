@@ -12,6 +12,8 @@ class StaffRole(models.IntegerChoices):
     WAREHOUSE = 3, 'ЗАВ СКЛАД'
     SEAMSTRESS = 4, 'ШВЕЯ'
     CUTTER = 5, 'КРОЙЩИК'
+    CONTROLLER = 6, 'КОНТРОЛЛЕР'
+
 
 
 class NomType(models.IntegerChoices):

@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor, IsController
 from my_db.enums import StaffRole, OrderStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order, \
     OrderProduct
@@ -17,7 +17,7 @@ from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, Work
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
     WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, WorkSerializer, \
     PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
-    PartyGETInfoSerializer, PartyCreateUpdateSerializer
+    PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, WorkCreateSerializer
 
 
 class WorkOutputView(APIView):
@@ -205,7 +205,7 @@ class WorkModerationView(APIView):
 
 
 class OrderInfoListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsCutter]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Order.objects.filter(status=OrderStatus.PROGRESS).prefetch_related('products__nomenclature')
     serializer_class = OrderSerializer
 
@@ -250,5 +250,66 @@ class ProductInfoView(APIView):
 
         serializer = ProductInfoSerializer(product, context=self.get_renderer_context())
         return Response(serializer.data)
+
+
+class PartyInfoListView(APIView):
+    permission_classes = [IsAuthenticated, IsController]
+
+    def post(self, request):
+        order_id = request.data.get('order')
+        product_id = request.data.get('product')
+
+        parties = Party.objects.filter(order_id=order_id, nomenclature_id=product_id).prefetch_related('details__color',
+                                                                                                       'details__size')
+
+        serializer = PartyInfoSerializer(parties, many=True, context=self.get_renderer_context())
+        return Response(serializer.data)
+
+
+class ProductOperationListView(APIView):
+    permission_classes = [IsAuthenticated, IsController]
+
+    def post(self, request):
+        product_id = request.data.get('product')
+
+        operations = Operation.objects.filter(nomenclature=product_id).values('id', 'title')
+
+        return Response(operations)
+
+
+class WorkCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsController]
+
+    @extend_schema(
+        request=WorkCreateSerializer,
+    )
+    def post(self, request):
+        serializer = WorkCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            party_id = validated_data['party']
+            size_id = validated_data['size']
+            color_id = validated_data['color']
+
+            create_data = []
+            for data in validated_data['works']:
+                work = Work.objects.create(staff_id=data['staff'], party_id=party_id)
+                create_data.append(
+                    WorkDetail(
+                        work=work,
+                        operation_id=data['operation'],
+                        color_id=color_id,
+                        size_id=size_id,
+                        amount=data['amount']
+                    )
+                )
+
+            WorkDetail.objects.bulk_create(create_data)
+            return Response({'text': 'Success!'}, status=status.HTTP_200_OK)
+
+
+
+
+
 
 

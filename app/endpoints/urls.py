@@ -23,7 +23,7 @@ from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, M
     MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView
 from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView, WorkInputView, \
     MyWorkInputView, WorkModerationListView, WorkModerationView, PartyCreateCRUDView, OrderInfoListView, PartyListView, \
-    ProductInfoView
+    ProductInfoView, PartyInfoListView, ProductOperationListView, WorkCreateView
 
 router = DefaultRouter()
 
@@ -88,7 +88,6 @@ urlpatterns = [
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
         path('warehouse/list/', WarehouseListView.as_view()),
 
-
         path('work/output/', WorkOutputView.as_view()),
         path('work/input/', WorkInputView.as_view()),
         path('work/input/my/', MyWorkInputView.as_view()),
@@ -99,6 +98,9 @@ urlpatterns = [
         path('work/moderation/update/', WorkModerationView.as_view()),
         path('work/order-info/list/', OrderInfoListView.as_view()),
         path('work/product-info/', ProductInfoView.as_view()),
+        path('work/get-party-info/', PartyInfoListView.as_view()),
+        path('work/get-product-operations/', ProductOperationListView.as_view()),
+        path('work/create-work/', WorkCreateView.as_view()),
 
 
         path('payment/create/', PaymentCreateView.as_view()),

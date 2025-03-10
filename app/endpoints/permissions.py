@@ -33,6 +33,13 @@ class IsCutter(BasePermission):
         return request.user.staff_profile.role == StaffRole.CUTTER
 
 
+class IsController(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.staff_profile.role == StaffRole.CONTROLLER
+
+
 class IsAuthor(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.staff == request.user.staff_profile
+
+

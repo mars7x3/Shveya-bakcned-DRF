@@ -266,4 +266,32 @@ class ProductInfoSerializer(serializers.ModelSerializer):
         fields = ['nomenclature', 'amounts']
 
 
+class InfoPartyDetailSerializer(serializers.ModelSerializer):
+    color = ColorSerializer()
+    size = SizeSerializer()
 
+    class Meta:
+        model = PartyDetail
+        fields = ['color', 'size', 'true_amount']
+
+
+class PartyInfoSerializer(serializers.ModelSerializer):
+    details = InfoPartyDetailSerializer(many=True)
+
+    class Meta:
+        model = Party
+        fields = ['number', 'details']
+
+
+class WorkLCreateDetailSerializer(serializers.Serializer):
+    operation = serializers.IntegerField()
+    staff = serializers.IntegerField()
+    amount = serializers.IntegerField()
+
+
+class WorkCreateSerializer(serializers.Serializer):
+    party = serializers.IntegerField()
+    product = serializers.IntegerField()
+    size = serializers.IntegerField()
+    color = serializers.IntegerField()
+    works = WorkLCreateDetailSerializer(many=True)
