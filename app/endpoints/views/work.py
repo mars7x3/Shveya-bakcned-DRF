@@ -18,7 +18,7 @@ from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, Work
     WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, WorkSerializer, \
     PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
     PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, WorkCreateSerializer, \
-    WorkBlankCRUDSerializer
+    WorkBlankCRUDSerializer, WorkBlankListSerializer, WorkBlankDetailSerializer
 
 
 class WorkOutputView(APIView):
@@ -286,6 +286,20 @@ class WorkCreateView(mixins.CreateModelMixin,
     queryset = WorkBlank.objects.all()
     serializer_class = WorkBlankCRUDSerializer
 
+
+
+class WorkBlankListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsController]
+    queryset = WorkBlank.objects.all()
+    serializer_class = WorkBlankListSerializer
+
+
+class WorkBlankDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsController]
+    queryset = WorkBlank.objects.prefetch_related(
+        'works__details__operation', 'works__details__work__staff', 'works__party__product'
+    ).all()
+    serializer_class = WorkBlankDetailSerializer
 
 
 

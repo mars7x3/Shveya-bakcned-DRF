@@ -352,3 +352,39 @@ class WorkBlankCRUDSerializer(serializers.ModelSerializer):
         return instance
 
 
+class WorkDetailInfoSerializer(serializers.ModelSerializer):
+    operation = serializers.IntegerField(source='operation.id')
+    staff = serializers.IntegerField(source='work.staff.id')
+    amount = serializers.IntegerField()
+
+    class Meta:
+        model = WorkDetail
+        fields = ['operation', 'staff', 'amount']
+
+
+class WorkInfoSerializer(serializers.ModelSerializer):
+    party = serializers.IntegerField(source='party.id', allow_null=True)
+    product = serializers.IntegerField(source='party.product.id', allow_null=True)
+    size = serializers.IntegerField(source='details.first.size.id', allow_null=True)
+    color = serializers.IntegerField(source='details.first.color.id', allow_null=True)
+    details = WorkDetailInfoSerializer(many=True)
+
+    class Meta:
+        model = Work
+        fields = ['party', 'product', 'size', 'color', 'details']
+
+
+class WorkBlankDetailSerializer(serializers.ModelSerializer):
+    works = WorkInfoSerializer(many=True)
+
+    class Meta:
+        model = WorkBlank
+        fields = ['id', 'created_at', 'updated_at', 'works']
+
+
+class WorkBlankListSerializer(serializers.ModelSerializer):
+    staff = WorkStaffSerializer()
+
+    class Meta:
+        model = WorkBlank
+        fields = ['id', 'created_at', 'updated_at', 'staff']
