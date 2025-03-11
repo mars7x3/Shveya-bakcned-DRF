@@ -298,21 +298,24 @@ class WorkCreateSerializer(serializers.Serializer):
 
 
 class WorkBlankCRUDSerializer(serializers.ModelSerializer):
-    works = WorkCreateSerializer(many=True)
+    works = WorkCreateSerializer(many=True, write_only=True)
 
     class Meta:
         model = WorkBlank
         fields = ['id', 'works']
 
     def create(self, validated_data):
-        party_id = validated_data['works']['party']
-        size_id = validated_data['works']['size']
-        color_id = validated_data['works']['color']
-
-        blank = WorkBlank.objects.create(**validated_data)
+        print(validated_data['works'])
+        validated_data = validated_data['works'][0]
+        party_id = validated_data['party']
+        size_id = validated_data['size']
+        color_id = validated_data['color']
+        request = self.context.get('request')
+        staff = request.user.staff_profile
+        blank = WorkBlank.objects.create(staff=staff)
 
         create_data = []
-        for data in validated_data['works']['details']:
+        for data in validated_data['details']:
             work = Work.objects.create(blank=blank, staff_id=data['staff'], party_id=party_id)
             create_data.append(
                 WorkDetail(
@@ -323,18 +326,17 @@ class WorkBlankCRUDSerializer(serializers.ModelSerializer):
                     amount=data['amount']
                 )
             )
-
         WorkDetail.objects.bulk_create(create_data)
 
         return blank
 
     def update(self, instance, validated_data):
-        party_id = validated_data['works']['party']
-        size_id = validated_data['works']['size']
-        color_id = validated_data['works']['color']
+        party_id = validated_data['works'][0]['party']
+        size_id = validated_data['works'][0]['size']
+        color_id = validated_data['works'][0]['color']
 
         create_data = []
-        for data in validated_data['works']['details']:
+        for data in validated_data['works'][0]['details']:
             work = Work.objects.create(blank=instance, staff_id=data['staff'], party_id=party_id)
             create_data.append(
                 WorkDetail(

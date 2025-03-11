@@ -281,7 +281,7 @@ class WorkCreateView(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
-    permission_classes = [IsAuthenticated, IsController]
+    permission_classes = [IsAuthenticated, ]
     queryset = WorkBlank.objects.all()
     serializer_class = WorkBlankCRUDSerializer
 
