@@ -281,7 +281,7 @@ class PartyInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Party
-        fields = ['number', 'details']
+        fields = ['id', 'number', 'details']
 
 
 class WorkLCreateDetailSerializer(serializers.Serializer):

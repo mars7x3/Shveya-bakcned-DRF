@@ -33,8 +33,8 @@ class StatisticView(APIView):
         ).select_related('nomenclature', 'order')
 
         aggregation = order_products.aggregate(
-            income=Sum('price'),
-            consumption=Sum(F('nomenclature__cost_price')),
+            income=Sum('true_price'),
+            consumption=Sum(F('nomenclature__true_cost_price')),
             orders=Count('order_id', distinct=True),
             produced=Sum('amounts__amount')  # Количество произведённых товаров
         )
@@ -85,7 +85,6 @@ class StatisticView(APIView):
         operation_time_aggregation = operations_qs.aggregate(
             total_time=Sum('time')  # Общее время работы оборудования
         )
-
 
         data = {
             "order": {

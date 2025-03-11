@@ -1,8 +1,8 @@
-from django.db.models import Prefetch, Sum, F, Q, IntegerField, Value, Case, When, CharField
+from django.db.models import Prefetch, Sum, F, Value, CharField
 from django.db.models.functions import Concat
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets, mixins
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,13 +11,13 @@ from rest_framework.viewsets import GenericViewSet
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor, IsController
 from my_db.enums import StaffRole, OrderStatus
-from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Payment, Nomenclature, Party, Order, \
+from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Nomenclature, Party, Order, \
     OrderProduct, WorkBlank
-from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, WorkCombinationSerializer, \
+from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
-    WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, WorkSerializer, \
-    PartyListSerializer, NomenclatureInfoSerializer, ProductInfoSerializer, PartyDetailInfoSerializer, \
-    PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, WorkCreateSerializer, \
+    WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, \
+    PartyListSerializer, ProductInfoSerializer, \
+    PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, \
     WorkBlankCRUDSerializer, WorkBlankListSerializer, WorkBlankDetailSerializer
 
 

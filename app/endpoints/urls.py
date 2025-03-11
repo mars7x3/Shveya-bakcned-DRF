@@ -70,7 +70,6 @@ urlpatterns = [
         path('user/client/files/', ClientFileCRUDView.as_view()),
         path('user/staff/list/', StaffListView.as_view()),
 
-
         path('order/clients/list/', ClientListView.as_view()),
         path('order/products/list/', ProductListView.as_view()),
 
