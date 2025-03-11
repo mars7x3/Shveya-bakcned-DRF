@@ -16,7 +16,8 @@ from .views.order import OrderReadView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.sample import CombinationFileCRUDVIew, SampleCombinationListView, SampleOperationListView
-from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView
+from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSet, ClientListView, ClientFileCRUDView, \
+    StaffListView
 from .views.general import RankListView, SizeListView, RankModelViewSet, ColorModelViewSet, SizeModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
@@ -67,6 +68,8 @@ urlpatterns = [
 
         path('user/staff/info/', StaffInfoView.as_view()),
         path('user/client/files/', ClientFileCRUDView.as_view()),
+        path('user/staff/list/', StaffListView.as_view()),
+
 
         path('order/clients/list/', ClientListView.as_view()),
         path('order/products/list/', ProductListView.as_view()),

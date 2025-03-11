@@ -262,7 +262,6 @@ class PartyInfoListView(APIView):
 
         parties = Party.objects.filter(order_id=order_id, nomenclature_id=product_id).prefetch_related('details__color',
                                                                                                        'details__size')
-
         serializer = PartyInfoSerializer(parties, many=True, context=self.get_renderer_context())
         return Response(serializer.data)
 
@@ -292,6 +291,7 @@ class WorkBlankListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsController]
     queryset = WorkBlank.objects.all()
     serializer_class = WorkBlankListSerializer
+    pagination_class = StandardPagination
 
 
 class WorkBlankDetailView(RetrieveAPIView):

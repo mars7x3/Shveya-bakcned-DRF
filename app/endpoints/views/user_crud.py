@@ -7,14 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 
-from endpoints.permissions import IsDirectorAndTechnologist
-from my_db.enums import UserStatus
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
+from my_db.enums import UserStatus, StaffRole
 from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
 from serializers.user_crud import StaffSerializer, MyUserCreateSerializer, \
     MyUserUpdateSerializer, ClientSerializer, MyUserSerializer, ClientListSerializer, \
     ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer, ClientUpdateSerializer, \
-    ClientCreateSerializer
+    ClientCreateSerializer, StaffListSerializer
 
 
 class StaffInfoView(APIView):
@@ -255,3 +255,9 @@ class ClientFileCRUDView(APIView):
             ClientFile.objects.filter(id__in=delete_ids).delete()
 
         return Response({"text": "Success!"}, status=status.HTTP_200_OK)
+
+
+class StaffListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    queryset = StaffProfile.objects.filter(role=StaffRole.SEAMSTRESS)
+    serializer_class = StaffListSerializer

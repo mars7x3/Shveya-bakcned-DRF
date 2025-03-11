@@ -135,3 +135,9 @@ class ClientFileCRUDSerializer(serializers.Serializer):
         help_text="Список ID файлов для удаления. PS: в свагере не работает это место, "
                   "но если отправишь [1, 2], то сработает"
     )
+
+
+class StaffListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffProfile
+        fields = ['id', 'name', 'surname']
