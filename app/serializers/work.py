@@ -292,7 +292,6 @@ class WorkLCreateDetailSerializer(serializers.Serializer):
 
 class WorkCreateSerializer(serializers.Serializer):
     party = serializers.IntegerField()
-    product = serializers.IntegerField()
     size = serializers.IntegerField()
     color = serializers.IntegerField()
     details = WorkLCreateDetailSerializer(many=True)
@@ -306,14 +305,14 @@ class WorkBlankCRUDSerializer(serializers.ModelSerializer):
         fields = ['id', 'works']
 
     def create(self, validated_data):
-        party_id = validated_data['party']
-        size_id = validated_data['size']
-        color_id = validated_data['color']
+        party_id = validated_data['works']['party']
+        size_id = validated_data['works']['size']
+        color_id = validated_data['works']['color']
 
         blank = WorkBlank.objects.create(**validated_data)
 
         create_data = []
-        for data in validated_data['details']:
+        for data in validated_data['works']['details']:
             work = Work.objects.create(blank=blank, staff_id=data['staff'], party_id=party_id)
             create_data.append(
                 WorkDetail(
@@ -330,12 +329,12 @@ class WorkBlankCRUDSerializer(serializers.ModelSerializer):
         return blank
 
     def update(self, instance, validated_data):
-        party_id = validated_data['party']
-        size_id = validated_data['size']
-        color_id = validated_data['color']
+        party_id = validated_data['works']['party']
+        size_id = validated_data['works']['size']
+        color_id = validated_data['works']['color']
 
         create_data = []
-        for data in validated_data['details']:
+        for data in validated_data['works']['details']:
             work = Work.objects.create(blank=instance, staff_id=data['staff'], party_id=party_id)
             create_data.append(
                 WorkDetail(
