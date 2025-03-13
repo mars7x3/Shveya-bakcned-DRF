@@ -259,5 +259,5 @@ class ClientFileCRUDView(APIView):
 
 class StaffListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsStaff]
-    queryset = StaffProfile.objects.filter(role=StaffRole.SEAMSTRESS)
+    queryset = StaffProfile.objects.filter(role__in=[StaffRole.SEAMSTRESS, StaffRole.CUTTER])
     serializer_class = StaffListSerializer
