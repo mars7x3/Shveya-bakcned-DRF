@@ -141,3 +141,15 @@ class CalculationListSerializer(serializers.ModelSerializer):
         model = Calculation
         fields = ['id', 'vendor_code', 'title', 'created_at', 'client']
         read_only_fields = ['created_at']
+
+
+class ClientProfileListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClientProfile
+        fields = ['id', 'name', 'surname', 'company_title']
+
+
+class ConsumableTitleListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title']

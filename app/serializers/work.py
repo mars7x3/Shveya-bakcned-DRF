@@ -286,6 +286,11 @@ class PartyInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'number', 'details']
 
 
+class RequestSerializer(serializers.Serializer):
+    product = serializers.IntegerField()
+    order = serializers.IntegerField()
+
+
 class WorkCreateDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDetail

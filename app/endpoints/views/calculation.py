@@ -1,4 +1,5 @@
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -11,7 +12,7 @@ from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
 from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
-    CalculationListSerializer
+    CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer
 
 
 class OperationTitleListView(APIView):
@@ -31,6 +32,7 @@ class OperationDetailView(RetrieveAPIView):
 class ConsumableTitleListView(APIView):
     permission_classes = [IsAuthenticated, IsStaff]
 
+    @extend_schema(responses=ConsumableTitleListSerializer(many=True))
     def get(self, request):
         operations = list(Nomenclature.objects.filter(
             is_active=True, type=NomType.MATERIAL).values('id', 'title')
@@ -75,6 +77,7 @@ class CalculationListView(ListAPIView):
 class ClientNameListView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
+    @extend_schema(responses=ClientProfileListSerializer(many=True))
     def get(self, request):
         clients = list(ClientProfile.objects.all().values('id', 'name', 'surname', 'company_title')
                           )

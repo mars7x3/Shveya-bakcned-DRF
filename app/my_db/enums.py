@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserStatus(models.IntegerChoices):
     STAFF = 1, 'СОТРУДНИК'
     CLIENT = 2, 'КЛИЕНТ'
@@ -13,7 +14,6 @@ class StaffRole(models.IntegerChoices):
     SEAMSTRESS = 4, 'ШВЕЯ'
     CUTTER = 5, 'КРОЙЩИК'
     CONTROLLER = 6, 'КОНТРОЛЛЕР'
-
 
 
 class NomType(models.IntegerChoices):

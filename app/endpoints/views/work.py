@@ -1,6 +1,6 @@
 from django.db.models import Prefetch, Sum, F, Value, CharField
 from django.db.models.functions import Concat
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, viewsets, mixins
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -19,30 +19,30 @@ from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, \
     PartyListSerializer, ProductInfoSerializer, \
     PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, \
     WorkCRUDSerializer, \
-    GETWorkListSerializer, GETWorkDetailSerializer
+    GETWorkListSerializer, GETWorkDetailSerializer, RequestSerializer
 
 
-class WorkOutputView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-
-    @extend_schema(request=WorkOutputSerializer(),
-                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
-    def post(self, request):
-        data = request.data
-        staffs = StaffProfile.objects.filter(id__in=data['staff_ids'])
-
-        work_detail_create = []
-        for staff in staffs:
-            work = Work.objects.create(staff=staff, order_id=data['order_id'])
-
-            for o in data['operations']:
-                work_detail_create.append(
-                    WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
-                )
-
-        WorkDetail.objects.bulk_create(work_detail_create)
-
-        return Response('Success!', status=status.HTTP_200_OK)
+# class WorkOutputView(APIView):
+#     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+#
+#     @extend_schema(request=WorkOutputSerializer(),
+#                    responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+#     def post(self, request):
+#         data = request.data
+#         staffs = StaffProfile.objects.filter(id__in=data['staff_ids'])
+#
+#         work_detail_create = []
+#         for staff in staffs:
+#             work = Work.objects.create(staff=staff, order_id=data['order_id'])
+#
+#             for o in data['operations']:
+#                 work_detail_create.append(
+#                     WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
+#                 )
+#
+#         WorkDetail.objects.bulk_create(work_detail_create)
+#
+#         return Response('Success!', status=status.HTTP_200_OK)
 
 
 class WorkStaffListView(ListAPIView):
@@ -51,80 +51,80 @@ class WorkStaffListView(ListAPIView):
     queryset = StaffProfile.objects.filter(role__in=[StaffRole.SEAMSTRESS, StaffRole.CUTTER])
 
 
-class WorkOperationListView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-
-    @extend_schema(
-        responses=WorkNomenclatureSerializer(),
-    )
-    def get(self, request, pk):
-        nomenclatures = Nomenclature.objects.filter(
-            products__order_id=pk
-        ).distinct().prefetch_related(
-            Prefetch(
-                'combinations',
-                queryset=Combination.objects.prefetch_related(
-                    Prefetch(
-                        'operations',
-                        queryset=Operation.objects.filter(is_active=True).annotate(
-                            required=Sum(F('nomenclature__products__amounts__amount'), default=0),
-                            assigned=Sum('details__amount', default=0),
-                            completed=Sum(
-                                'details__amount',
-                                default=0
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        serializer = WorkNomenclatureSerializer(nomenclatures, many=True)
-        return Response(serializer.data)
-
-
-class WorkInputView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-
-    @extend_schema(request=WorkInputSerializer(),
-                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
-    def post(self, request):
-        data = request.data
-        staff = StaffProfile.objects.get(id=data['staff_id'])
-
-        work_detail_create = []
-        work = Work.objects.create(staff=staff, order_id=data['order_id'])
-
-        for o in data['operations']:
-            work_detail_create.append(
-                WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
-            )
-
-        WorkDetail.objects.bulk_create(work_detail_create)
-
-        return Response('Success!', status=status.HTTP_200_OK)
+# class WorkOperationListView(APIView):
+#     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+#
+#     @extend_schema(
+#         responses=WorkNomenclatureSerializer(),
+#     )
+#     def get(self, request, pk):
+#         nomenclatures = Nomenclature.objects.filter(
+#             products__order_id=pk
+#         ).distinct().prefetch_related(
+#             Prefetch(
+#                 'combinations',
+#                 queryset=Combination.objects.prefetch_related(
+#                     Prefetch(
+#                         'operations',
+#                         queryset=Operation.objects.filter(is_active=True).annotate(
+#                             required=Sum(F('nomenclature__products__amounts__amount'), default=0),
+#                             assigned=Sum('details__amount', default=0),
+#                             completed=Sum(
+#                                 'details__amount',
+#                                 default=0
+#                             )
+#                         )
+#                     )
+#                 )
+#             )
+#         )
+#
+#         serializer = WorkNomenclatureSerializer(nomenclatures, many=True)
+#         return Response(serializer.data)
 
 
-class MyWorkInputView(APIView):
-    permission_classes = [IsAuthenticated, IsStaff]
+# class WorkInputView(APIView):
+#     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+#
+#     @extend_schema(request=WorkInputSerializer(),
+#                    responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+#     def post(self, request):
+#         data = request.data
+#         staff = StaffProfile.objects.get(id=data['staff_id'])
+#
+#         work_detail_create = []
+#         work = Work.objects.create(staff=staff, order_id=data['order_id'])
+#
+#         for o in data['operations']:
+#             work_detail_create.append(
+#                 WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
+#             )
+#
+#         WorkDetail.objects.bulk_create(work_detail_create)
+#
+#         return Response('Success!', status=status.HTTP_200_OK)
 
-    @extend_schema(request=MyWorkInputSerializer(),
-                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
-    def post(self, request):
-        data = request.data
-        staff = request.user.staff_profile
 
-        work_detail_create = []
-        work = Work.objects.create(staff=staff, order_id=data['order_id'])
-
-        for o in data['operations']:
-            work_detail_create.append(
-                WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
-            )
-
-        WorkDetail.objects.bulk_create(work_detail_create)
-
-        return Response('Success!', status=status.HTTP_200_OK)
+# class MyWorkInputView(APIView):
+#     permission_classes = [IsAuthenticated, IsStaff]
+#
+#     @extend_schema(request=MyWorkInputSerializer(),
+#                    responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+#     def post(self, request):
+#         data = request.data
+#         staff = request.user.staff_profile
+#
+#         work_detail_create = []
+#         work = Work.objects.create(staff=staff, order_id=data['order_id'])
+#
+#         for o in data['operations']:
+#             work_detail_create.append(
+#                 WorkDetail(work=work, operation_id=o['operation_id'], amount=o['amount'])
+#             )
+#
+#         WorkDetail.objects.bulk_create(work_detail_create)
+#
+#         return Response('Success!', status=status.HTTP_200_OK)
 
 
 class MyWorkListView(APIView):
@@ -182,28 +182,28 @@ class MyWorkListView(APIView):
         return Response(result)
 
 
-class WorkModerationListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Work.objects.all().prefetch_related(
-        Prefetch(
-            'details',
-            queryset=WorkDetail.objects.select_related('operation')
-        )
-    )
-    serializer_class = WorkModerationListSerializer
+# class WorkModerationListView(ListAPIView):
+#     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+#     queryset = Work.objects.all().prefetch_related(
+#         Prefetch(
+#             'details',
+#             queryset=WorkDetail.objects.select_related('operation')
+#         )
+#     )
+#     serializer_class = WorkModerationListSerializer
 
 
-class WorkModerationView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-
-    @extend_schema(request=WorkModerationSerializer(),
-                   responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
-    def post(self, request):
-        data = request.data
-        work = Work.objects.get(id=data['work_id'])
-        work.save()
-
-        return Response('Success!', status=status.HTTP_200_OK)
+# class WorkModerationView(APIView):
+#     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+#
+#     @extend_schema(request=WorkModerationSerializer(),
+#                    responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}})
+#     def post(self, request):
+#         data = request.data
+#         work = Work.objects.get(id=data['work_id'])
+#         work.save()
+#
+#         return Response('Success!', status=status.HTTP_200_OK)
 
 
 class OrderInfoListView(ListAPIView):
@@ -256,7 +256,8 @@ class ProductInfoView(APIView):
 
 class PartyInfoListView(APIView):
     permission_classes = [IsAuthenticated, IsController]
-
+    @extend_schema(request=RequestSerializer(),
+                   responses=PartyInfoSerializer(many=True))
     def post(self, request):
         order_id = request.data.get('order')
         product_id = request.data.get('product')
@@ -290,24 +291,38 @@ class WorkCRUDView(mixins.CreateModelMixin,
         serializer.save(staff=self.request.user.staff_profile)
 
 
-class WorkReadView(viewsets.ReadOnlyModelViewSet):
+class WorkReadDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsController]
-    queryset = Work.objects.all()
-    pagination_class = StandardPagination
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return GETWorkDetailSerializer
-        return GETWorkListSerializer
-
-    def get_queryset(self):
-        if self.action == 'retrieve':
-            return Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__operation',
+    queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__operation',
                                                                                                 'details__staff')
-        return Work.objects.all().select_related('color', 'size', 'staff')
+    pagination_class = StandardPagination
+    serializer_class = GETWorkDetailSerializer
 
 
+class WorkReadListView(APIView):
+    permission_classes = [IsAuthenticated, IsController]
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="order", description="ID заказа", required=True, type=int),
+            OpenApiParameter(name="product", description="ID продукта", required=True, type=int),
+        ],
+        responses=GETWorkListSerializer(many=True)
+    )
+    def get(self, request):
+        order_id = request.query_params.get('order')
+        product_id = request.query_params.get('product')
+
+        if not order_id or not product_id:
+            return Response({"error": "order и product обязательны"}, status=400)
+
+        works = Work.objects.filter(
+            party__order_id=order_id,
+            party__nomenclature_id=product_id
+        ).select_related('color', 'size', 'staff')
+
+        serializer = GETWorkListSerializer(works, many=True)
+        return Response(serializer.data)
 
 
 

@@ -22,9 +22,9 @@ from .views.general import RankListView, SizeListView, RankModelViewSet, ColorMo
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
     MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView
-from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView, WorkInputView, \
-    MyWorkInputView, WorkModerationListView, WorkModerationView, PartyCreateCRUDView, OrderInfoListView, PartyListView, \
-    ProductInfoView, PartyInfoListView, ProductOperationListView, WorkReadView, WorkCRUDView
+from .views.work import WorkStaffListView, MyWorkListView, PartyCreateCRUDView, OrderInfoListView, PartyListView, \
+    ProductInfoView, PartyInfoListView, ProductOperationListView, WorkCRUDView, WorkReadListView, \
+    WorkReadDetailView
 
 router = DefaultRouter()
 
@@ -45,7 +45,6 @@ router.register('warehouse/history/list', QuantityHistoryListView)
 router.register('work/party/list', PartyListView)
 router.register('work/party/crud', PartyCreateCRUDView)
 router.register('work/crud', WorkCRUDView)
-router.register('work/read', WorkReadView)
 
 router.register('dashboard/plan/crud', PlanCRUDView)
 router.register('calculation/crud', CalculationViewSet)
@@ -92,18 +91,21 @@ urlpatterns = [
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
         path('warehouse/list/', WarehouseListView.as_view()),
 
-        path('work/output/', WorkOutputView.as_view()),
-        path('work/input/', WorkInputView.as_view()),
-        path('work/input/my/', MyWorkInputView.as_view()),
+        # path('work/output/', WorkOutputView.as_view()),
+        # path('work/input/', WorkInputView.as_view()),
+        # path('work/input/my/', MyWorkInputView.as_view()),
         path('work/staffs/list/', WorkStaffListView.as_view()),
-        path('work/order-operations/<int:pk>/', WorkOperationListView.as_view()),
+        # path('work/order-operations/<int:pk>/', WorkOperationListView.as_view()),
         path('work/history/list/my/', MyWorkListView.as_view()),
-        path('work/moderation/list/', WorkModerationListView.as_view()),
-        path('work/moderation/update/', WorkModerationView.as_view()),
+        # path('work/moderation/list/', WorkModerationListView.as_view()),
+        # path('work/moderation/update/', WorkModerationView.as_view()),
         path('work/order-info/list/', OrderInfoListView.as_view()),
         path('work/product-info/', ProductInfoView.as_view()),
         path('work/get-party-info/', PartyInfoListView.as_view()),
         path('work/get-product-operations/', ProductOperationListView.as_view()),
+        path('work/get-works/', WorkReadListView.as_view()),
+        path('work/get-works/<int:pk>/', WorkReadDetailView.as_view()),
+
 
         path('payment/create/', PaymentCreateView.as_view()),
         path('payment/files/create/', PaymentFilesCreateView.as_view()),

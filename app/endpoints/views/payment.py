@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsOwner
-from my_db.enums import PaymentStatus
+from my_db.enums import PaymentStatus, WorkStatus
 from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
     SalaryCreateSerializer, WorkPaymentDetailSerializer
@@ -56,9 +56,8 @@ class SalaryInfoView(APIView):
     def get(self, request, pk):
         works_queryset = (
             WorkDetail.objects.filter(
-                work__staff_id=pk,
-                #work__status=WorkStatus.DONE,
-                work__payment__isnull=True,
+                staff_id=pk,
+                status=WorkStatus.NEW,
             )
             .select_related('operation')
             .values('operation__id', 'operation__title', 'operation__price')
@@ -123,27 +122,33 @@ class SalaryCreateView(APIView):
         serializer = SalaryCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         staff = serializer.validated_data.get('staff_id')
-        payment = Payment.objects.create(
+        Payment.objects.create(
             staff=staff,
             status=PaymentStatus.SALARY,
             amount=serializer.validated_data.get('amount')
         )
 
-        Work.objects.filter(
+        WorkDetail.objects.filter(
             staff=staff,
-            #status=WorkStatus.DONE,
-            payment__isnull=True
-        ).update(payment=payment)
+            status=WorkStatus.NEW,
+        ).update(status=WorkStatus.PAID)
 
-        Payment.objects.filter(
+        payments = Payment.objects.filter(
             staff=staff,
-            status=PaymentStatus.FINE
+            status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE]
         ).update(status=PaymentStatus.FINE_CHECKED)
 
-        Payment.objects.filter(
-            staff=staff,
-            status=PaymentStatus.ADVANCE
-        ).update(status=PaymentStatus.ADVANCE_CHECKED)
+
+        if payments:
+            update_data = []
+            for p in payments:
+                if p.status == PaymentStatus.ADVANCE:
+                    p.status = PaymentStatus.ADVANCE_CHECKED
+                elif p.status == PaymentStatus.FINE:
+                    p.status = PaymentStatus.FINE_CHECKED
+                update_data.append(p)
+
+            Payment.objects.bulk_update(update_data, ['status'])
 
         return Response('Success!', status=status.HTTP_200_OK)
 
