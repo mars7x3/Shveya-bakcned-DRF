@@ -3,7 +3,7 @@ from django.db import models
 
 from .compress import staff_image_folder, WEBPField, equipment_image_folder, nom_image_folder
 from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, PaymentStatus, \
-    PartyStatus
+    PartyStatus, WorkStatus
 
 
 # ______________________________ User ______________________________
@@ -339,28 +339,21 @@ class PartyConsumable(models.Model):
     left = models.DecimalField(decimal_places=3, max_digits=12, default=0)
 
 
-class WorkBlank(models.Model):
-    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='blanks')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['-id']
-
-
 class Work(models.Model):
-    blank = models.ForeignKey(WorkBlank, on_delete=models.CASCADE, blank=True, null=True, related_name='works')
-    staff = models.ForeignKey(StaffProfile, on_delete=models.CASCADE, related_name='works')
+    staff = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name='works')
     party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name='works')
-    payment = models.ForeignKey('Payment', on_delete=models.CASCADE, blank=True, null=True, related_name='works')
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL, blank=True, null=True, related_name='works')
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL,blank=True, null=True, related_name='works')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class WorkDetail(models.Model):
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='details')
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='works')
-    color = models.ForeignKey(Color, on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
-    size = models.ForeignKey(Size, on_delete=models.SET_NULL,blank=True, null=True, related_name='work_details')
+    staff = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
+    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='work_details')
     amount = models.IntegerField(default=0)
+    status = models.IntegerField(choices=WorkStatus.choices, default=WorkStatus.NEW)
 
 
 # ______________________________ Work end ______________________________

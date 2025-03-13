@@ -24,7 +24,7 @@ from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, M
     MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView
 from .views.work import WorkOutputView, WorkStaffListView, WorkOperationListView, MyWorkListView, WorkInputView, \
     MyWorkInputView, WorkModerationListView, WorkModerationView, PartyCreateCRUDView, OrderInfoListView, PartyListView, \
-    ProductInfoView, PartyInfoListView, ProductOperationListView, WorkCreateView, WorkBlankDetailView, WorkBlankListView
+    ProductInfoView, PartyInfoListView, ProductOperationListView, WorkReadView, WorkCRUDView
 
 router = DefaultRouter()
 
@@ -44,7 +44,8 @@ router.register('warehouse/material/crud', MaterialModelViewSet)
 router.register('warehouse/history/list', QuantityHistoryListView)
 router.register('work/party/list', PartyListView)
 router.register('work/party/crud', PartyCreateCRUDView)
-router.register('work/crud', WorkCreateView)
+router.register('work/crud', WorkCRUDView)
+router.register('work/read', WorkReadView)
 
 router.register('dashboard/plan/crud', PlanCRUDView)
 router.register('calculation/crud', CalculationViewSet)
@@ -103,8 +104,6 @@ urlpatterns = [
         path('work/product-info/', ProductInfoView.as_view()),
         path('work/get-party-info/', PartyInfoListView.as_view()),
         path('work/get-product-operations/', ProductOperationListView.as_view()),
-        path('work/get-work-blank/<int:pk>/', WorkBlankDetailView.as_view()),
-        path('work/get-work-blank/list/', WorkBlankListView.as_view()),
 
         path('payment/create/', PaymentCreateView.as_view()),
         path('payment/files/create/', PaymentFilesCreateView.as_view()),

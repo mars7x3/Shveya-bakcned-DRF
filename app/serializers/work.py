@@ -1,8 +1,10 @@
+from collections import defaultdict
+
 from rest_framework import serializers
 
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
-    Consumable, WorkBlank
+    Consumable
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -284,108 +286,74 @@ class PartyInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'number', 'details']
 
 
-class WorkLCreateDetailSerializer(serializers.Serializer):
-    operation = serializers.IntegerField()
-    staff = serializers.IntegerField()
-    amount = serializers.IntegerField()
+class WorkCreateDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkDetail
+        fields = ['staff', 'operation', 'amount']
 
 
-class WorkCreateSerializer(serializers.Serializer):
-    party = serializers.IntegerField()
-    size = serializers.IntegerField()
-    color = serializers.IntegerField()
-    details = WorkLCreateDetailSerializer(many=True)
-
-
-class WorkBlankCRUDSerializer(serializers.ModelSerializer):
-    works = WorkCreateSerializer(many=True, write_only=True)
+class WorkCRUDSerializer(serializers.ModelSerializer):
+    details = WorkCreateDetailSerializer(many=True)
 
     class Meta:
-        model = WorkBlank
-        fields = ['id', 'works']
+        model = Work
+        fields = ['id', 'party', 'color', 'size', 'details']
 
     def create(self, validated_data):
-        print(validated_data['works'])
-        validated_data = validated_data['works'][0]
-        party_id = validated_data['party']
-        size_id = validated_data['size']
-        color_id = validated_data['color']
-        request = self.context.get('request')
-        staff = request.user.staff_profile
-        blank = WorkBlank.objects.create(staff=staff)
+        details = validated_data.pop('details')
 
-        create_data = []
-        for data in validated_data['details']:
-            work = Work.objects.create(blank=blank, staff_id=data['staff'], party_id=party_id)
-            create_data.append(
-                WorkDetail(
-                    work=work,
-                    operation_id=data['operation'],
-                    color_id=color_id,
-                    size_id=size_id,
-                    amount=data['amount']
-                )
-            )
-        WorkDetail.objects.bulk_create(create_data)
+        work = Work.objects.create(**validated_data)
+        WorkDetail.objects.bulk_create([
+            WorkDetail(work=work, **data) for data in details
+        ])
 
-        return blank
+
+        return work
 
     def update(self, instance, validated_data):
-        party_id = validated_data['works'][0]['party']
-        size_id = validated_data['works'][0]['size']
-        color_id = validated_data['works'][0]['color']
+        details = validated_data.pop('details')
+        instance.details.all().delete()
 
-        create_data = []
-        for data in validated_data['works'][0]['details']:
-            work = Work.objects.create(blank=instance, staff_id=data['staff'], party_id=party_id)
-            create_data.append(
-                WorkDetail(
-                    work=work,
-                    operation_id=data['operation'],
-                    color_id=color_id,
-                    size_id=size_id,
-                    amount=data['amount']
-                )
-            )
-
-        WorkDetail.objects.bulk_create(create_data)
+        WorkDetail.objects.bulk_create([
+            WorkDetail(work=instance, **data) for data in details
+        ])
 
         return instance
 
 
-class WorkDetailInfoSerializer(serializers.ModelSerializer):
-    operation = serializers.IntegerField(source='operation.id')
-    staff = serializers.IntegerField(source='work.staff.id')
-    amount = serializers.IntegerField()
+class OperationReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operation
+        fields = ['id', 'title']
+
+
+class WorkDetailReadSerializer(serializers.ModelSerializer):
+    staff = WorkStaffSerializer()
+    operation = OperationReadSerializer()
 
     class Meta:
         model = WorkDetail
-        fields = ['operation', 'staff', 'amount']
+        fields = ['staff', 'operation', 'amount']
 
 
-class WorkInfoSerializer(serializers.ModelSerializer):
-    party = serializers.IntegerField(source='party.id', allow_null=True)
-    product = serializers.IntegerField(source='party.product.id', allow_null=True)
-    size = serializers.IntegerField(source='details.first.size.id', allow_null=True)
-    color = serializers.IntegerField(source='details.first.color.id', allow_null=True)
-    details = WorkDetailInfoSerializer(many=True)
+class GETWorkDetailSerializer(serializers.ModelSerializer):
+    staff = WorkStaffSerializer()
+    size = SizeSerializer()
+    color = ColorSerializer()
+    details = WorkDetailReadSerializer(many=True)
 
     class Meta:
         model = Work
-        fields = ['party', 'product', 'size', 'color', 'details']
+        fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party', 'details']
 
 
-class WorkBlankDetailSerializer(serializers.ModelSerializer):
-    works = WorkInfoSerializer(many=True)
-
-    class Meta:
-        model = WorkBlank
-        fields = ['id', 'created_at', 'updated_at', 'works']
-
-
-class WorkBlankListSerializer(serializers.ModelSerializer):
+class GETWorkListSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
+    size = SizeSerializer()
+    color = ColorSerializer()
 
     class Meta:
-        model = WorkBlank
-        fields = ['id', 'created_at', 'updated_at', 'staff']
+        model = Work
+        fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party']
+
+

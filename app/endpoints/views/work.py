@@ -12,13 +12,14 @@ from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor, IsController
 from my_db.enums import StaffRole, OrderStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Nomenclature, Party, Order, \
-    OrderProduct, WorkBlank
+    OrderProduct
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, \
     WorkInputSerializer, WorkNomenclatureSerializer, OperationSummarySerializer, MyWorkInputSerializer, \
     WorkModerationListSerializer, WorkModerationSerializer, OrderSerializer, \
     PartyListSerializer, ProductInfoSerializer, \
     PartyGETInfoSerializer, PartyCreateUpdateSerializer, PartyInfoSerializer, \
-    WorkBlankCRUDSerializer, WorkBlankListSerializer, WorkBlankDetailSerializer
+    WorkCRUDSerializer, \
+    GETWorkListSerializer, GETWorkDetailSerializer
 
 
 class WorkOutputView(APIView):
@@ -277,29 +278,35 @@ class ProductOperationListView(APIView):
         return Response(operations)
 
 
-class WorkCreateView(mixins.CreateModelMixin,
+class WorkCRUDView(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
     permission_classes = [IsAuthenticated, ]
-    queryset = WorkBlank.objects.all()
-    serializer_class = WorkBlankCRUDSerializer
+    queryset = Work.objects.all()
+    serializer_class = WorkCRUDSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(staff=self.request.user.staff_profile)
 
 
-
-class WorkBlankListView(ListAPIView):
+class WorkReadView(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated, IsController]
-    queryset = WorkBlank.objects.all()
-    serializer_class = WorkBlankListSerializer
+    queryset = Work.objects.all()
     pagination_class = StandardPagination
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return GETWorkDetailSerializer
+        return GETWorkListSerializer
 
-class WorkBlankDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsController]
-    queryset = WorkBlank.objects.prefetch_related(
-        'works__details__operation', 'works__details__work__staff', 'works__party__product'
-    ).all()
-    serializer_class = WorkBlankDetailSerializer
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__operation',
+                                                                                                'details__staff')
+        return Work.objects.all().select_related('color', 'size', 'staff')
+
+
 
 
 
