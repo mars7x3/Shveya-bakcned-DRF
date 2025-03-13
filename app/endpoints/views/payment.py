@@ -136,8 +136,7 @@ class SalaryCreateView(APIView):
         payments = Payment.objects.filter(
             staff=staff,
             status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE]
-        ).update(status=PaymentStatus.FINE_CHECKED)
-
+        )
 
         if payments:
             update_data = []
