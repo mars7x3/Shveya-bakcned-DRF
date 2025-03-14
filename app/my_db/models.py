@@ -357,6 +357,7 @@ class WorkDetail(models.Model):
     operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='work_details')
     amount = models.IntegerField(default=0)
     status = models.IntegerField(choices=WorkStatus.choices, default=WorkStatus.NEW)
+    payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
 
 
 # ______________________________ Work end ______________________________

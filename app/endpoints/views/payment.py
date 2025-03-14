@@ -122,7 +122,7 @@ class SalaryCreateView(APIView):
         serializer = SalaryCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         staff = serializer.validated_data.get('staff_id')
-        Payment.objects.create(
+        payment = Payment.objects.create(
             staff=staff,
             status=PaymentStatus.SALARY,
             amount=serializer.validated_data.get('amount')
@@ -131,7 +131,7 @@ class SalaryCreateView(APIView):
         WorkDetail.objects.filter(
             staff=staff,
             status=WorkStatus.NEW,
-        ).update(status=WorkStatus.PAID)
+        ).update(status=WorkStatus.PAID, payment=payment)
 
         payments = Payment.objects.filter(
             staff=staff,

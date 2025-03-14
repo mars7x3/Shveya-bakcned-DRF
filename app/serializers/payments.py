@@ -67,7 +67,7 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
 
     def get_operations(self, obj):
         operations = (
-            WorkDetail.objects.filter(work__payment=obj)
+            WorkDetail.objects.filter(payment=obj)
             .values(operation_title=F('operation__title'))
             .annotate(total_amount=Sum('amount'))
         )

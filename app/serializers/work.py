@@ -305,25 +305,19 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         model = Work
         fields = ['id', 'party', 'color', 'size', 'details']
 
-    def validate(self, attrs):
-        party = attrs.get('party')
-        color = attrs.get('color')
-        size = attrs.get('size')
-
+    def create(self, validated_data):
+        details = validated_data.pop('details')
+        party = validated_data.get('party')
+        color = validated_data.get('color')
+        size = validated_data.get('size')
         if Work.objects.filter(party=party, color=color, size=size).exists():
             raise ValidationError({'detail': 'Объект с такимой партией, цветом и размером уже существует.',
                                    'code': 100})
-
-        return attrs
-
-    def create(self, validated_data):
-        details = validated_data.pop('details')
 
         work = Work.objects.create(**validated_data)
         WorkDetail.objects.bulk_create([
             WorkDetail(work=work, **data) for data in details
         ])
-
 
         return work
 
