@@ -319,7 +319,7 @@ class WorkReadListView(APIView):
         works = Work.objects.filter(
             party__order_id=order_id,
             party__nomenclature_id=product_id
-        ).select_related('color', 'size', 'staff')
+        ).select_related('color', 'size', 'staff', 'party')
 
         serializer = GETWorkListSerializer(works, many=True)
         return Response(serializer.data)

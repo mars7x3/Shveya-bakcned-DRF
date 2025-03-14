@@ -1,6 +1,7 @@
 from collections import defaultdict
 
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.exceptions import ValidationError
 
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
@@ -304,6 +305,17 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         model = Work
         fields = ['id', 'party', 'color', 'size', 'details']
 
+    def validate(self, attrs):
+        party = attrs.get('party')
+        color = attrs.get('color')
+        size = attrs.get('size')
+
+        if Work.objects.filter(party=party, color=color, size=size).exists():
+            raise ValidationError({'detail': 'Объект с такими party, color и size уже существует.'},
+                                  code=status.HTTP_205_RESET_CONTENT)
+
+        return attrs
+
     def create(self, validated_data):
         details = validated_data.pop('details')
 
@@ -359,15 +371,23 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
             obj.party.details
             .filter(color=obj.color, size=obj.size)
             .first()
-            .plan_amount
+            .true_amount
             if obj.party.details.filter(color=obj.color, size=obj.size).exists()
             else 0
         )
+
+
+class PartySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Size
+        fields = ['id', 'title']
+
 
 class GETWorkListSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
     size = SizeSerializer()
     color = ColorSerializer()
+    party = PartySerializer()
 
     class Meta:
         model = Work
