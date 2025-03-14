@@ -311,8 +311,8 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         size = attrs.get('size')
 
         if Work.objects.filter(party=party, color=color, size=size).exists():
-            raise ValidationError({'detail': 'Объект с такими party, color и size уже существует.'},
-                                  code=status.HTTP_205_RESET_CONTENT)
+            raise ValidationError({'detail': 'Объект с такимой партией, цветом и размером уже существует.',
+                                   'code': 100})
 
         return attrs
 
