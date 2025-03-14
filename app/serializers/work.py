@@ -346,11 +346,23 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
     size = SizeSerializer()
     color = ColorSerializer()
     details = WorkDetailReadSerializer(many=True)
+    party_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
-        fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party', 'details']
+        fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party', 'details', 'party_amount']
 
+    def get_party_amount(self, obj):
+        if not obj.party:
+            return None
+        return (
+            obj.party.details
+            .filter(color=obj.color, size=obj.size)
+            .first()
+            .plan_amount
+            if obj.party.details.filter(color=obj.color, size=obj.size).exists()
+            else 0
+        )
 
 class GETWorkListSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
