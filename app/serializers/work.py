@@ -379,8 +379,8 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
 
 class PartySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Size
-        fields = ['id', 'title']
+        model = Party
+        fields = ['id', 'number']
 
 
 class GETWorkListSerializer(serializers.ModelSerializer):
