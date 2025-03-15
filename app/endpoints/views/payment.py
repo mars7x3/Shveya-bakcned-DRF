@@ -154,7 +154,7 @@ class SalaryCreateView(APIView):
 
 
 class PaymentDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, ]
     queryset = Payment.objects.all()
     serializer_class = WorkPaymentDetailSerializer
 
