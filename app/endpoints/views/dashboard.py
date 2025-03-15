@@ -44,7 +44,7 @@ class StatisticView(APIView):
 
         work_qs = Work.objects.filter(
             created_at__month=date
-        ).prefetch_related('details__operation').select_related('payment', 'staff')
+        ).prefetch_related('details__operation', 'details__payment').select_related('staff')
 
         operations_aggregation = work_qs.aggregate(
             performance=Sum('details__amount'),
@@ -52,7 +52,7 @@ class StatisticView(APIView):
         )
 
         payments_qs = Payment.objects.filter(
-            staff__in=work_qs.values('staff'),
+            staff__in=work_qs.values('details__staff').distinct(),
             created_at__month=date
         ).select_related('staff')
 
@@ -67,7 +67,7 @@ class StatisticView(APIView):
             ])),  # Общая сумма заработка
         )
 
-        staff_count = work_qs.values('staff').distinct().count()
+        staff_count = work_qs.values('details__staff').distinct().count()
         avg_performance = operations_aggregation['performance'] / staff_count if staff_count > 0 else 0
 
         equipment_services_qs = EquipmentService.objects.filter(
