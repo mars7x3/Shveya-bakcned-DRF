@@ -1,4 +1,4 @@
-from django.db.models import Sum, F
+from django.db.models import Sum, F, DecimalField, ExpressionWrapper
 from rest_framework import serializers
 
 from my_db.models import PaymentFile, Payment, WorkDetail, Operation, StaffProfile
@@ -56,6 +56,7 @@ class AggregatedOperationSerializer(serializers.Serializer):
     operation_title = serializers.CharField()
     total_amount = serializers.IntegerField()
     operation_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    total_price = serializers.DecimalField(max_digits=12, decimal_places=3)
 
 
 class WorkPaymentDetailSerializer(serializers.ModelSerializer):
@@ -72,8 +73,10 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
             .annotate(
                 operation_title=F('operation__title'),
                 operation_price=F('operation__price'),
-                total_amount=Sum('amount')
+                total_amount=Sum('amount'),
+                total_price=ExpressionWrapper(F('operation__price') * Sum('amount'),
+                                              output_field=DecimalField(max_digits=10, decimal_places=2))
             )
-            .values('operation_title', 'operation_price', 'total_amount')
+            .values('operation_title', 'operation_price', 'total_amount', 'total_price')
         )
         return AggregatedOperationSerializer(operations, many=True).data
