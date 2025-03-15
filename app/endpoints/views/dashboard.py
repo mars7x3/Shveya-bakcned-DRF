@@ -20,7 +20,7 @@ class PlanCRUDView(viewsets.ModelViewSet):
 
 
 class StatisticView(APIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
         date = request.query_params.get('date')
@@ -34,7 +34,7 @@ class StatisticView(APIView):
 
         aggregation = order_products.aggregate(
             income=Sum('true_price'),
-            consumption=Sum(F('nomenclature__true_cost_price')),
+            consumption=Sum(F('true_cost_price')),
             orders=Count('order_id', distinct=True),
             produced=Sum('amounts__amount')  # Количество произведённых товаров
         )
