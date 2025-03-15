@@ -12,14 +12,14 @@ from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
 from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
-    CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer
+    CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer, GPListSerializer
 
 
 class OperationTitleListView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
     def get(self, request):
-        operations = list(Operation.objects.filter(is_active=True).values('id', 'title'))
+        operations = list(Operation.objects.filter(is_active=True, is_sample=True).values('id', 'title'))
         return Response(operations, status=status.HTTP_200_OK)
 
 
@@ -82,3 +82,13 @@ class ClientNameListView(APIView):
         clients = list(ClientProfile.objects.all().values('id', 'name', 'surname', 'company_title')
                           )
         return Response(clients, status=status.HTTP_200_OK)
+
+
+class ProductTitleList(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    @extend_schema(responses=GPListSerializer(many=True))
+    def get(self, request):
+        products = list(Nomenclature.objects.filter(type=NomType.GP).values('id', 'vendor_code', 'title')
+                          )
+        return Response(products, status=status.HTTP_200_OK)

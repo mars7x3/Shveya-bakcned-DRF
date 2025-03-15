@@ -153,3 +153,9 @@ class ConsumableTitleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
         fields = ['id', 'title']
+
+
+class GPListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code','title']

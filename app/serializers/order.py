@@ -121,7 +121,6 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['deadline', 'client', 'products', 'status']
-        extra_kwargs = {'status': {'read_only': True}}
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
