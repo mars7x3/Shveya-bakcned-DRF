@@ -181,9 +181,14 @@ class GETOperationInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'time', 'price', 'rank']
 
 
+class GPInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code', 'title', 'cost_price']
+
 
 class GETConsumableInfoSerializer(serializers.ModelSerializer):
-    material_nomenclature = GPListSerializer()
+    material_nomenclature = GPInfoSerializer()
     color = ColorSerializer()
 
     class Meta:
@@ -204,7 +209,7 @@ class GETProductInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code','title', 'cost_price', 'operations', 'consumables', 'prices']
+        fields = ['id', 'vendor_code','title', 'operations', 'consumables', 'prices']
 
     def get_operations(self, obj):
         direct_operations = obj.operations.all()
