@@ -407,6 +407,9 @@ class Calculation(models.Model):
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    nomenclature = models.ForeignKey(
+        Nomenclature, on_delete=models.CASCADE, related_name='calculations', blank=True, null=True
+    )
 
 
 class CalOperation(models.Model):

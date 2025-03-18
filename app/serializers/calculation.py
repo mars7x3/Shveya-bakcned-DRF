@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
-    ClientProfile
+    ClientProfile, Consumable, Color, Price
 from utils.get_or_none import serialize_instance
 
 
@@ -78,8 +78,8 @@ class CalculationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Calculation
-        fields = ['id', 'vendor_code', 'client', 'title', 'count', 'is_active', 'price', 'cost_price', 'created_at',
-                  'cal_operations', 'cal_consumables', 'cal_prices', 'client_info']
+        fields = ['id', 'vendor_code', 'client', 'title', 'count', 'is_active', 'price', 'cost_price', 'nomenclature',
+                  'created_at', 'cal_operations', 'cal_consumables', 'cal_prices', 'client_info']
         read_only_fields = ['created_at']
 
     def create(self, validated_data):
@@ -158,4 +158,57 @@ class ConsumableTitleListSerializer(serializers.ModelSerializer):
 class GPListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code','title']
+        fields = ['id', 'vendor_code', 'title']
+
+
+class RankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rank
+        fields = ['id', 'title', 'percent']
+
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = ['id', 'title', 'code']
+
+
+class GETOperationInfoSerializer(serializers.ModelSerializer):
+    rank = RankSerializer()
+
+    class Meta:
+        model = Operation
+        fields = ['id', 'title', 'time', 'price', 'rank']
+
+
+
+class GETConsumableInfoSerializer(serializers.ModelSerializer):
+    material_nomenclature = GPListSerializer()
+    color = ColorSerializer()
+
+    class Meta:
+        model = Consumable
+        fields = ['material_nomenclature', 'color', 'consumption']
+
+
+class GETPriceInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Price
+        fields = ['title', 'price']
+
+
+class GETProductInfoSerializer(serializers.ModelSerializer):
+    operations = serializers.SerializerMethodField()
+    consumables = GETConsumableInfoSerializer(many=True)
+    prices = GETPriceInfoSerializer(many=True)
+
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'vendor_code','title', 'cost_price', 'operations', 'consumables', 'prices']
+
+    def get_operations(self, obj):
+        direct_operations = obj.operations.all()
+        combination_operations = Operation.objects.filter(combinations__nomenclature=obj).distinct()
+        all_operations = direct_operations.union(combination_operations)
+
+        return GETOperationInfoSerializer(all_operations, many=True).data

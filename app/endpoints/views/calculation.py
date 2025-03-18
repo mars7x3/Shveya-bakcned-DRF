@@ -1,5 +1,5 @@
 from django.db.models import Q
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, mixins
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +12,8 @@ from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
 from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
-    CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer, GPListSerializer
+    CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer, GPListSerializer, \
+    GETProductInfoSerializer
 
 
 class OperationTitleListView(APIView):
@@ -92,3 +93,27 @@ class ProductTitleList(APIView):
         products = list(Nomenclature.objects.filter(type=NomType.GP).values('id', 'vendor_code', 'title')
                           )
         return Response(products, status=status.HTTP_200_OK)
+
+
+class GETProductInfoView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name="product", description="ID продукта", required=True, type=int),
+        ],
+        responses=GETProductInfoSerializer()
+    )
+    def get(self, request):
+        product_id = request.query_params.get('product')
+
+        if not product_id:
+            return Response({"error": "product обязателен!"}, status=400)
+
+        product = Nomenclature.objects.filter(
+            id=product_id,
+        ).prefetch_related('combinations__operations', 'operations__nomenclature', 'operations__rank',
+                           'consumables__material_nomenclature', 'consumables__color', 'prices')
+
+        serializer = GETProductInfoSerializer(product.first())
+        return Response(serializer.data)

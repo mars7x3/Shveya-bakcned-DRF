@@ -7,7 +7,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views.calculation import OperationTitleListView, ConsumableTitleListView, OperationDetailView, \
-    ConsumableDetailView, CalculationViewSet, CalculationListView, ClientNameListView, ProductTitleList
+    ConsumableDetailView, CalculationViewSet, CalculationListView, ClientNameListView, ProductTitleList, \
+    GETProductInfoView
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
@@ -128,6 +129,8 @@ urlpatterns = [
         path('calculation/list/', CalculationListView.as_view()),
         path('calculation/clients/names/', ClientNameListView.as_view()),
         path('calculation/get-product-titles/', ProductTitleList.as_view()),
+        path('calculation/get-product-info/', GETProductInfoView.as_view()),
+
 
 
 
