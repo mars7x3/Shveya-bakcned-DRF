@@ -184,7 +184,7 @@ class GETOperationInfoSerializer(serializers.ModelSerializer):
 class GPInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price']
+        fields = ['id', 'vendor_code', 'title', 'cost_price', 'unit']
 
 
 class GETConsumableInfoSerializer(serializers.ModelSerializer):
