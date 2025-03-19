@@ -116,6 +116,7 @@ class OutputWarehouseNomSerializer(serializers.ModelSerializer):
 
 class OutputWarehouseMaterialsSerializer(serializers.ModelSerializer):
     nomenclature = OutputWarehouseNomSerializer()
+
     class Meta:
         model = QuantityNomenclature
         fields = ['nomenclature', 'amount']
@@ -123,19 +124,23 @@ class OutputWarehouseMaterialsSerializer(serializers.ModelSerializer):
 
 class MovingSerializer(serializers.ModelSerializer):
     quantities = OutputWarehouseMaterialsSerializer(many=True)
+    out_warehouse = OutputWarehouseSerializer()
+
     class Meta:
         model = Quantity
-        fields = ['id', 'quantities']
+        fields = ['id', 'quantities', 'out_warehouse']
 
 
 class MovingListSerializer(serializers.ModelSerializer):
     out_warehouse = OutputWarehouseSerializer()
+
     class Meta:
         model = Quantity
         fields = ['id', 'out_warehouse', 'created_at']
 
 
 class MyMaterialsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Nomenclature
         fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'is_active']
@@ -161,7 +166,7 @@ class QuantitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quantity
-        fields = ['in_warehouse', 'out_warehouse']
+        fields = ['id', 'in_warehouse', 'out_warehouse']
 
 
 class QuantityHistoryListSerializer(serializers.ModelSerializer):
@@ -200,7 +205,7 @@ class QuantityDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quantity
-        fields = ['in_warehouse', 'out_warehouse', 'quantities', 'files', 'status', 'created_at']
+        fields = ['id', 'in_warehouse', 'out_warehouse', 'quantities', 'files', 'status', 'created_at']
 
 
 class QuantityHistoryDetailSerializer(serializers.ModelSerializer):
