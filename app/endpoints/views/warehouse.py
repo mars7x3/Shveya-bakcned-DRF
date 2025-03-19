@@ -340,7 +340,7 @@ class WarehouseListView(ListAPIView):
 
 
 class QuantityHistoryListView(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsStaff]
     pagination_class = StandardPagination
     queryset = QuantityHistory.objects.all()
 
