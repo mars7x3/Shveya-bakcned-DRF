@@ -353,6 +353,10 @@ class QuantityHistoryListView(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return QuantityHistory.objects.select_related(
                 'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
+        staff = self.request.user.staff_profile
+        if staff.role == StaffRole.WAREHOUSE:
+            return QuantityHistory.objects.filter(staff_id=staff.id).select_related(
+                'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
         return QuantityHistory.objects.select_related(
             'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
 
