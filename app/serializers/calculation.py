@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
-    ClientProfile, Consumable, Color, Price
+    ClientProfile, Consumable, Color, Price, Equipment
 from utils.get_or_none import serialize_instance
 
 
@@ -11,19 +11,19 @@ class OperationRankSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class OperationNomenclatureSerializer(serializers.ModelSerializer):
+class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Nomenclature
-        fields = ['id', 'vendor_code', 'title']
+        model = Equipment
+        fields = ['id', 'title']
 
 
 class OperationDetailSerializer(serializers.ModelSerializer):
-    nomenclature = OperationNomenclatureSerializer(read_only=True)
     rank = OperationRankSerializer(read_only=True)
+    equipment = EquipmentSerializer()
 
     class Meta:
         model = Operation
-        fields = ['id', 'title', 'time', 'nomenclature', 'rank']
+        fields = ['id', 'title', 'time', 'equipment', 'rank']
 
 
 class ConsumableDetailSerializer(serializers.ModelSerializer):
