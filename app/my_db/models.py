@@ -64,7 +64,7 @@ class ClientFile(models.Model):
 
 class Rank(models.Model):
     title = models.CharField(max_length=50)
-    percent = models.IntegerField(default=0)
+    percent = models.DecimalField(default=0, decimal_places=3, max_digits=12)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
