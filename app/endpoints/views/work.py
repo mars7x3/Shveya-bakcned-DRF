@@ -224,7 +224,7 @@ class PartyCreateCRUDView(mixins.CreateModelMixin,
 
 
 class PartyListView(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticated, IsAuthor]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Party.objects.all()
     pagination_class = StandardPagination
 
@@ -234,8 +234,10 @@ class PartyListView(viewsets.ReadOnlyModelViewSet):
         return PartyListSerializer
 
     def get_queryset(self):
-        queryset = self.request.user.staff_profile.parties.all()
-        return queryset
+        staff = self.request.user.staff_profile
+        if staff.role == StaffRole.CUTTER:
+            return staff.parties.all()
+        return Party.objects.all()
 
 
 class ProductInfoView(APIView):

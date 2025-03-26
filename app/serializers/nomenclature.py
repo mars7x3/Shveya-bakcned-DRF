@@ -365,15 +365,12 @@ class OperationRetrieveSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
-    time = serializers.SerializerMethodField()
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price', 'time']
+        fields = ['id', 'vendor_code', 'title', 'cost_price']
 
-    def get_time(self, obj):
-        # Суммируем время всех связанных операций
-        return sum(operation.time for operation in obj.operations.all())
+
 
 
 

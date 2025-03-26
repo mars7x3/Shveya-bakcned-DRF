@@ -59,10 +59,14 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
 class GETOrderProductSerializer(serializers.ModelSerializer):
     amounts = GETOrderProductAmountSerializer(many=True)
     nomenclature = NomenclatureSerializer()
+    time = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderProduct
         fields = ['nomenclature', 'price', 'true_price', 'cost_price', 'true_cost_price', 'amounts']
+
+    def get_time(self, obj):
+        return sum(operation.time for operation in obj.nomenclature.operations.all())
 
 
 class GETPartyDetailSerializer(serializers.ModelSerializer):

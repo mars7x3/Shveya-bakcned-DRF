@@ -3,7 +3,7 @@ from django.db import models
 
 from .compress import staff_image_folder, WEBPField, equipment_image_folder, nom_image_folder
 from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, PaymentStatus, \
-    PartyStatus, WorkStatus
+    PartyStatus, WorkStatus, CombinationStatus
 
 
 # ______________________________ User ______________________________
@@ -140,6 +140,7 @@ class Combination(models.Model):
     file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True,
                              related_name='combinations')
     is_sample = models.BooleanField(default=False)
+    status = models.IntegerField(choices=CombinationStatus.choices)
 
     def __str__(self):
         return f'{self.id}. {self.title}'

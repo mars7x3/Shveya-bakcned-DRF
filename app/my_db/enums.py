@@ -61,3 +61,9 @@ class PaymentStatus(models.IntegerChoices):
 class WorkStatus(models.IntegerChoices):
     NEW = 1, "НОВЫЙ"
     PAID = 2, "ОПЛАЧЕН"
+
+
+class CombinationStatus(models.IntegerChoices):
+    KROI = 1, "КРОЙ"
+    OTK = 2, "ОТК"
+    DONE = 3, "УПАКОВАН"
