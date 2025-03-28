@@ -64,6 +64,5 @@ class WorkStatus(models.IntegerChoices):
 
 
 class CombinationStatus(models.IntegerChoices):
-    KROI = 1, "КРОЙ"
-    OTK = 2, "ОТК"
-    DONE = 3, "УПАКОВАН"
+    OTK = 1, "ОТК"
+    DONE = 2, "УПАКОВАН"

@@ -44,11 +44,11 @@ class StatisticView(APIView):
 
         work_qs = Work.objects.filter(
             created_at__month=date
-        ).prefetch_related('details__operation', 'details__payment').select_related('staff')
+        ).prefetch_related('details__combination', 'details__payment').select_related('staff')
 
         operations_aggregation = work_qs.aggregate(
             performance=Sum('details__amount'),
-            time=Sum(F('details__amount') * F('details__operation__time')),
+            time=Sum(F('details__amount') * F('details__combination__operations__time')),
         )
 
         payments_qs = Payment.objects.filter(

@@ -305,6 +305,7 @@ class OrderProductAmount(models.Model):
     size = models.ForeignKey(Size, on_delete=models.SET_NULL, blank=True, null=True, related_name='amounts')
     amount = models.IntegerField(default=0)
     done = models.IntegerField(default=0)
+    defect = models.IntegerField(default=0)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL,blank=True, null=True, related_name='amounts')
 
 # ______________________________ Order end ______________________________
@@ -355,7 +356,8 @@ class Work(models.Model):
 class WorkDetail(models.Model):
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='details')
     staff = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='work_details')
+    combination = models.ForeignKey(Combination, on_delete=models.SET_NULL, blank=True, null=True,
+                                    related_name='work_details')
     amount = models.IntegerField(default=0)
     status = models.IntegerField(choices=WorkStatus.choices, default=WorkStatus.NEW)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')

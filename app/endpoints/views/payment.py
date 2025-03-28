@@ -59,19 +59,24 @@ class SalaryInfoView(APIView):
                 staff_id=pk,
                 status=WorkStatus.NEW,
             )
-            .select_related('operation')
-            .values('operation__id', 'operation__title', 'operation__price')
-            .annotate(total_amount=Sum('amount'))
+            .select_related('combination')
+            .values('combination__id', 'combination__title', 'work__party__number', 'work__party__order_id')
+            .annotate(
+                total_amount=Sum('amount'),
+                total_price=Sum('combination__operations__price')
+            )
         )
 
         works = [
             {
                 "operation": {
-                    "id": work["operation__id"],
-                    "title": work["operation__title"],
-                    "price": work["operation__price"],
+                    "id": work["combination__id"],
+                    "title": work["combination__title"],
+                    "price": work["total_price"],
                 },
                 "total_amount": work["total_amount"],
+                "party_number": work["work__party__number"],
+                "order_id": work["work__party__order_id"]
             }
             for work in works_queryset
         ]

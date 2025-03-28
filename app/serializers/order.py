@@ -43,7 +43,7 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount', 'done', 'color', 'cut']
+        fields = ['size', 'amount', 'done', 'color', 'cut', 'defect']
 
     def get_cut(self, obj):
         order = obj.order_product.order
@@ -63,7 +63,7 @@ class GETOrderProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProduct
-        fields = ['nomenclature', 'price', 'true_price', 'cost_price', 'true_cost_price', 'amounts']
+        fields = ['nomenclature', 'price', 'true_price', 'cost_price', 'true_cost_price', 'amounts', 'time']
 
     def get_time(self, obj):
         return sum(operation.time for operation in obj.nomenclature.operations.all())
@@ -106,7 +106,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 class OrderProductAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount', 'color', 'done']
+        fields = ['size', 'amount', 'color', 'done', 'defect']
 
 
 class OrderProductSerializer(serializers.ModelSerializer):

@@ -276,9 +276,9 @@ class ProductOperationListView(APIView):
     def post(self, request):
         product_id = request.data.get('product')
 
-        operations = Operation.objects.filter(nomenclature=product_id).values('id', 'title')
+        combinations = Combination.objects.filter(nomenclature=product_id).values('id', 'title')
 
-        return Response(operations)
+        return Response(combinations)
 
 
 class WorkCRUDView(mixins.CreateModelMixin,
@@ -295,7 +295,7 @@ class WorkCRUDView(mixins.CreateModelMixin,
 
 class WorkReadDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsController]
-    queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__operation',
+    queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__combination',
                                                                                                 'details__staff')
     pagination_class = StandardPagination
     serializer_class = GETWorkDetailSerializer

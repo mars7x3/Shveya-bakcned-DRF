@@ -295,7 +295,7 @@ class RequestSerializer(serializers.Serializer):
 class WorkCreateDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDetail
-        fields = ['staff', 'operation', 'amount']
+        fields = ['staff', 'combination', 'amount']
 
 
 class WorkCRUDSerializer(serializers.ModelSerializer):
@@ -322,6 +322,9 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         return work
 
     def update(self, instance, validated_data):
+        if instance.details.exclude(payment__isnull=True):
+            raise ValidationError({'detail': 'Объект нельзя изменить, т.к. ЗП уже выдана.',
+                                   'code': 100})
         details = validated_data.pop('details')
         instance.details.all().delete()
 
@@ -332,19 +335,19 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         return instance
 
 
-class OperationReadSerializer(serializers.ModelSerializer):
+class CombinationReadSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Operation
+        model = Combination
         fields = ['id', 'title']
 
 
 class WorkDetailReadSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
-    operation = OperationReadSerializer()
+    combination = CombinationReadSerializer()
 
     class Meta:
         model = WorkDetail
-        fields = ['staff', 'operation', 'amount']
+        fields = ['staff', 'combination', 'amount']
 
 
 class GETWorkDetailSerializer(serializers.ModelSerializer):
