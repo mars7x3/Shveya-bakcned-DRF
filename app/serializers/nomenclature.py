@@ -206,7 +206,7 @@ class CombinationCreateSerializer(serializers.ModelSerializer):
 
 class GPCRUDSerializer(serializers.ModelSerializer):
     prices = PriceSerializer(required=False, many=True)
-    operations = OperationCreateSerializer(required=False, many=True)
+    # operations = OperationCreateSerializer(required=False, many=True)
     consumables = ConsumableCreateSerializer(required=False, many=True)
     combinations =  CombinationCreateSerializer(required=False, many=True)
 
@@ -222,14 +222,14 @@ class GPCRUDSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         prices_data = validated_data.pop('prices', [])
         consumables_data = validated_data.pop('consumables', [])
-        operations_data = validated_data.pop('operations', [])
+        # operations_data = validated_data.pop('operations', [])
         combinations_data = validated_data.pop('combinations', [])
 
         nomenclature = Nomenclature.objects.create(**validated_data)
 
         Price.objects.bulk_create([Price(nomenclature=nomenclature, **data) for data in prices_data])
         Consumable.objects.bulk_create([Consumable(nomenclature=nomenclature, **data) for data in consumables_data])
-        Operation.objects.bulk_create([Operation(nomenclature=nomenclature, **data) for data in operations_data])
+        # Operation.objects.bulk_create([Operation(nomenclature=nomenclature, **data) for data in operations_data])
 
         for data in combinations_data:
             c_operations_data = data.pop('operations')
@@ -240,30 +240,30 @@ class GPCRUDSerializer(serializers.ModelSerializer):
             combination = Combination.objects.create(nomenclature=nomenclature, **data)
             combination.operations.set(operations_ids)
 
-        operation_data_by_title = {}
-        for data in operations_data:
-            title = data['title']
-            if title not in operation_data_by_title:
-                operation_data_by_title[title] = data.copy()
+        # operation_data_by_title = {}
+        # for data in operations_data:
+        #     title = data['title']
+        #     if title not in operation_data_by_title:
+        #         operation_data_by_title[title] = data.copy()
 
-        existing_samples = set(
-            Operation.objects.filter(title__in=operation_data_by_title.keys(), is_sample=True)
-            .values_list('title', flat=True)
-        )
-
-        sample_operations = [
-            Operation(is_sample=True, **data)
-            for title, data in operation_data_by_title.items() if title not in existing_samples
-        ]
-        if sample_operations:
-            Operation.objects.bulk_create(sample_operations)
+        # existing_samples = set(
+        #     Operation.objects.filter(title__in=operation_data_by_title.keys(), is_sample=True)
+        #     .values_list('title', flat=True)
+        # )
+        #
+        # sample_operations = [
+        #     Operation(is_sample=True, **data)
+        #     for title, data in operation_data_by_title.items() if title not in existing_samples
+        # ]
+        # if sample_operations:
+        #     Operation.objects.bulk_create(sample_operations)
 
         return nomenclature
 
     def update(self, instance, validated_data):
         prices_data = validated_data.pop('prices', [])
         consumables_data = validated_data.pop('consumables', [])
-        operations_data = validated_data.pop('operations', [])
+        # operations_data = validated_data.pop('operations', [])
         combinations_data = validated_data.pop('combinations', [])
 
         nomenclature = super().update(instance, validated_data)
@@ -276,7 +276,7 @@ class GPCRUDSerializer(serializers.ModelSerializer):
 
         Price.objects.bulk_create([Price(nomenclature=nomenclature, **data) for data in prices_data])
         Consumable.objects.bulk_create([Consumable(nomenclature=nomenclature, **data) for data in consumables_data])
-        Operation.objects.bulk_create([Operation(nomenclature=nomenclature, **data) for data in operations_data])
+        # Operation.objects.bulk_create([Operation(nomenclature=nomenclature, **data) for data in operations_data])
 
         for data in combinations_data:
             c_operations_data = data.pop('operations')
@@ -288,23 +288,23 @@ class GPCRUDSerializer(serializers.ModelSerializer):
             combination.operations.set(operations_ids)
             combination.save()
 
-        operation_data_by_title = {}
-        for data in operations_data:
-            title = data['title']
-            if title not in operation_data_by_title:
-                operation_data_by_title[title] = data.copy()
-
-        existing_samples = set(
-            Operation.objects.filter(title__in=operation_data_by_title.keys(), is_sample=True)
-            .values_list('title', flat=True)
-        )
-
-        sample_operations = [
-            Operation(is_sample=True, **data)
-            for title, data in operation_data_by_title.items() if title not in existing_samples
-        ]
-        if sample_operations:
-            Operation.objects.bulk_create(sample_operations)
+        # operation_data_by_title = {}
+        # for data in operations_data:
+        #     title = data['title']
+        #     if title not in operation_data_by_title:
+        #         operation_data_by_title[title] = data.copy()
+        #
+        # existing_samples = set(
+        #     Operation.objects.filter(title__in=operation_data_by_title.keys(), is_sample=True)
+        #     .values_list('title', flat=True)
+        # )
+        #
+        # sample_operations = [
+        #     Operation(is_sample=True, **data)
+        #     for title, data in operation_data_by_title.items() if title not in existing_samples
+        # ]
+        # if sample_operations:
+        #     Operation.objects.bulk_create(sample_operations)
 
         return nomenclature
 
