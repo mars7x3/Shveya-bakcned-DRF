@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
-    ClientProfile, Consumable, Color, Price, Equipment, CalCombination
+    ClientProfile, Consumable, Color, Price, Equipment, CalCombination, Combination
 from utils.get_or_none import serialize_instance
 
 
@@ -203,6 +203,14 @@ class GETOperationInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'time', 'price', 'rank']
 
 
+class GETCombinationInfoSerializer(serializers.ModelSerializer):
+    operations = GETOperationInfoSerializer(many=True)
+
+    class Meta:
+        model = Combination
+        fields = ['id', 'title', 'status', 'operations']
+
+
 class GPInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
@@ -225,17 +233,11 @@ class GETPriceInfoSerializer(serializers.ModelSerializer):
 
 
 class GETProductInfoSerializer(serializers.ModelSerializer):
-    operations = serializers.SerializerMethodField()
+    combinations = GETCombinationInfoSerializer(many=True)
     consumables = GETConsumableInfoSerializer(many=True)
     prices = GETPriceInfoSerializer(many=True)
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code','title', 'operations', 'consumables', 'prices']
+        fields = ['id', 'vendor_code','title', 'combinations', 'consumables', 'prices']
 
-    def get_operations(self, obj):
-        direct_operations = obj.operations.all()
-        combination_operations = Operation.objects.filter(combinations__nomenclature=obj).distinct()
-        all_operations = direct_operations.union(combination_operations)
-
-        return GETOperationInfoSerializer(all_operations, many=True).data
