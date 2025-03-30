@@ -3,6 +3,7 @@ from collections import defaultdict
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
+from my_db.enums import CombinationStatus
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
     Consumable
@@ -310,9 +311,10 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         party = validated_data.get('party')
         color = validated_data.get('color')
         size = validated_data.get('size')
-        if Work.objects.filter(party=party, color=color, size=size).exists():
-            raise ValidationError({'detail': 'Объект с такимой партией, цветом и размером уже существует.',
-                                   'code': 100})
+        work = Work.objects.filter(party=party, color=color, size=size)
+        if work:
+            raise ValidationError({'detail': 'Объект с такой партией, цветом и размером уже существует.',
+                                   'code': 100, 'obj_id': work.first().id})
 
         work = Work.objects.create(**validated_data)
         WorkDetail.objects.bulk_create([
