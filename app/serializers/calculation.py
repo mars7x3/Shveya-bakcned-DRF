@@ -43,7 +43,7 @@ class CalOperationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalOperation
-        fields = ['id', 'title', 'time', 'price', 'rank', 'rank_info']
+        fields = ['id', 'title', 'time', 'price', 'rank', 'equipment', 'rank_info']
 
 
 class CalCombinationSerializer(serializers.ModelSerializer):
