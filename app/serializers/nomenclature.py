@@ -213,7 +213,7 @@ class GPCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
         fields = ['id', 'vendor_code', 'is_active', 'title', 'cost_price', 'image',
-                  'prices', 'operations', 'consumables', 'combinations']
+                  'prices', 'consumables', 'combinations']
 
     def validate(self, attrs):
         attrs['type'] = NomType.GP
