@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
-    ClientProfile, Consumable, Color, Price, Equipment
+    ClientProfile, Consumable, Color, Price, Equipment, CalCombination
 from utils.get_or_none import serialize_instance
 
 
@@ -43,7 +43,15 @@ class CalOperationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalOperation
-        fields = ['id', 'operation', 'title', 'time', 'price', 'rank', 'rank_info']
+        fields = ['id', 'title', 'time', 'price', 'rank', 'rank_info']
+
+
+class CalCombinationSerializer(serializers.ModelSerializer):
+    operations = CalOperationSerializer(many=True, required=False)
+
+    class Meta:
+        model = CalCombination
+        fields = ['id', 'title', 'operations']
 
 
 class CalConsumableSerializer(serializers.ModelSerializer):
@@ -65,7 +73,7 @@ class CalClientSerializer(serializers.ModelSerializer):
 
 
 class CalculationSerializer(serializers.ModelSerializer):
-    cal_operations = CalOperationSerializer(many=True, required=False)
+    combinations = CalCombinationSerializer(many=True, required=False)
     cal_consumables = CalConsumableSerializer(many=True, required=False)
     cal_prices = CalPriceSerializer(many=True, required=False)
     client_info = serializers.SerializerMethodField()
@@ -79,19 +87,26 @@ class CalculationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Calculation
         fields = ['id', 'vendor_code', 'client', 'title', 'count', 'is_active', 'price', 'cost_price', 'nomenclature',
-                  'created_at', 'cal_operations', 'cal_consumables', 'cal_prices', 'client_info']
+                  'created_at', 'combinations', 'cal_consumables', 'cal_prices', 'client_info']
         read_only_fields = ['created_at']
 
     def create(self, validated_data):
-        operations_data = validated_data.pop('cal_operations', [])
+        combinations = validated_data.pop('combinations', [])
         consumables_data = validated_data.pop('cal_consumables', [])
         prices_data = validated_data.pop('cal_prices', [])
 
         calculation = Calculation.objects.create(**validated_data)
 
-        CalOperation.objects.bulk_create([
-            CalOperation(calculation=calculation, **operation) for operation in operations_data
-        ])
+        create_data = []
+        for data in combinations:
+            c_operations_data = data.pop('operations')
+            combination = CalCombination.objects.create(calculation=calculation, **data)
+            for o in c_operations_data:
+                create_data.append(
+                    CalOperation(combination=combination, **o)
+                )
+        CalOperation.objects.bulk_create(create_data)
+
         CalConsumable.objects.bulk_create([
             CalConsumable(calculation=calculation, **consumable) for consumable in consumables_data
         ])
@@ -102,7 +117,7 @@ class CalculationSerializer(serializers.ModelSerializer):
         return calculation
 
     def update(self, instance, validated_data):
-        operations_data = validated_data.pop('cal_operations', [])
+        combinations = validated_data.pop('combinations', [])
         consumables_data = validated_data.pop('cal_consumables', [])
         prices_data = validated_data.pop('cal_prices', [])
 
@@ -116,10 +131,17 @@ class CalculationSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        CalOperation.objects.filter(calculation=instance).delete()
-        CalOperation.objects.bulk_create([
-            CalOperation(calculation=instance, **operation) for operation in operations_data
-        ])
+        instance.combinations.all().delete()
+
+        create_data = []
+        for data in combinations:
+            c_operations_data = data.pop('operations')
+            combination = CalCombination.objects.create(calculation=instance, **data)
+            for o in c_operations_data:
+                create_data.append(
+                    CalOperation(combination=combination, **o)
+                )
+        CalOperation.objects.bulk_create(create_data)
 
         CalConsumable.objects.filter(calculation=instance).delete()
         CalConsumable.objects.bulk_create([

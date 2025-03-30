@@ -415,12 +415,22 @@ class Calculation(models.Model):
     )
 
 
-class CalOperation(models.Model):
+class CalCombination(models.Model):
     calculation = models.ForeignKey(
-        Calculation, on_delete=models.CASCADE, related_name='cal_operations'
+        Calculation, on_delete=models.CASCADE, related_name='combinations'
     )
-    operation = models.ForeignKey(
-        Operation, on_delete=models.SET_NULL, related_name='cal_operations', blank=True, null=True
+    title = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.id}. {self.title}'
+
+
+class CalOperation(models.Model):
+    combination = models.ForeignKey(
+        CalCombination, on_delete=models.CASCADE, blank=True, null=True, related_name='operations'
+    )
+    equipment = models.ForeignKey(
+        Equipment, on_delete=models.SET_NULL, blank=True, null=True, related_name='cal_operations'
     )
     rank = models.ForeignKey(
         Rank, on_delete=models.SET_NULL, blank=True, null=True, related_name='cal_operations'
