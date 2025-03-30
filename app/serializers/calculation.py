@@ -81,7 +81,7 @@ class CalculationSerializer(serializers.ModelSerializer):
     def get_client_info(self, obj):
         return serialize_instance(
             obj.client,
-            ["id", "name", "surename", "company_title", "phone"]
+            ["id", "name", "surename", "company_title", "phone", "combinations"]
         )
 
     class Meta:
