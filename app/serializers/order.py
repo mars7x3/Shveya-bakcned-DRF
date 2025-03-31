@@ -1,7 +1,9 @@
+from django.db.models import Sum
 from rest_framework import serializers
 
+from my_db.enums import CombinationStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
-    Color, StaffProfile
+    Color, StaffProfile, WorkDetail
 
 
 class OrderClientSerializer(serializers.ModelSerializer):
@@ -40,10 +42,11 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
     size = SizeSerializer()
     color = ColorSerializer()
     cut = serializers.SerializerMethodField()
+    otk = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount', 'done', 'color', 'cut', 'defect']
+        fields = ['size', 'amount', 'done', 'color', 'cut', 'defect', 'otk']
 
     def get_cut(self, obj):
         order = obj.order_product.order
@@ -53,6 +56,19 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
             detail.true_amount
             for party in order.parties.filter(nomenclature=nomenclature)
             for detail in party.details.filter(color=obj.color, size=obj.size)
+        )
+
+    def get_otk(self, obj):
+        order = obj.order_product.order
+        nomenclature = obj.order_product.nomenclature
+
+        return (
+                WorkDetail.objects.filter(
+                    work__party__in=order.parties.filter(nomenclature=nomenclature),
+                    work__color=obj.color,
+                    work__size=obj.size,
+                    combination__status=CombinationStatus.DONE
+                ).aggregate(total=Sum('amount'))['total'] or 0
         )
 
 

@@ -317,7 +317,7 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
                                    'code': 100, 'obj_id': work.first().id})
 
         work = Work.objects.create(**validated_data)
-        WorkDetail.objects.bulk_create([
+        details = WorkDetail.objects.bulk_create([
             WorkDetail(work=work, **data) for data in details
         ])
 
