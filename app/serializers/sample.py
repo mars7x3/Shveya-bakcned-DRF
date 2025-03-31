@@ -56,7 +56,7 @@ class CombinationDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Combination
-        fields = ['id', 'title', 'file', 'is_sample', 'operations']
+        fields = ['id', 'title', 'file', 'is_sample', 'operations', 'status']
 
 
 class CombinationListSerializer(serializers.ModelSerializer):
