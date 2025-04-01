@@ -64,5 +64,6 @@ class WorkStatus(models.IntegerChoices):
 
 
 class CombinationStatus(models.IntegerChoices):
+    ZERO = 0, "НЕТ"
     OTK = 1, "ОТК"
     DONE = 2, "УПАКОВАН"
