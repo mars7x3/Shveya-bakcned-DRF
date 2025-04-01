@@ -34,6 +34,9 @@ class WorkOperationSerializer(serializers.Serializer):
 class GroupedWorkDetailSerializer(serializers.Serializer):
     operation = WorkOperationSerializer()
     total_amount = serializers.IntegerField()
+    party_number = serializers.CharField()
+    order_id = serializers.IntegerField()
+
 
 
 class WorkDetailPaymentSerializer(serializers.ModelSerializer):

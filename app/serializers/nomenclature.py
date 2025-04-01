@@ -201,7 +201,7 @@ class CombinationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Combination
-        fields = ['id', 'operations', 'title']
+        fields = ['id', 'operations', 'title', 'status']
 
 
 class GPCRUDSerializer(serializers.ModelSerializer):

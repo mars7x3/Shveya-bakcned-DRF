@@ -51,7 +51,7 @@ class CalCombinationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CalCombination
-        fields = ['id', 'title', 'operations']
+        fields = ['id', 'title', 'operations', 'status']
 
 
 class CalConsumableSerializer(serializers.ModelSerializer):

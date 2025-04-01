@@ -420,6 +420,7 @@ class CalCombination(models.Model):
         Calculation, on_delete=models.CASCADE, related_name='combinations'
     )
     title = models.CharField(max_length=50)
+    status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True)
 
     def __str__(self):
         return f'{self.id}. {self.title}'
