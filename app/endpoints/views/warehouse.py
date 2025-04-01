@@ -91,7 +91,7 @@ class MyMaterialListFilter(filters.FilterSet):
 
 
 class MyMaterialListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = MyMaterialsSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = MyMaterialListFilter
@@ -114,7 +114,7 @@ class MaterialModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologistAndWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Nomenclature.objects.filter(type=NomType.MATERIAL)
     serializer_class = MaterialCRUDSerializer
 
@@ -183,7 +183,7 @@ class StockInputView(APIView):
 
 
 class StockOutputView(APIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(request=StockOutputSerializer())
     def post(self, request):
@@ -212,7 +212,7 @@ class StockOutputView(APIView):
 
 
 class MovingListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = MovingListSerializer
 
     def get_queryset(self):
@@ -239,7 +239,7 @@ class MovingDetailView(APIView):
 
 
 class StockDefectiveView(APIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(request=StockDefectiveSerializer())
     def post(self, request):
@@ -274,7 +274,7 @@ class StockDefectiveView(APIView):
 
 
 class StockDefectiveFileView(APIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(request=StockDefectiveFileSerializer())
     def post(self, request):
@@ -294,7 +294,7 @@ class StockDefectiveFileView(APIView):
 
 
 class StockOutputUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(request=StockOutputUpdateSerializer())
     def post(self, request):

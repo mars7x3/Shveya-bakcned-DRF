@@ -285,7 +285,7 @@ class WorkCRUDView(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Work.objects.all()
     serializer_class = WorkCRUDSerializer
 
