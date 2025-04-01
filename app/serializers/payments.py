@@ -74,11 +74,15 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
         operations = (
             WorkDetail.objects.filter(payment=obj)
             .annotate(
-                operation_title=F('operation__title'),
-                operation_price=F('operation__price'),
+                operation_title=F('combination__title'),
+                operation_price=F('combination__operations__price'),
                 total_amount=Sum('amount'),
-                total_price=ExpressionWrapper(F('operation__price') * Sum('amount'),
-                                              output_field=DecimalField(max_digits=10, decimal_places=2))
+            )
+            .annotate(
+                total_price=ExpressionWrapper(
+                    F('operation_price') * F('total_amount'),
+                    output_field=DecimalField(max_digits=10, decimal_places=2)
+                )
             )
             .values('operation_title', 'operation_price', 'total_amount', 'total_price')
         )
