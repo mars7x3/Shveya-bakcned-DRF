@@ -56,13 +56,7 @@ class GPModelViewSet(mixins.CreateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Nomenclature.objects.prefetch_related(
-        Prefetch(
-            'combinations',
-            queryset=Combination.objects.filter(order__isnull=True),
-            to_attr='filtered_combinations'
-        )
-    )
+    queryset = Nomenclature.objects.all()
     serializer_class = GPCRUDSerializer
 
 

@@ -207,7 +207,7 @@ class GPCRUDSerializer(serializers.ModelSerializer):
     prices = PriceSerializer(required=False, many=True)
     # operations = OperationCreateSerializer(required=False, many=True)
     consumables = ConsumableCreateSerializer(required=False, many=True)
-    combinations =  CombinationCreateSerializer(required=False, many=True, source='filtered_combinations')
+    combinations =  CombinationCreateSerializer(required=False, many=True)
 
     class Meta:
         model = Nomenclature

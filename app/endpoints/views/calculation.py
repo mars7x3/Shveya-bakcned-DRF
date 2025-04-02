@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, mixins
 from rest_framework.generics import RetrieveAPIView, ListAPIView
@@ -10,7 +10,7 @@ from django_filters import rest_framework as filters
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
-from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile
+from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile, Combination
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
     CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer, GPListSerializer, \
     GETProductInfoSerializer
@@ -112,8 +112,12 @@ class GETProductInfoView(APIView):
 
         product = Nomenclature.objects.filter(
             id=product_id,
-        ).prefetch_related('combinations__operations', 'operations__nomenclature', 'operations__rank',
-                           'consumables__material_nomenclature', 'prices')
+        ).prefetch_related(Prefetch(
+                    'combinations',
+                    queryset=Combination.objects.filter(order__isnull=True),
+                    to_attr='filtered_combinations'
+                ),
+                 'consumables__material_nomenclature', 'prices')
 
         serializer = GETProductInfoSerializer(product.first())
         return Response(serializer.data)
