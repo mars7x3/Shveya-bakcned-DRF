@@ -113,7 +113,7 @@ class GETProductInfoView(APIView):
         product = Nomenclature.objects.filter(
             id=product_id,
         ).prefetch_related('combinations__operations', 'operations__nomenclature', 'operations__rank',
-                           'consumables__material_nomenclature', 'consumables__color', 'prices')
+                           'consumables__material_nomenclature', 'prices')
 
         serializer = GETProductInfoSerializer(product.first())
         return Response(serializer.data)
