@@ -56,7 +56,13 @@ class GPModelViewSet(mixins.CreateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
-    queryset = Nomenclature.objects.all()
+    queryset = Nomenclature.objects.prefetch_related(
+        Prefetch(
+            'combinations',
+            queryset=Combination.objects.filter(order__isnull=True),
+            to_attr='filtered_combinations'
+        )
+    )
     serializer_class = GPCRUDSerializer
 
 
@@ -66,25 +72,23 @@ class GPDetailView(APIView):
     def get_object(self, pk):
         try:
             return Nomenclature.objects.prefetch_related(
-                        Prefetch(
-                            "operations",
-                            queryset=Operation.objects.exclude(
-                                id__in=Combination.operations.through.objects.values_list("operation_id", flat=True)
-                            ),
-                            to_attr="nom_operations"
-                        ),
-                        "combinations",
-                        "prices",
-                        "consumables"
-                    ).get(pk=pk)
+                Prefetch(
+                    'combinations',
+                    queryset=Combination.objects.filter(order__isnull=True),
+                    to_attr='filtered_combinations'
+                ),
+                'prices',
+                'consumables'
+            ).get(id=pk)
         except:
-            return Response('Product does not exist!', status=status.HTTP_404_NOT_FOUND)
+            return None
 
-    @extend_schema(
-        responses=GPDetailSerializer,
-    )
+    @extend_schema(responses=GPDetailSerializer)
     def get(self, request, pk):
         product = self.get_object(pk)
+        if not product:
+            return Response({'error': 'Product does not exist!'}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = GPDetailSerializer(product)
         return Response(serializer.data)
 

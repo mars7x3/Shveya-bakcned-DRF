@@ -158,18 +158,17 @@ class ColorSerializer(serializers.ModelSerializer):
 
 
 class ConsumableSerializer(serializers.ModelSerializer):
-    color = ColorSerializer(read_only=True)
     material_nomenclature = NomenclatureSerializer(read_only=True)
 
     class Meta:
         model = Consumable
-        fields = ['id', 'material_nomenclature', 'color', 'consumption']
+        fields = ['id', 'material_nomenclature', 'consumption']
 
 
 class ConsumableCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
-        fields = ['material_nomenclature', 'color', 'consumption']
+        fields = ['material_nomenclature', 'consumption']
 
 
 class OperationCreateSerializer(serializers.ModelSerializer):
@@ -208,7 +207,7 @@ class GPCRUDSerializer(serializers.ModelSerializer):
     prices = PriceSerializer(required=False, many=True)
     # operations = OperationCreateSerializer(required=False, many=True)
     consumables = ConsumableCreateSerializer(required=False, many=True)
-    combinations =  CombinationCreateSerializer(required=False, many=True)
+    combinations =  CombinationCreateSerializer(required=False, many=True, source='filtered_combinations')
 
     class Meta:
         model = Nomenclature
@@ -322,12 +321,6 @@ class PatternCRUDSerializer(serializers.Serializer):
         help_text="Список ID изображений для удаления. PS: в свагере не работает это место, "
                   "но если отправишь [1, 2], то сработает"
     )
-
-
-class ConsumableCRUDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Consumable
-        fields = ['size', 'consumption']
 
 
 class OperationRankSerializer(serializers.ModelSerializer):

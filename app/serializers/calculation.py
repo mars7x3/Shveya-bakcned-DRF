@@ -219,11 +219,10 @@ class GPInfoSerializer(serializers.ModelSerializer):
 
 class GETConsumableInfoSerializer(serializers.ModelSerializer):
     material_nomenclature = GPInfoSerializer()
-    color = ColorSerializer()
 
     class Meta:
         model = Consumable
-        fields = ['material_nomenclature', 'color', 'consumption']
+        fields = ['material_nomenclature', 'consumption']
 
 
 class GETPriceInfoSerializer(serializers.ModelSerializer):

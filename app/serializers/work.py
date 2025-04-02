@@ -333,7 +333,7 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         WorkDetail.objects.bulk_create([
             WorkDetail(work=instance, **data) for data in details
         ])
-
+        instance.save()
         return instance
 
 

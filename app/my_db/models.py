@@ -141,6 +141,7 @@ class Combination(models.Model):
                              related_name='combinations')
     is_sample = models.BooleanField(default=False)
     status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True)
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, blank=True, null=True, related_name='combinations')
 
     def __str__(self):
         return f'{self.id}. {self.title}'
@@ -198,9 +199,6 @@ class Consumable(models.Model):
     )
     material_nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='material_consumables', blank=True, null=True
-    )
-    color = models.ForeignKey(
-        Color, on_delete=models.SET_NULL, related_name='consumables', blank=True, null=True
     )
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
 
