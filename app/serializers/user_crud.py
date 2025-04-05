@@ -78,6 +78,24 @@ class StaffUpdateSerializer(StaffCreateSerializer):
                 staff_profile.image = None
         return attrs
 
+    def update(self, instance, validated_data):
+        username = validated_data.pop('username', None)
+        password = validated_data.pop('password', None)
+
+        if username:
+            instance.user.username = username
+
+        if password:
+            instance.user.set_password(password)
+
+        instance.user.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 
 class ClientFileSerializer(serializers.ModelSerializer):
     class Meta:
