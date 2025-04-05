@@ -80,16 +80,17 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         user_data = {}
-        if serializer.validated_data.get('username'):
-            user_data['username'] = serializer.validated_data.get('username')
-        if serializer.validated_data.get('password'):
-            user_data['password'] = serializer.validated_data.pop('password')
+        username = serializer.validated_data.get('username', None)
+        password = serializer.validated_data.get('password', None)
+        if username:
+            user_data['username'] = username
 
         if user_data:
             user_serializer = MyUserUpdateSerializer(data=user_data)
             user_serializer.is_valid(raise_exception=True)
             user = user_serializer.update(staff_profile.user, user_serializer.data)
-            user.set_password(user_data.get('password'))
+            if password:
+                user.set_password(password)
             user.save()
 
         self.perform_update(serializer)
@@ -103,16 +104,17 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         user_data = {}
-        if serializer.validated_data.get('username'):
-            user_data['username'] = serializer.validated_data.get('username')
-        if serializer.validated_data.get('password'):
-            user_data['password'] = serializer.validated_data.pop('password')
+        username = serializer.validated_data.get('username', None)
+        password = serializer.validated_data.get('password', None)
+        if username:
+            user_data['username'] = username
 
         if user_data:
             user_serializer = MyUserUpdateSerializer(data=user_data)
             user_serializer.is_valid(raise_exception=True)
             user = user_serializer.update(staff_profile.user, user_serializer.data)
-            user.set_password(user_data.get('password'))
+            if password:
+                user.set_password(password)
             user.save()
 
         self.perform_update(serializer)

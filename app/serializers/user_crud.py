@@ -63,10 +63,7 @@ class StaffCreateSerializer(StaffSerializer):
 
 
 class StaffUpdateSerializer(StaffCreateSerializer):
-    username = serializers.CharField(write_only=True, required=False)
-    password = serializers.CharField(write_only=True, required=False)
     image_delete = serializers.BooleanField(default=False)
-    role = serializers.IntegerField(required=False)
 
     def validate(self, attrs):
         image_delete = attrs.get('image_delete', None)
@@ -77,24 +74,6 @@ class StaffUpdateSerializer(StaffCreateSerializer):
                 staff_profile.image.delete(save=False)
                 staff_profile.image = None
         return attrs
-
-    def update(self, instance, validated_data):
-        username = validated_data.pop('username', None)
-        password = validated_data.pop('password', None)
-
-        if username:
-            instance.user.username = username
-
-        if password:
-            instance.user.set_password(password)
-
-        instance.user.save()
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-        return instance
 
 
 class ClientFileSerializer(serializers.ModelSerializer):
