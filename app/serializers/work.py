@@ -76,7 +76,7 @@ class OperationSummarySerializer(serializers.Serializer):
 class WorkStaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
-        fields = ['id', 'name', 'surname']
+        fields = ['id', 'name', 'surname', 'number']
 
 
 class OperationDetailSerializer(serializers.ModelSerializer):
