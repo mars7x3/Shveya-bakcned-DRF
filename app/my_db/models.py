@@ -25,6 +25,7 @@ class StaffProfile(models.Model):
     role = models.IntegerField(choices=StaffRole.choices)
     salary = models.IntegerField(default=0)
     image = WEBPField(upload_to=staff_image_folder, blank=True, null=True)
+    number = models.IntegerField(default=0, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -120,7 +121,7 @@ class Nomenclature(models.Model):
 
 class Pattern(models.Model):
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='patterns')
-    image = WEBPField(upload_to=staff_image_folder)
+    image = models.FileField(upload_to='nomenclatures')
 
 # ______________________________ Nomenclature end ______________________________
 

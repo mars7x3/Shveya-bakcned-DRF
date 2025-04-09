@@ -137,4 +137,4 @@ class ClientFileCRUDSerializer(serializers.Serializer):
 class StaffListSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
-        fields = ['id', 'name', 'surname']
+        fields = ['id', 'name', 'surname', 'number']

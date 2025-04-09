@@ -30,6 +30,9 @@ class NomUnit(models.IntegerChoices):
     L = 4, "ЛИТР"
     U = 5, "ШТ."
     R = 6, "РУЛОН"
+    BB = 7, "БОБИНЫ"
+    BX = 8, "КОРОБКИ"
+    M = 9, "МЕТР"
 
 
 class OrderStatus(models.IntegerChoices):

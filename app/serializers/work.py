@@ -34,7 +34,7 @@ class MyWorkInputSerializer(serializers.Serializer):
 class WorkStaffListSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
-        fields = ['id', 'name', 'surname', 'role']
+        fields = ['id', 'name', 'surname', 'role', 'number']
 
 
 class WorkOperationSerializer(serializers.ModelSerializer):
