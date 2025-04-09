@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
-    EquipmentImages, EquipmentService, StaffProfile, CombinationFile, Price
+    EquipmentImages, EquipmentService, StaffProfile, CombinationFile, Price, NomFile
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -22,6 +22,12 @@ class PatternSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pattern
         fields = ['id', 'image']
+
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NomFile
+        fields = ['id', 'file']
 
 
 class EquipmentImagesSerializer(serializers.ModelSerializer):
@@ -314,6 +320,21 @@ class PatternCRUDSerializer(serializers.Serializer):
         child=serializers.ImageField(),
         required=False,
         help_text="Список файлов изображений для добавления к продукту."
+    )
+    delete_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        help_text="Список ID изображений для удаления. PS: в свагере не работает это место, "
+                  "но если отправишь [1, 2], то сработает"
+    )
+
+
+class FilesCRUDSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(help_text="ID продукта, к которому добавляются изображения.")
+    images = serializers.ListField(
+        child=serializers.FileField(),
+        required=False,
+        help_text="Список файлов для добавления к продукту."
     )
     delete_ids = serializers.ListField(
         child=serializers.IntegerField(),

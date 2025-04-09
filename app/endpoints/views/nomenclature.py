@@ -14,12 +14,12 @@ from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
-    CombinationFile
+    CombinationFile, NomFile
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
     EquipmentListSerializer, EquipmentServiceSerializer, EquipmentServiceReadSerializer, EquipmentCRUDSerializer, \
-    OperationRetrieveSerializer
+    OperationRetrieveSerializer, FilesCRUDSerializer, FileSerializer
 from django_filters import rest_framework as filters
 
 
@@ -104,6 +104,23 @@ class PatternListView(APIView):
         return Response(serializer.data)
 
 
+class FileListView(APIView):
+    def get_object(self, pk):
+        try:
+            return Nomenclature.objects.prefetch_related('files').get(pk=pk)
+        except:
+            return Response('Product does not exist!', status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        responses=FileSerializer(many=True),
+    )
+    def get(self, request, pk):
+        product = self.get_object(pk)
+        patterns = product.patterns.all()
+        serializer = FileSerializer(patterns, many=True, context=self.get_renderer_context())
+        return Response(serializer.data)
+
+
 class PatternCRUDView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
@@ -124,6 +141,30 @@ class PatternCRUDView(APIView):
 
         if delete_ids:
             Pattern.objects.filter(id__in=delete_ids).delete()
+
+        return Response({"text": "Success!"}, status=status.HTTP_200_OK)
+
+
+class FileCRUDView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @extend_schema(
+        request=FilesCRUDSerializer,
+        responses={200: {'type': 'object', 'properties': {'text': {'type': 'string'}}}}
+    )
+    def post(self, request):
+        serializer = FilesCRUDSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product_id = serializer.validated_data.get('product_id')
+        files = request.FILES.getlist('files')
+        delete_ids = serializer.validated_data.get('delete_ids', [])
+
+        create_data = [NomFile(nomenclature_id=product_id, file=file) for file in files]
+        NomFile.objects.bulk_create(create_data)
+
+        if delete_ids:
+            NomFile.objects.filter(id__in=delete_ids).delete()
 
         return Response({"text": "Success!"}, status=status.HTTP_200_OK)
 

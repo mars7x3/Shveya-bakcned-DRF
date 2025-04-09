@@ -121,7 +121,13 @@ class Nomenclature(models.Model):
 
 class Pattern(models.Model):
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='patterns')
-    image = models.FileField(upload_to='nomenclatures')
+    image = WEBPField(upload_to=staff_image_folder)
+
+
+class NomFile(models.Model):
+    nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(upload_to='nomen_files')
+
 
 # ______________________________ Nomenclature end ______________________________
 
