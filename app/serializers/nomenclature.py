@@ -331,7 +331,7 @@ class PatternCRUDSerializer(serializers.Serializer):
 
 class FilesCRUDSerializer(serializers.Serializer):
     product_id = serializers.IntegerField(help_text="ID продукта, к которому добавляются изображения.")
-    images = serializers.ListField(
+    files = serializers.ListField(
         child=serializers.FileField(),
         required=False,
         help_text="Список файлов для добавления к продукту."
