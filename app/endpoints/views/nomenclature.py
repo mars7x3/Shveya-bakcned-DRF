@@ -116,8 +116,8 @@ class FileListView(APIView):
     )
     def get(self, request, pk):
         product = self.get_object(pk)
-        patterns = product.patterns.all()
-        serializer = FileSerializer(patterns, many=True, context=self.get_renderer_context())
+        files = product.files.all()
+        serializer = FileSerializer(files, many=True, context=self.get_renderer_context())
         return Response(serializer.data)
 
 
