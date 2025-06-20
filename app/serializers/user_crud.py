@@ -14,16 +14,17 @@ class MyUserSerializer(serializers.ModelSerializer):
 class MyUserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'is_active']
 
 
 class MyUserUpdateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=False)
     password = serializers.CharField(required=False)
+    is_active = serializers.BooleanField()
 
     class Meta:
         model = MyUser
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'is_active']
 
 
 class StaffWarehouseSerializer(serializers.ModelSerializer):
