@@ -5,6 +5,7 @@ from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Sum
 from django.template.defaulttags import comment
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status, mixins
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -218,6 +219,9 @@ class MovingListView(ListAPIView):
     def get_queryset(self):
         manager = self.request.user.staff_profile
         warehouse = manager.warehouses.first()
+        if not warehouse:
+            raise ValidationError("У менеджера не назначен склад.")
+
         movements = warehouse.in_quants.select_related('out_warehouse').filter(status=QuantityStatus.PROGRESSING)
         return movements
 

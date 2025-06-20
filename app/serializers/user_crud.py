@@ -51,7 +51,11 @@ class StaffSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
         if instance.role == StaffRole.WAREHOUSE:
-            rep['warehouse'] = StaffWarehouseSerializer(instance.warehouses.first(), context=self.context).data
+            warehouse = instance.warehouses.first()
+            if warehouse:
+                rep['warehouse'] = StaffWarehouseSerializer(warehouse, context=self.context).data
+            else:
+                rep['warehouse'] = 'Не привязан склад к сотруднику.'
         return rep
 
 
