@@ -190,10 +190,14 @@ class StockOutputView(APIView):
     def post(self, request):
         staff = request.user.staff_profile
         data = request.data
-
-        quantity = Quantity.objects.create(in_warehouse_id=data['output_warehouse_id'],
-                                           out_warehouse=staff.warehouses.first(),
-                                           status=QuantityStatus.PROGRESSING)
+        warehouse_id = data['output_warehouse_id']
+        if warehouse_id:
+            quantity = Quantity.objects.create(in_warehouse_id=warehouse_id,
+                                               out_warehouse=staff.warehouses.first(),
+                                               status=QuantityStatus.PROGRESSING)
+        else:
+            quantity = Quantity.objects.create(out_warehouse=staff.warehouses.first(),
+                                               status=data['status'])
 
         create_data = []
         for i in data['products']:

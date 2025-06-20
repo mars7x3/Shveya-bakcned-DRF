@@ -81,8 +81,9 @@ class StockInputSerializer(serializers.Serializer):
 
 
 class StockOutputSerializer(serializers.Serializer):
-    output_warehouse_id = serializers.IntegerField()
+    output_warehouse_id = serializers.IntegerField(required=False)
     products = StockInputSerializer(many=True)
+    status = serializers.IntegerField(required=False)
 
 
 class StockDefectiveSerializer(serializers.Serializer):

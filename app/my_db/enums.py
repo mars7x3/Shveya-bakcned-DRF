@@ -46,6 +46,8 @@ class QuantityStatus(models.IntegerChoices):
     PROGRESSING = 1, "В ОБРАБОТКЕ"
     ACTIVE = 2, "АКТИВЕН"
     INACTIVE = 3, "НЕАКТИВЕН"
+    WRITE_OF = 4, "СПИСАНИЕ"
+    RETURN_TO_CLIENT = 5, "ВОЗВРАТ КЛИЕНТУ"
 
 
 class PartyStatus(models.IntegerChoices):
