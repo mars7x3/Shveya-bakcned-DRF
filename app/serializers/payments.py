@@ -62,13 +62,20 @@ class AggregatedOperationSerializer(serializers.Serializer):
     total_price = serializers.DecimalField(max_digits=12, decimal_places=3)
 
 
+class StaffProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffProfile
+        fields = ['id', 'name', 'surname', 'number', 'role']
+
+
 class WorkPaymentDetailSerializer(serializers.ModelSerializer):
     files = WorkPaymentFileSerializer(many=True, read_only=True)
     operations = serializers.SerializerMethodField()
+    staff = StaffProfileSerializer()
 
     class Meta:
         model = Payment
-        fields = ['id', 'status', 'comment', 'created_at', 'amount', 'operations', 'files']
+        fields = ['id', 'status', 'comment', 'created_at', 'amount', 'operations', 'files', 'staff']
 
     def get_operations(self, obj):
         operations = (
