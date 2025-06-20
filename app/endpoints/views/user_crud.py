@@ -62,7 +62,8 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         user_data = {
             'username': serializer.validated_data.pop('username'),
             'password': serializer.validated_data.pop('password'),
-            'status': UserStatus.STAFF
+            'status': UserStatus.STAFF,
+            'is_active': serializer.validated_data.pop('is_active')
         }
         user_serializer = MyUserCreateSerializer(data=user_data)
         user_serializer.is_valid(raise_exception=True)
@@ -79,19 +80,28 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(staff_profile, data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        user = staff_profile.user
         user_data = {}
-        username = serializer.validated_data.get('username', None)
-        password = serializer.validated_data.get('password', None)
-        if username:
+
+        validated_data = serializer.validated_data
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        is_active = validated_data.get('is_active')
+
+        if username is not None:
             user_data['username'] = username
+        if is_active is not None:
+            user_data['is_active'] = is_active
 
         if user_data:
-            user_serializer = MyUserUpdateSerializer(data=user_data)
+            user_serializer = MyUserUpdateSerializer(data=user_data, partial=True)
             user_serializer.is_valid(raise_exception=True)
-            user = user_serializer.update(staff_profile.user, user_serializer.data)
-            if password:
-                user.set_password(password)
-            user.save()
+            user = user_serializer.update(user, user_serializer.validated_data)
+
+        if password:
+            user.set_password(password)
+
+        user.save()
 
         self.perform_update(serializer)
         serializer = StaffSerializer(staff_profile, context=self.get_renderer_context())
@@ -103,19 +113,28 @@ class StaffModelViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(staff_profile, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
+        user = staff_profile.user
         user_data = {}
-        username = serializer.validated_data.get('username', None)
-        password = serializer.validated_data.get('password', None)
-        if username:
+
+        validated_data = serializer.validated_data
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        is_active = validated_data.get('is_active')
+
+        if username is not None:
             user_data['username'] = username
+        if is_active is not None:
+            user_data['is_active'] = is_active
 
         if user_data:
-            user_serializer = MyUserUpdateSerializer(data=user_data)
+            user_serializer = MyUserUpdateSerializer(data=user_data, partial=True)
             user_serializer.is_valid(raise_exception=True)
-            user = user_serializer.update(staff_profile.user, user_serializer.data)
-            if password:
-                user.set_password(password)
-            user.save()
+            user = user_serializer.update(user, user_serializer.validated_data)
+
+        if password:
+            user.set_password(password)
+
+        user.save()
 
         self.perform_update(serializer)
         serializer = StaffSerializer(staff_profile, context=self.get_renderer_context())

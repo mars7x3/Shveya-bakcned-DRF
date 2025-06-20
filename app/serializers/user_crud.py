@@ -64,6 +64,7 @@ class StaffCreateSerializer(StaffSerializer):
     username = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True)
     image = serializers.ImageField(required=False, allow_null=True)
+    is_active = serializers.BooleanField()
 
 
 class StaffUpdateSerializer(StaffCreateSerializer):
