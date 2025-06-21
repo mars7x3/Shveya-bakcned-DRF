@@ -22,7 +22,10 @@ class WorkPaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = '__all__'
+        fields = ['staff', 'status', 'comment', 'created_at', 'amount', 'date_from', 'date_until']
+        extra_kwargs = {'id': {'read_only': True},
+                        'date_from': {'read_only': True},
+                        'date_until': {'read_only': True},}
 
 
 class WorkOperationSerializer(serializers.Serializer):
@@ -48,11 +51,14 @@ class WorkDetailPaymentSerializer(serializers.ModelSerializer):
 class SalaryInfoSerializer(serializers.Serializer):
     works = GroupedWorkDetailSerializer(many=True)
     payments = WorkDetailPaymentSerializer(many=True)
+    earliest_created_at = serializers.DateField()
 
 
 class SalaryCreateSerializer(serializers.Serializer):
     staff_id = serializers.PrimaryKeyRelatedField(queryset=StaffProfile.objects.all())
     amount = serializers.IntegerField()
+    date_from = serializers.DateField()
+    date_until = serializers.DateField()
 
 
 class AggregatedOperationSerializer(serializers.Serializer):
@@ -75,7 +81,8 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['id', 'status', 'comment', 'created_at', 'amount', 'operations', 'files', 'staff']
+        fields = ['id', 'status', 'comment', 'created_at', 'amount', 'operations', 'files', 'staff', 'date_from',
+                  'date_until']
 
     def get_operations(self, obj):
         operations = (

@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Min
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from drf_spectacular.utils import extend_schema
@@ -63,7 +63,7 @@ class SalaryInfoView(APIView):
             .values('combination__id', 'combination__title', 'work__party__number', 'work__party__order_id')
             .annotate(
                 total_amount=Sum('amount'),
-                total_price=Sum('combination__operations__price')
+                total_price=Sum('combination__operations__price'),
             )
         )
 
@@ -76,7 +76,7 @@ class SalaryInfoView(APIView):
                 },
                 "total_amount": work["total_amount"],
                 "party_number": work["work__party__number"],
-                "order_id": work["work__party__order_id"]
+                "order_id": work["work__party__order_id"],
             }
             for work in works_queryset
         ]
@@ -86,9 +86,17 @@ class SalaryInfoView(APIView):
             status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE]
         )
 
+        work_detail = WorkDetail.objects.filter(
+            staff_id=pk,
+            status=WorkStatus.NEW
+        ).order_by('-created_at').first()
+
+        earliest_created_at = work_detail.created_at.date() if work_detail else None
+
         data = {
             "works": works,
             "payments": payments,
+            "earliest_created_at": earliest_created_at
         }
         serializer = SalaryInfoSerializer(data)
         return Response(serializer.data)

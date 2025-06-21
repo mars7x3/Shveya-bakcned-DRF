@@ -366,6 +366,7 @@ class WorkDetail(models.Model):
     amount = models.IntegerField(default=0)
     status = models.IntegerField(choices=WorkStatus.choices, default=WorkStatus.NEW)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True, related_name='work_details')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 
 # ______________________________ Work end ______________________________
@@ -379,6 +380,8 @@ class Payment(models.Model):
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     amount = models.IntegerField(default=0)
+    date_from = models.DateField(blank=True, null=True)
+    date_until = models.DateField(blank=True, null=True)
 
     class Meta:
         ordering = ['-id']
