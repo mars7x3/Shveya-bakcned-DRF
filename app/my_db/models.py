@@ -21,7 +21,7 @@ class StaffProfile(models.Model):
     )
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50, blank=True, null=True)
-    phone = models.CharField(max_length=50)
+    phone = models.CharField(max_length=50, blank=True, null=True)
     role = models.IntegerField(choices=StaffRole.choices)
     salary = models.IntegerField(default=0)
     image = WEBPField(upload_to=staff_image_folder, blank=True, null=True)
