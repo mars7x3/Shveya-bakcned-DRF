@@ -293,6 +293,7 @@ class Order(models.Model):
     deadline = models.DateTimeField()
     true_deadline = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='orders')
 
     class Meta:
         ordering = ['-id']

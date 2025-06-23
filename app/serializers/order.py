@@ -1,9 +1,11 @@
+from django.db import transaction
 from django.db.models import Sum
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
-from my_db.enums import CombinationStatus
+from my_db.enums import CombinationStatus, OrderStatus, QuantityStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
-    Color, StaffProfile, WorkDetail
+    Color, StaffProfile, WorkDetail, Warehouse, Quantity, QuantityNomenclature, QuantityHistory, NomCount
 
 
 class OrderClientSerializer(serializers.ModelSerializer):
@@ -109,14 +111,22 @@ class GETPartySerializer(serializers.ModelSerializer):
         fields = ['nomenclature', 'staff', 'number', 'status', 'created_at', 'details']
 
 
+class WarehouseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        fields = ['id', 'title']
+
+
 class OrderDetailSerializer(serializers.ModelSerializer):
     client = OrderClientSerializer()
     products = GETOrderProductSerializer(many=True)
     parties = GETPartySerializer(many=True)
+    warehouse = WarehouseSerializer()
 
     class Meta:
         model = Order
-        fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline', 'products', 'parties']
+        fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline', 'products', 'parties',
+                  'warehouse']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):
@@ -140,7 +150,7 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['deadline', 'client', 'products', 'status']
+        fields = ['deadline', 'client', 'products', 'status', 'warehouse']
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')
@@ -160,6 +170,9 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, instance, validated_data):
+        if instance.status == OrderStatus.DONE:
+            raise ValidationError("Вы не можете редактировать заказ, так как он уже готов.")
+
         products_data = validated_data.pop('products')
 
         for key, value in validated_data.items():
@@ -178,5 +191,69 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
                 )
 
         OrderProductAmount.objects.bulk_create(order_products_list)
+
+        if instance.status == OrderStatus.DONE and instance.warehouse:
+            data = [
+                {
+                    "product_id": product.nomenclature.id,
+                    "amount": sum(amount.done for amount in product.amounts.all()),
+                    "price": product.true_price,
+                }
+                for product in instance.products.all()
+            ]
+
+            quantity = Quantity.objects.create(in_warehouse=instance.warehouse, status=QuantityStatus.ACTIVE)
+
+            create_data = []
+            for i in data:
+                create_data.append(
+                    QuantityNomenclature(
+                        quantity=quantity,
+                        nomenclature_id=i['product_id'],
+                        amount=i['amount'],
+                        price=i['price'],
+                    )
+                )
+            QuantityNomenclature.objects.bulk_create(create_data)
+
+            staff = self.context['request'].user.staff_profile
+            QuantityHistory.objects.create(quantity=quantity, staff_id=staff.id, staff_name=staff.name,
+                                           staff_surname=staff.surname, status=quantity.status)
+
+            with transaction.atomic():
+                nom_count_updates = []
+                nomenclature_updates = []
+
+                for item in data:
+                    obj, created = NomCount.objects.get_or_create(
+                        warehouse=quantity.in_warehouse,
+                        nomenclature_id=item["product_id"]
+                    )
+                    if created:
+                        obj.amount = item['amount']
+                        obj.save()
+
+                    else:
+                        obj.amount += item["amount"]
+                    nom_count_updates.append(obj)
+
+                    nomenclature = Nomenclature.objects.get(id=item['product_id'])
+
+                    total_amount_before = NomCount.objects.filter(nomenclature_id=item['product_id']).aggregate(
+                        total_amount=Sum('amount')
+                    )['total_amount'] or 0
+                    if total_amount_before > 0:
+                        total_amount_before -= item['amount']
+                    total_cost_before = total_amount_before * nomenclature.cost_price
+
+                    total_amount_after = obj.amount
+                    total_cost_after = total_cost_before + (item['amount'] * item['price'])
+
+                    nomenclature.cost_price = total_cost_after / total_amount_after
+                    nomenclature_updates.append(nomenclature)
+
+                NomCount.objects.bulk_update(nom_count_updates, ['amount'])
+                Nomenclature.objects.bulk_update(nomenclature_updates, ['cost_price'])
+
 
         return instance
