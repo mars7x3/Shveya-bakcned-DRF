@@ -36,7 +36,7 @@ class ConsumableTitleListView(APIView):
     @extend_schema(responses=ConsumableTitleListSerializer(many=True))
     def get(self, request):
         operations = list(Nomenclature.objects.filter(
-            is_active=True, type=NomType.MATERIAL).values('id', 'title', 'vendor_code')
+            is_active=True, type=NomType.MATERIAL).values('id', 'title', 'vendor_code', 'color', 'coefficient')
                           )
         return Response(operations, status=status.HTTP_200_OK)
 

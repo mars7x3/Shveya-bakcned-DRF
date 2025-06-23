@@ -15,7 +15,7 @@ class GPListSerializer(serializers.ModelSerializer):
 class MaterialListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title']
+        fields = ['id', 'vendor_code', 'title', 'color', 'coefficient']
 
 
 class PatternSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class CombinationOperationsSerializer(serializers.ModelSerializer):
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'unit']
+        fields = ['id', 'title', 'unit', 'coefficient']
 
 
 class EquipmentReadSerializer(serializers.ModelSerializer):
