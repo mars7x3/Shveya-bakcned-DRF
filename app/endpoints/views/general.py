@@ -23,7 +23,7 @@ class SizeListView(ListAPIView):
 
 
 class SizeModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, ]
     queryset = Size.objects.all()
     serializer_class = SizeSerializer
 
@@ -46,7 +46,7 @@ class SizeModelViewSet(viewsets.ModelViewSet):
 
 
 class RankModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, ]
     queryset = Rank.objects.all()
     serializer_class = RankSerializer
 
@@ -58,7 +58,7 @@ class RankModelViewSet(viewsets.ModelViewSet):
 
 
 class ColorModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, ]
     queryset = Color.objects.all()
     serializer_class = ColorSerializer
 
