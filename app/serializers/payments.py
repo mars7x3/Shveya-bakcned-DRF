@@ -22,7 +22,7 @@ class WorkPaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = ['staff', 'status', 'comment', 'created_at', 'amount', 'date_from', 'date_until']
+        fields = ['staff', 'status', 'comment', 'created_at', 'amount', 'date_from', 'date_until', 'files']
         extra_kwargs = {'id': {'read_only': True},
                         'date_from': {'read_only': True},
                         'date_until': {'read_only': True},}
