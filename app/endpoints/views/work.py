@@ -329,5 +329,7 @@ class WorkReadListView(APIView):
 
 
 
+from my_db.models import Payment
 
+Payment
 

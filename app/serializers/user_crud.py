@@ -20,7 +20,7 @@ class MyUserCreateSerializer(serializers.ModelSerializer):
 class MyUserUpdateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=False)
     password = serializers.CharField(required=False)
-    is_active = serializers.BooleanField()
+    is_active = serializers.BooleanField(required=False)
 
     class Meta:
         model = MyUser
