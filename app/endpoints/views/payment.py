@@ -138,7 +138,9 @@ class SalaryCreateView(APIView):
         payment = Payment.objects.create(
             staff=staff,
             status=PaymentStatus.SALARY,
-            amount=serializer.validated_data.get('amount')
+            amount=serializer.validated_data.get('amount'),
+            date_from=serializer.validated_data.get('date_from'),
+            date_until=serializer.validated_data.get('date_from'),
         )
 
         WorkDetail.objects.filter(

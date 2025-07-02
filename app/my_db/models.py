@@ -104,15 +104,15 @@ class Color(models.Model):
 # ______________________________ Nomenclature ______________________________
 
 class Nomenclature(models.Model):
-    vendor_code = models.CharField(max_length=50, unique=True)
-    title = models.CharField(max_length=50)
+    vendor_code = models.CharField(max_length=50, blank=True, null=True)
+    title = models.CharField(max_length=50, unique=True)
     type = models.IntegerField(choices=NomType.choices)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     image = WEBPField(upload_to=nom_image_folder, blank=True, null=True)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, verbose_name='nomenclatures', blank=True, null=True)
-    coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True)
+    coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True) #считать в m2
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'
@@ -346,7 +346,16 @@ class PartyConsumable(models.Model):
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
     consumption = models.DecimalField(decimal_places=3, max_digits=12, default=0)
     defect = models.DecimalField(decimal_places=3, max_digits=12, default=0)
-    left = models.DecimalField(decimal_places=3, max_digits=12, default=0)
+    remainder = models.DecimalField(decimal_places=3, max_digits=12, default=0)
+    passport_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    table_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    layers_count = models.IntegerField(default=0)
+    number_of_marker = models.CharField(max_length=50, blank=True, null=True)
+    restyled = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    fact_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    fail = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    quantity = models.IntegerField(default=0)
+
 
 
 class Work(models.Model):

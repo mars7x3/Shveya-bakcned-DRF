@@ -66,6 +66,8 @@ class AggregatedOperationSerializer(serializers.Serializer):
     total_amount = serializers.IntegerField()
     operation_price = serializers.DecimalField(max_digits=12, decimal_places=3)
     total_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    order_id = serializers.IntegerField()
+    party_id = serializers.IntegerField()
 
 
 class StaffProfileSerializer(serializers.ModelSerializer):
@@ -91,6 +93,8 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
                 operation_title=F('combination__title'),
                 operation_price=F('combination__operations__price'),
                 total_amount=Sum('amount'),
+                party_id=F('work__party__id'),
+                order_id=F('work__party__order__id')
             )
             .annotate(
                 total_price=ExpressionWrapper(
@@ -98,6 +102,6 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
                     output_field=DecimalField(max_digits=10, decimal_places=2)
                 )
             )
-            .values('operation_title', 'operation_price', 'total_amount', 'total_price')
+            .values('operation_title', 'operation_price', 'total_amount', 'total_price', 'party_id', 'order_id')
         )
         return AggregatedOperationSerializer(operations, many=True).data
