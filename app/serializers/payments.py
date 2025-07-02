@@ -102,6 +102,6 @@ class WorkPaymentDetailSerializer(serializers.ModelSerializer):
                     output_field=DecimalField(max_digits=10, decimal_places=2)
                 )
             )
-            .values('operation_title', 'operation_price', 'total_amount', 'total_price', 'party_id', 'order_id')
+            .values('operation_title', 'operation_price', 'total_amount', 'total_price', 'party_number', 'order_id')
         )
         return AggregatedOperationSerializer(operations, many=True).data
