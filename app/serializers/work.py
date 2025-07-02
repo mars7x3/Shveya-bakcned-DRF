@@ -105,7 +105,7 @@ class PartyConsumableSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartyConsumable
         fields = ['nomenclature', 'defect', 'remainder', 'passport_length', 'table_length',
-                  'layers_count', 'number_of_marker', 'restyled', '', 'fact_length', 'fail', 'quantity']
+                  'layers_count', 'number_of_marker', 'restyled', 'fact_length', 'fail', 'quantity']
 
 
 class PartyDetailSerializer(serializers.ModelSerializer):
@@ -191,7 +191,7 @@ class PartyConsumableInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartyConsumable
         fields = ['nomenclature', 'defect', 'remainder', 'passport_length', 'table_length',
-                  'layers_count', 'number_of_marker', 'restyled', '', 'fact_length', 'fail', 'quantity']
+                  'layers_count', 'number_of_marker', 'restyled', 'fact_length', 'fail', 'quantity']
 
 
 class PartyDetailInfoSerializer(serializers.ModelSerializer):
