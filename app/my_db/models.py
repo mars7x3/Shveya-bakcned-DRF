@@ -344,7 +344,6 @@ class PartyDetail(models.Model):
 class PartyConsumable(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='consumptions')
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
-    consumption = models.DecimalField(decimal_places=3, max_digits=12, default=0)
     defect = models.DecimalField(decimal_places=3, max_digits=12, default=0)
     remainder = models.DecimalField(decimal_places=3, max_digits=12, default=0)
     passport_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
@@ -355,6 +354,7 @@ class PartyConsumable(models.Model):
     fact_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
     fail = models.DecimalField(decimal_places=1, max_digits=12, default=0)
     quantity = models.IntegerField(default=0)
+    count_in_layer = models.DecimalField(decimal_places=1, max_digits=12, default=0)
 
 
 
