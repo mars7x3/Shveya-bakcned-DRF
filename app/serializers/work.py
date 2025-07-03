@@ -128,12 +128,29 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
 
         party = Party.objects.create(**validated_data)
 
-        PartyDetail.objects.bulk_create([
+        party_details = PartyDetail.objects.bulk_create([
             PartyDetail(party=party, **data) for data in details
         ])
         PartyConsumable.objects.bulk_create([
             PartyConsumable(party=party, **consumable) for consumable in consumptions
         ])
+
+        staff = self.context.get('request').user.staff_profile
+        details_create_list = []
+        combinations = party.nomenclature.combinations.filter(status=CombinationStatus.CUT)
+        for detail in party_details:
+            work = Work.objects.create(party=party, color=detail.color, size=detail.size)
+            for comb in combinations:
+                details_create_list.append(
+                    WorkDetail(
+                        work=work,
+                        staff=staff,
+                        combination=comb,
+                        amount=detail.true_amount
+                    )
+                )
+
+        WorkDetail.objects.bulk_create(details_create_list)
 
         return party
 
@@ -148,12 +165,30 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
         instance.details.all().delete()
         instance.consumptions.all().delete()
 
-        PartyDetail.objects.bulk_create([
+        party_details = PartyDetail.objects.bulk_create([
             PartyDetail(party=instance, **data) for data in details
         ])
         PartyConsumable.objects.bulk_create([
             PartyConsumable(party=instance, **consumable) for consumable in consumptions
         ])
+
+        instance.works.all().delete()
+        staff = self.context.get('request').user.staff_profile
+        details_create_list = []
+        combinations = instance.nomenclature.combinations.filter(status=CombinationStatus.CUT)
+        for detail in party_details:
+            work = Work.objects.create(party=instance, color=detail.color, size=detail.size)
+            for comb in combinations:
+                details_create_list.append(
+                    WorkDetail(
+                        work=work,
+                        staff=staff,
+                        combination=comb,
+                        amount=detail.true_amount
+                    )
+                )
+
+        WorkDetail.objects.bulk_create(details_create_list)
 
         return instance
 

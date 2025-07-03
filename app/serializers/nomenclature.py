@@ -1,9 +1,11 @@
 from django.db import transaction
+from jsonschema.exceptions import ValidationError
 from rest_framework import serializers
 
 from my_db.enums import NomType
 from my_db.models import Nomenclature, Pattern, Operation, Combination, Rank, Equipment, Consumable, Size, \
     EquipmentImages, EquipmentService, StaffProfile, CombinationFile, Price, NomFile
+from utils.nomenclature import has_cut_combination
 
 
 class GPListSerializer(serializers.ModelSerializer):
@@ -230,6 +232,9 @@ class GPCRUDSerializer(serializers.ModelSerializer):
         # operations_data = validated_data.pop('operations', [])
         combinations_data = validated_data.pop('combinations', [])
 
+        if not has_cut_combination(combinations_data):
+            raise ValidationError('Добавьте комбинацию со статусом "КРОЙ".')
+
         nomenclature = Nomenclature.objects.create(**validated_data)
 
         Price.objects.bulk_create([Price(nomenclature=nomenclature, **data) for data in prices_data])
@@ -270,6 +275,8 @@ class GPCRUDSerializer(serializers.ModelSerializer):
         consumables_data = validated_data.pop('consumables', [])
         # operations_data = validated_data.pop('operations', [])
         combinations_data = validated_data.pop('combinations', [])
+        if not has_cut_combination(combinations_data):
+            raise ValidationError('Добавьте комбинацию со статусом "КРОЙ".')
 
         nomenclature = super().update(instance, validated_data)
 

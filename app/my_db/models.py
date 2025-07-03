@@ -358,7 +358,6 @@ class PartyConsumable(models.Model):
     count_in_layer = models.DecimalField(decimal_places=1, max_digits=12, default=0)
 
 
-
 class Work(models.Model):
     staff = models.ForeignKey(StaffProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name='works')
     party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name='works')
