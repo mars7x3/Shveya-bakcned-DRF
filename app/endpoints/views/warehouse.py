@@ -55,7 +55,7 @@ class MaterialListFilter(filters.FilterSet):
 
 
 class WarehouseMaterialListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = MaterialSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = MaterialListFilter
@@ -107,7 +107,11 @@ class MyMaterialListView(ListAPIView):
                 queryset=NomCount.objects.filter(warehouse=warehouse),
                 to_attr='filtered_counts'
             )
-        ).filter(type=NomType.MATERIAL)
+        ).filter(
+                type=NomType.MATERIAL,
+                counts__warehouse=warehouse,
+                counts__amount__gt=0
+            ).distinct()
         return queryset
 
 
@@ -122,7 +126,7 @@ class MaterialModelViewSet(mixins.CreateModelMixin,
 
 
 class StockInputView(APIView):
-    permission_classes = [IsAuthenticated, IsWarehouse]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(request=StockInputSerializer(many=True))
     def post(self, request):
