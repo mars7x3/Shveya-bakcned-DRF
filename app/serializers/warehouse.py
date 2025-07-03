@@ -112,7 +112,7 @@ class OutputWarehouseSerializer(serializers.ModelSerializer):
 class OutputWarehouseNomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'color', 'vendor_code']
 
 
 class OutputWarehouseMaterialsSerializer(serializers.ModelSerializer):
