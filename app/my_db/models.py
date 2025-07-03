@@ -210,6 +210,7 @@ class Consumable(models.Model):
         Nomenclature, on_delete=models.CASCADE, related_name='material_consumables', blank=True, null=True
     )
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
+    unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
 
 
 class Price(models.Model):
@@ -293,7 +294,7 @@ class Order(models.Model):
     deadline = models.DateTimeField()
     true_deadline = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='orders')
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='orders')  # это склад, куда попадает ГП после статуса "ГОТОВО"
 
     class Meta:
         ordering = ['-id']
