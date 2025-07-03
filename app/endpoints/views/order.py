@@ -59,3 +59,4 @@ class OrderModelViewSet(mixins.CreateModelMixin,
     queryset = Order.objects.select_related('client')
     serializer_class = OrderCRUDSerializer
 
+
