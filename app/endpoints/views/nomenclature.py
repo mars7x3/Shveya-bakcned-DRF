@@ -12,7 +12,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
-from my_db.enums import NomType
+from my_db.enums import NomType, NomUnit
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
     CombinationFile, NomFile
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
@@ -63,7 +63,7 @@ class MaterialListMyView(ListAPIView):
         warehouse = staff.warehouses.first()
         return (
             Nomenclature.objects
-            .filter(type=NomType.MATERIAL)
+            .filter(type=NomType.MATERIAL, unit=NomUnit.R)
             .filter(counts__warehouse=warehouse, counts__amount=1)
             .distinct()
         )
