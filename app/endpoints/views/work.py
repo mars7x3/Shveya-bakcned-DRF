@@ -319,13 +319,15 @@ class WorkReadListView(APIView):
     def get(self, request):
         order_id = request.query_params.get('order')
         product_id = request.query_params.get('product')
+        staff = request.user.staff_profile
 
         if not order_id or not product_id:
             return Response({"error": "order и product обязательны"}, status=400)
 
         works = Work.objects.filter(
             party__order_id=order_id,
-            party__nomenclature_id=product_id
+            party__nomenclature_id=product_id,
+            staff=staff
         ).select_related('color', 'size', 'staff', 'party')
 
         serializer = GETWorkListSerializer(works, many=True)
