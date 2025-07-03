@@ -128,8 +128,8 @@ class StockInputView(APIView):
     def post(self, request):
         staff = request.user.staff_profile
         data = request.data
-
-        quantity = Quantity.objects.create(in_warehouse=staff.warehouses.first(), status=QuantityStatus.ACTIVE)
+        warehouse = Warehouse.objects.filter(staffs=staff).first()
+        quantity = Quantity.objects.create(in_warehouse=warehouse, status=QuantityStatus.ACTIVE)
 
         create_data = []
         for i in data:
@@ -190,14 +190,16 @@ class StockOutputView(APIView):
     @extend_schema(request=StockOutputSerializer())
     def post(self, request):
         staff = request.user.staff_profile
+        warehouse = Warehouse.objects.filter(staffs=staff).first()
         data = request.data
+
         warehouse_id = data['output_warehouse_id']
         if warehouse_id:
             quantity = Quantity.objects.create(in_warehouse_id=warehouse_id,
-                                               out_warehouse=staff.warehouses.first(),
+                                               out_warehouse=warehouse,
                                                status=QuantityStatus.PROGRESSING)
         else:
-            quantity = Quantity.objects.create(out_warehouse=staff.warehouses.first(),
+            quantity = Quantity.objects.create(out_warehouse=warehouse,
                                                status=data['status'])
 
         create_data = []
@@ -254,8 +256,8 @@ class StockDefectiveView(APIView):
     def post(self, request):
         staff = request.user.staff_profile
         data = request.data
-
-        quantity = Quantity.objects.create(out_warehouse=staff.warehouses.first(), status=QuantityStatus.ACTIVE)
+        warehouse = Warehouse.objects.filter(staffs=staff).first()
+        quantity = Quantity.objects.create(out_warehouse=warehouse, status=QuantityStatus.ACTIVE)
 
         create_data = []
         for i in data['products']:
@@ -271,11 +273,11 @@ class StockDefectiveView(APIView):
 
         QuantityHistory.objects.create(quantity=quantity, staff_id=staff.id, staff_name=staff.name,
                                        staff_surname=staff.surname, status=quantity.status)
-
+        warehouse = Warehouse.objects.filter(staffs=staff).first()
         with transaction.atomic():
             for i in data['products']:
                 NomCount.objects.filter(
-                    warehouse=staff.warehouses.first(),
+                    warehouse=warehouse,
                     nomenclature_id=i["product_id"]
                 ).update(amount=F('amount') - i["amount"])
 

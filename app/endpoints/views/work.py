@@ -46,7 +46,7 @@ from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, \
 
 
 class WorkStaffListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+    permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = WorkStaffListSerializer
     queryset = StaffProfile.objects.filter(role__in=[StaffRole.SEAMSTRESS, StaffRole.CUTTER])
 
@@ -257,7 +257,7 @@ class ProductInfoView(APIView):
 
 
 class PartyInfoListView(APIView):
-    permission_classes = [IsAuthenticated, IsController]
+    permission_classes = [IsAuthenticated, IsStaff]
     @extend_schema(request=RequestSerializer(),
                    responses=PartyInfoSerializer(many=True))
     def post(self, request):
@@ -299,7 +299,7 @@ class WorkCRUDView(mixins.CreateModelMixin,
 
 
 class WorkReadDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsController]
+    permission_classes = [IsAuthenticated, IsStaff]
     queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__combination',
                                                                                                 'details__staff')
     pagination_class = StandardPagination
@@ -307,7 +307,7 @@ class WorkReadDetailView(RetrieveAPIView):
 
 
 class WorkReadListView(APIView):
-    permission_classes = [IsAuthenticated, IsController]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     @extend_schema(
         parameters=[

@@ -14,7 +14,7 @@ from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType, NomUnit
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
-    CombinationFile, NomFile
+    CombinationFile, NomFile, Warehouse
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
@@ -60,7 +60,7 @@ class MaterialListMyView(ListAPIView):
 
     def get_queryset(self):
         staff = self.request.user.staff_profile
-        warehouse = staff.warehouses.first()
+        warehouse = Warehouse.objects.filter(staffs=staff).first()
         return (
             Nomenclature.objects
             .filter(type=NomType.MATERIAL, unit=NomUnit.R)
