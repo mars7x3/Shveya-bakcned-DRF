@@ -51,6 +51,24 @@ class MaterialListView(ListAPIView):
     filterset_class = GPListFilter
 
 
+class MaterialListMyView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+    queryset = Nomenclature.objects.all()
+    serializer_class = MaterialListSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = GPListFilter
+
+    def get_queryset(self):
+        staff = self.request.user.staff_profile
+        warehouse = staff.warehouses.first()
+        return (
+            Nomenclature.objects
+            .filter(type=NomType.MATERIAL)
+            .filter(counts__warehouse=warehouse, counts__amount=1)
+            .distinct()
+        )
+
+
 class GPModelViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,

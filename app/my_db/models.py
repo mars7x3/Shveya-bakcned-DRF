@@ -105,7 +105,7 @@ class Color(models.Model):
 
 class Nomenclature(models.Model):
     vendor_code = models.CharField(max_length=50, blank=True, null=True)
-    title = models.CharField(max_length=50, unique=True)
+    title = models.CharField(max_length=50)
     type = models.IntegerField(choices=NomType.choices)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)

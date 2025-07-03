@@ -10,7 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsCutter, IsAuthor, IsController
-from my_db.enums import StaffRole, OrderStatus
+from my_db.enums import StaffRole, OrderStatus, CombinationStatus
 from my_db.models import StaffProfile, Work, WorkDetail, Combination, Operation, Nomenclature, Party, Order, \
     OrderProduct
 from serializers.work import WorkOutputSerializer, WorkStaffListSerializer, \
@@ -271,12 +271,17 @@ class PartyInfoListView(APIView):
 
 
 class ProductOperationListView(APIView):
-    permission_classes = [IsAuthenticated, IsController]
+    permission_classes = [IsAuthenticated, IsStaff]
 
     def post(self, request):
         product_id = request.data.get('product')
-
-        combinations = Combination.objects.filter(nomenclature=product_id).values('id', 'title')
+        staff = request.user.staff_profile
+        if staff.role == StaffRole.OTK:
+            combinations = (Combination.objects.filter(
+                nomenclature=product_id, status__in=[CombinationStatus.OTK, CombinationStatus.DONE])
+                            .values('id', 'title'))
+        else:
+            combinations = Combination.objects.filter(nomenclature=product_id).values('id', 'title')
 
         return Response(combinations)
 

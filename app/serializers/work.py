@@ -395,3 +395,6 @@ class GETWorkListSerializer(serializers.ModelSerializer):
         fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party']
 
 
+from my_db.models import StaffProfile
+
+s = StaffProfile.objects.filter(id=34).update(role=7)

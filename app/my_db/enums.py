@@ -14,6 +14,7 @@ class StaffRole(models.IntegerChoices):
     SEAMSTRESS = 4, 'ШВЕЯ'
     CUTTER = 5, 'КРОЙЩИК'
     CONTROLLER = 6, 'КОНТРОЛЛЕР'
+    OTK = 7, 'ОТК'
 
 
 class NomType(models.IntegerChoices):
@@ -72,4 +73,6 @@ class WorkStatus(models.IntegerChoices):
 class CombinationStatus(models.IntegerChoices):
     ZERO = 0, "НЕТ"
     OTK = 1, "ОТК"
-    DONE = 2, "УПАКОВАН"
+    DONE = 2, "УПАКОВКА"
+    CUT = 3, 'КРОЙ'
+

@@ -20,7 +20,8 @@ class OperationTitleListView(APIView):
     permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
     def get(self, request):
-        operations = list(Operation.objects.filter(is_active=True, is_sample=True).values('id', 'title'))
+        operations = list(Operation.objects.filter(is_active=True, is_sample=True)
+                          .values('id', 'title', 'price', 'time'))
         return Response(operations, status=status.HTTP_200_OK)
 
 

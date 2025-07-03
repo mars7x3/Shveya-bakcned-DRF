@@ -12,7 +12,7 @@ from .views.calculation import OperationTitleListView, ConsumableTitleListView, 
 from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
-    EquipmentImageCRUDView, EquipmentServiceView, FileCRUDView, FileListView
+    EquipmentImageCRUDView, EquipmentServiceView, FileCRUDView, FileListView, MaterialListMyView
 from .views.order import OrderReadView, OrderModelViewSet
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
@@ -76,6 +76,7 @@ urlpatterns = [
 
         path('product/list/', GPListView.as_view()),
         path('material/list/', MaterialListView.as_view()),
+        path('material/list/my/', MaterialListMyView.as_view()),
 
         path('product/detail/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
