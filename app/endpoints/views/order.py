@@ -1,7 +1,9 @@
+from collections import defaultdict
+from decimal import Decimal
 from email.policy import default
 
 from django.db.models import Q, Sum, ExpressionWrapper, F, FloatField
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -59,4 +61,46 @@ class OrderModelViewSet(mixins.CreateModelMixin,
     queryset = Order.objects.select_related('client')
     serializer_class = OrderCRUDSerializer
 
+
+class InvoiceDataVie(APIView):
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        invoice = defaultdict(lambda: {'colors': defaultdict(Decimal), 'unit': None, 'title': None})
+
+        order = Order.objects.prefetch_related(
+            'products__amounts__color',
+            'products__nomenclature__consumables__material_nomenclature',
+        ).get(id=order_id)
+
+        for order_product in order.products.all():
+            product_nomenclature = order_product.nomenclature
+            consumables = product_nomenclature.consumables.all()
+
+            # Для каждого OrderProductAmount (может быть разный цвет/размер)
+            for amount_entry in order_product.amounts.all():
+                amount = amount_entry.amount
+                color_title = amount_entry.color.title if amount_entry.color else '—'
+
+                for consumable in consumables:
+                    material = consumable.material_nomenclature
+                    if not material:
+                        continue
+
+                    total_consumed = amount * consumable.consumption
+
+                    key = material.id
+                    invoice[key]['title'] = material.title
+                    invoice[key]['unit'] = consumable.unit
+                    invoice[key]['colors'][color_title] += total_consumed
+
+        # Формируем итоговый список
+        result = []
+        for entry in invoice.values():
+            result.append({
+                'title': entry['title'],
+                'colors': {color: float(amount) for color, amount in entry['colors'].items()},
+                'unit': entry['unit'],
+            })
+
+        return Response(result, status=status.HTTP_200_OK)
 

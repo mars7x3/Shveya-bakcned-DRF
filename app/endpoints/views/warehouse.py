@@ -100,10 +100,11 @@ class MyMaterialListView(ListAPIView):
 
     def get_queryset(self):
         manager = self.request.user.staff_profile
+        warehouse = Warehouse.objects.filter(staffs=manager).first()
         queryset = Nomenclature.objects.prefetch_related(
             Prefetch(
                 'counts',
-                queryset=NomCount.objects.filter(warehouse=manager.warehouses.first()),
+                queryset=NomCount.objects.filter(warehouse=warehouse),
                 to_attr='filtered_counts'
             )
         ).filter(type=NomType.MATERIAL)
