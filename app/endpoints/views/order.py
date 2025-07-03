@@ -63,8 +63,8 @@ class OrderModelViewSet(mixins.CreateModelMixin,
 
 
 class InvoiceDataVie(APIView):
-    def post(self, request):
-        order_id = request.data.get('order_id')
+    def get(self, request):
+        order_id = request.query_params.get('order_id')
         invoice = defaultdict(lambda: {'colors': defaultdict(Decimal), 'unit': None, 'title': None})
 
         order = Order.objects.prefetch_related(
