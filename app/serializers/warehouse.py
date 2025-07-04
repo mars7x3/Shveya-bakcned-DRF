@@ -57,7 +57,7 @@ class MaterialSerializer(serializers.ModelSerializer):
 class MaterialCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'unit', 'color', 'coefficient']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'unit', 'color', 'coefficient', 'status']
 
     def validate(self, attrs):
         attrs['type'] = NomType.MATERIAL

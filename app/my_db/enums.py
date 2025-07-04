@@ -24,6 +24,11 @@ class NomType(models.IntegerChoices):
     GP = 4, "ГП"
 
 
+class NomStatus(models.IntegerChoices):
+    CUT = 1, 'КРОЙ'
+    SHOP = 2, "ЦЕХ"
+
+
 class NomUnit(models.IntegerChoices):
     MM = 1, "ММ"
     SM = 2, "СМ"
@@ -45,10 +50,11 @@ class OrderStatus(models.IntegerChoices):
 
 class QuantityStatus(models.IntegerChoices):
     PROGRESSING = 1, "В ОБРАБОТКЕ"
-    ACTIVE = 2, "АКТИВЕН"
-    INACTIVE = 3, "НЕАКТИВЕН"
+    ACTIVE = 2, "УСПЕШНОЕ ПЕРЕМЕЩЕНИЕ"
+    INACTIVE = 3, "ОТМЕНА ПЕРЕМЕЩЕНИЯ"
     WRITE_OF = 4, "СПИСАНИЕ"
     RETURN_TO_CLIENT = 5, "ВОЗВРАТ КЛИЕНТУ"
+    DEFECT = 6, "БРАК"
 
 
 class PartyStatus(models.IntegerChoices):

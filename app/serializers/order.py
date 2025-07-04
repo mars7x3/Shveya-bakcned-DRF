@@ -193,7 +193,7 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
 
         OrderProductAmount.objects.bulk_create(order_products_list)
 
-        if instance.status == OrderStatus.DONE and instance.warehouse:
+        if instance.status == OrderStatus.DONE and instance.in_warehouse:
             data = [
                 {
                     "product_id": product.nomenclature.id,

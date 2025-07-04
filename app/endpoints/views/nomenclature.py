@@ -14,7 +14,7 @@ from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
 from my_db.enums import NomType, NomUnit
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
-    CombinationFile, NomFile, Warehouse
+    CombinationFile, NomFile, Warehouse, Consumable
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \
@@ -60,13 +60,16 @@ class MaterialListMyView(ListAPIView):
 
     def get_queryset(self):
         staff = self.request.user.staff_profile
+        product_id = self.request.query_params.get('product')
         warehouse = Warehouse.objects.filter(staffs=staff).first()
-        return (
-            Nomenclature.objects
-            .filter(type=NomType.MATERIAL, unit=NomUnit.R)
-            .filter(counts__warehouse=warehouse, counts__amount=1)
-            .distinct()
-        )
+
+        nomenclatures = Nomenclature.objects.filter(
+            material_consumables__nomenclature_id=product_id,
+            counts__warehouse=warehouse,
+            counts__amount=1
+        ).distinct()
+
+        return nomenclatures
 
 
 class GPModelViewSet(mixins.CreateModelMixin,

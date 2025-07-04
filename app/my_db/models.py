@@ -3,7 +3,7 @@ from django.db import models
 
 from .compress import staff_image_folder, WEBPField, equipment_image_folder, nom_image_folder
 from .enums import UserStatus, StaffRole, NomType, NomUnit, QuantityStatus, OrderStatus, PaymentStatus, \
-    PartyStatus, WorkStatus, CombinationStatus
+    PartyStatus, WorkStatus, CombinationStatus, NomStatus
 
 
 # ______________________________ User ______________________________
@@ -113,6 +113,7 @@ class Nomenclature(models.Model):
     image = WEBPField(upload_to=nom_image_folder, blank=True, null=True)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, verbose_name='nomenclatures', blank=True, null=True)
     coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True) #считать в m2
+    status = models.IntegerField(choices=NomStatus.choices, blank=True, null=True)
 
     def __str__(self):
         return f'{self.title} - {self.vendor_code}'
