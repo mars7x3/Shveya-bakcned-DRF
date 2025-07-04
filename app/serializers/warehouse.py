@@ -46,7 +46,7 @@ class WarehouseCRUDSerializer(WarehouseSerializer):
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'color', 'coefficient']
+        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'color', 'coefficient', 'status']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -144,7 +144,7 @@ class MyMaterialsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'is_active', 'color', 'coefficient']
+        fields = ['id', 'title', 'vendor_code', 'unit', 'cost_price', 'is_active', 'color', 'coefficient', 'status']
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
