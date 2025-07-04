@@ -172,9 +172,6 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
         party_details = PartyDetail.objects.bulk_create([
             PartyDetail(party=instance, **data) for data in details
         ])
-        PartyConsumable.objects.bulk_create([
-            PartyConsumable(party=instance, **consumable) for consumable in consumptions
-        ])
 
         instance.works.all().delete()
         staff = self.context.get('request').user.staff_profile
@@ -193,6 +190,12 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
                 )
 
         WorkDetail.objects.bulk_create(details_create_list)
+
+        consumables = PartyConsumable.objects.bulk_create([
+            PartyConsumable(party=instance, **consumable) for consumable in consumptions
+        ])
+
+        write_off_from_warehouse.delay(staff, consumables)
 
         return instance
 
