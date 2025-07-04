@@ -261,7 +261,7 @@ class StockDefectiveView(APIView):
         staff = request.user.staff_profile
         data = request.data
         warehouse = Warehouse.objects.filter(staffs=staff).first()
-        quantity = Quantity.objects.create(out_warehouse=warehouse, status=QuantityStatus.БРАК)
+        quantity = Quantity.objects.create(out_warehouse=warehouse, status=QuantityStatus.DEFECT)
 
         create_data = []
         for i in data['products']:

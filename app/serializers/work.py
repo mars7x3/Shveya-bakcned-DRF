@@ -7,6 +7,7 @@ from my_db.enums import CombinationStatus
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
     Consumable
+from tasks.warehouse import write_off_from_warehouse
 
 
 class OperationOutAndInSerializer(serializers.Serializer):
@@ -132,9 +133,6 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
         party_details = PartyDetail.objects.bulk_create([
             PartyDetail(party=party, **data) for data in details
         ])
-        PartyConsumable.objects.bulk_create([
-            PartyConsumable(party=party, **consumable) for consumable in consumptions
-        ])
 
         staff = self.context.get('request').user.staff_profile
         details_create_list = []
@@ -152,6 +150,11 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
                 )
 
         WorkDetail.objects.bulk_create(details_create_list)
+
+        consumables = PartyConsumable.objects.bulk_create([
+            PartyConsumable(party=party, **consumable) for consumable in consumptions
+        ])
+        write_off_from_warehouse.delay(staff, consumables)
 
         return party
 
