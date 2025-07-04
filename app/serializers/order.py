@@ -121,12 +121,13 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     client = OrderClientSerializer()
     products = GETOrderProductSerializer(many=True)
     parties = GETPartySerializer(many=True)
-    warehouse = WarehouseSerializer()
+    in_warehouse = WarehouseSerializer()
+    out_warehouse = WarehouseSerializer()
 
     class Meta:
         model = Order
         fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline', 'products', 'parties',
-                  'warehouse']
+                  'in_warehouse', 'out_warehouse']
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):
@@ -150,7 +151,7 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['deadline', 'client', 'products', 'status', 'warehouse']
+        fields = ['deadline', 'client', 'products', 'status', 'in_warehouse', 'out_warehouse']
 
     def create(self, validated_data):
         products_data = validated_data.pop('products')

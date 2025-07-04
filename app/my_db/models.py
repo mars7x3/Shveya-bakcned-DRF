@@ -294,7 +294,10 @@ class Order(models.Model):
     deadline = models.DateTimeField()
     true_deadline = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True, related_name='orders')  # это склад, куда попадает ГП после статуса "ГОТОВО"
+    in_warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True,
+                                     related_name='in_orders')  # это склад, куда попадает ГП после статуса "ГОТОВО"
+    out_warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, blank=True, null=True,
+                                      related_name='out_orders')  # это склад, откуда спишется сырье после статуса "ГОТОВО"
 
     class Meta:
         ordering = ['-id']
@@ -345,17 +348,17 @@ class PartyDetail(models.Model):
 class PartyConsumable(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='consumptions')
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
-    defect = models.DecimalField(decimal_places=3, max_digits=12, default=0)
-    remainder = models.DecimalField(decimal_places=3, max_digits=12, default=0)
-    passport_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
-    table_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
-    layers_count = models.IntegerField(default=0)
+    defect = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    remainder = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    passport_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    table_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    layers_count = models.IntegerField(blank=True, null=True)
     number_of_marker = models.CharField(max_length=50, blank=True, null=True)
-    restyled = models.DecimalField(decimal_places=1, max_digits=12, default=0)
-    fact_length = models.DecimalField(decimal_places=1, max_digits=12, default=0)
-    fail = models.DecimalField(decimal_places=1, max_digits=12, default=0)
-    quantity = models.IntegerField(default=0)
-    count_in_layer = models.DecimalField(decimal_places=1, max_digits=12, default=0)
+    restyled = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    fact_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    fail = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    count_in_layer = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
 
 
 class Work(models.Model):
