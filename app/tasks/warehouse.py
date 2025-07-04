@@ -1,10 +1,11 @@
 from main_conf.celery import app
-from my_db.models import Warehouse, NomCount
+from my_db.models import Warehouse, NomCount, PartyConsumable
 
 
 @app.task
-def write_off_from_warehouse(staff, consumables):
-    warehouse = Warehouse.objects.filter(staffs=staff).first()
+def write_off_from_warehouse(staff_id, consumables__ids):
+    warehouse = Warehouse.objects.filter(staffs__id=staff_id).first()
+    consumables = PartyConsumable.objects.filter(id__in=consumables__ids)
 
     update_list = []
     for c in consumables:

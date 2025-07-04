@@ -155,31 +155,32 @@ class StockInputView(APIView):
             nomenclature_updates = []
 
             for item in data:
+                nomenclature = Nomenclature.objects.get(id=item['product_id'])
+                price = item['price']
+                amount = item['amount']
+
                 obj, created = NomCount.objects.get_or_create(
                     warehouse=quantity.in_warehouse,
-                    nomenclature_id=item["product_id"]
+                    nomenclature=nomenclature
                 )
-                if created:
-                    obj.amount = item['amount']
-                    obj.save()
 
+                if created:
+                    old_amount = 0
+                    old_price = 0
                 else:
-                    obj.amount += item["amount"]
+                    old_amount = obj.amount
+                    old_price = nomenclature.cost_price or 0  # fallback
+
+                obj.amount = old_amount + amount
                 nom_count_updates.append(obj)
 
-                nomenclature = Nomenclature.objects.get(id=item['product_id'])
+                total_amount = obj.amount
+                total_cost = (old_amount * old_price) + (amount * price)
 
-                total_amount_before = NomCount.objects.filter(nomenclature_id=item['product_id']).aggregate(
-                    total_amount=Sum('amount')
-                )['total_amount'] or 0
-                if total_amount_before > 0:
-                    total_amount_before -= item['amount']
-                total_cost_before = total_amount_before * nomenclature.cost_price
-
-                total_amount_after = obj.amount
-                total_cost_after = total_cost_before + (item['amount'] * item['price'])
-
-                nomenclature.cost_price = total_cost_after / total_amount_after
+                if total_amount > 0:
+                    nomenclature.cost_price = total_cost / total_amount
+                else:
+                    nomenclature.cost_price = 0  # или None
                 nomenclature_updates.append(nomenclature)
 
             NomCount.objects.bulk_update(nom_count_updates, ['amount'])
@@ -369,11 +370,9 @@ class QuantityHistoryListView(viewsets.ReadOnlyModelViewSet):
             return QuantityHistory.objects.select_related(
                 'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
         staff = self.request.user.staff_profile
-        if staff.role == StaffRole.WAREHOUSE:
-            return QuantityHistory.objects.filter(staff_id=staff.id).select_related(
-                'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
-        return QuantityHistory.objects.select_related(
+        return QuantityHistory.objects.filter(staff_id=staff.id).select_related(
             'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
+
 
 
 

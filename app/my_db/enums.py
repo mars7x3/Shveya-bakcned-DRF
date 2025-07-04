@@ -22,6 +22,8 @@ class NomType(models.IntegerChoices):
     PF_1 = 2, "ПФ1"
     PF_2 = 3, "ПФ2"
     GP = 4, "ГП"
+    ORDER = 5, "ЗАКАЗ"
+
 
 
 class NomStatus(models.IntegerChoices):
@@ -55,6 +57,7 @@ class QuantityStatus(models.IntegerChoices):
     WRITE_OF = 4, "СПИСАНИЕ"
     RETURN_TO_CLIENT = 5, "ВОЗВРАТ КЛИЕНТУ"
     DEFECT = 6, "БРАК"
+    ORDER = 7, "ЗАКАЗ"
 
 
 class PartyStatus(models.IntegerChoices):
