@@ -281,7 +281,9 @@ class ProductOperationListView(APIView):
                 nomenclature=product_id, status__in=[CombinationStatus.OTK, CombinationStatus.DONE])
                             .values('id', 'title'))
         else:
-            combinations = Combination.objects.filter(nomenclature=product_id).values('id', 'title')
+            combinations = (Combination.objects.filter(nomenclature=product_id)
+                            .exclude(status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT])
+                            .values('id', 'title'))
 
         return Response(combinations)
 

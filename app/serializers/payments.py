@@ -31,7 +31,7 @@ class WorkPaymentSerializer(serializers.ModelSerializer):
 class WorkOperationSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField()
-    price = serializers.IntegerField()
+    price = serializers.DecimalField(max_digits=12, decimal_places=2)
 
 
 class GroupedWorkDetailSerializer(serializers.Serializer):

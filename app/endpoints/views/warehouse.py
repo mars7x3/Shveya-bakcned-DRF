@@ -169,7 +169,7 @@ class StockInputView(APIView):
                     old_price = 0
                 else:
                     old_amount = obj.amount
-                    old_price = nomenclature.cost_price or 0  # fallback
+                    old_price = nomenclature.cost_price or 0
 
                 obj.amount = old_amount + amount
                 nom_count_updates.append(obj)
@@ -180,7 +180,7 @@ class StockInputView(APIView):
                 if total_amount > 0:
                     nomenclature.cost_price = total_cost / total_amount
                 else:
-                    nomenclature.cost_price = 0  # или None
+                    nomenclature.cost_price = 0
                 nomenclature_updates.append(nomenclature)
 
             NomCount.objects.bulk_update(nom_count_updates, ['amount'])
