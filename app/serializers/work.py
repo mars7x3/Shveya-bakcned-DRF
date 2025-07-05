@@ -3,7 +3,7 @@ from collections import defaultdict
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
-from my_db.enums import CombinationStatus
+from my_db.enums import CombinationStatus, StaffRole
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
     Consumable
@@ -404,12 +404,24 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
     staff = WorkStaffSerializer()
     size = SizeSerializer()
     color = ColorSerializer()
-    details = WorkDetailReadSerializer(many=True)
+    details = serializers.SerializerMethodField()
     party_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
         fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party', 'details', 'party_amount']
+
+    def get_details(self, obj):
+        staff = self.context.get('request').user.staff_profile
+        if staff.role == StaffRole.OTK:
+            filtered_details = obj.details.filter(
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE]
+            )
+        else:
+            filtered_details = obj.details.exclude(
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT]
+            )
+        return WorkDetailReadSerializer(filtered_details, many=True).data
 
     def get_party_amount(self, obj):
         if not obj.party:
