@@ -13,6 +13,6 @@ def write_off_from_warehouse(staff_id, consumables__ids):
         nom_count.amount = c.remainder
         update_list.append(nom_count)
 
-    NomCount.objects.bulk_update(nom_count, ['amount'])
+    NomCount.objects.bulk_update(update_list, ['amount'])
 
 
