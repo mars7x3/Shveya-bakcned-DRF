@@ -60,7 +60,8 @@ class MaterialListMyView(ListAPIView):
 
     def get_queryset(self):
         staff = self.request.user.staff_profile
-        product_title = self.request.query_params.get('product')
+        product_id = self.request.query_params.get('product')
+        product_title = Nomenclature.objects.get(product_id).title
         warehouse = Warehouse.objects.filter(staffs=staff).first()
 
         nomenclatures = Nomenclature.objects.filter(
