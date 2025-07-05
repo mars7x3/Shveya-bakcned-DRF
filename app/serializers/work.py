@@ -137,6 +137,7 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
         staff = self.context.get('request').user.staff_profile
         details_create_list = []
         combinations = party.nomenclature.combinations.filter(status=CombinationStatus.CUT)
+        party_details = party_details.filter(true_amount__gt=0)
         for detail in party_details:
             work = Work.objects.create(party=party, color=detail.color, size=detail.size)
             for comb in combinations:
@@ -179,6 +180,8 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
         staff = self.context.get('request').user.staff_profile
         details_create_list = []
         combinations = instance.nomenclature.combinations.filter(status=CombinationStatus.CUT)
+        party_details = party_details.filter(true_amount__gt=0)
+
         for detail in party_details:
             work = Work.objects.create(party=instance, color=detail.color, size=detail.size)
             for comb in combinations:
