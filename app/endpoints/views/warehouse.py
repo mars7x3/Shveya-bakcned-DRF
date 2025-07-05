@@ -108,7 +108,6 @@ class MyMaterialListView(ListAPIView):
                 to_attr='filtered_counts'
             )
         ).filter(
-                type=NomType.MATERIAL,
                 counts__warehouse=warehouse,
                 counts__amount__gt=0
             ).distinct()
