@@ -26,7 +26,7 @@ def gp_move_in_warehouse(order_id, staff_id):
             "price": product.true_price,
         })
 
-    quantity = Quantity.objects.create(in_warehouse=order.warehouse, status=QuantityStatus.ACTIVE)
+    quantity = Quantity.objects.create(in_warehouse=order.in_warehouse, status=QuantityStatus.ACTIVE)
 
     create_data = []
     for i in data:
