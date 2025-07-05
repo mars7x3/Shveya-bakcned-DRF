@@ -2,9 +2,9 @@ from django.db import transaction
 from django.db.models import Sum
 
 from main_conf.celery import app
-from my_db.enums import QuantityStatus
+from my_db.enums import QuantityStatus, CombinationStatus
 from my_db.models import NomCount, Nomenclature, QuantityHistory, QuantityNomenclature, Quantity, StaffProfile, Order, \
-    Consumable
+    Consumable, WorkDetail
 
 
 @app.task
@@ -12,14 +12,19 @@ def gp_move_in_warehouse(order_id, staff_id):
     order = Order.objects.get(id=order_id)
     staff = StaffProfile.objects.get(id=staff_id)
 
-    data = [
-        {
+    data = []
+
+    for product in order.products.all():
+        amount = WorkDetail.objects.filter(
+            combination__status=CombinationStatus.DONE,
+            work__party__nomenclature=product.nomenclature
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        data.append({
             "product_id": product.nomenclature.id,
-            "amount": sum(amount.done for amount in product.amounts.all()),
+            "amount": amount,
             "price": product.true_price,
-        }
-        for product in order.products.all()
-    ]
+        })
 
     quantity = Quantity.objects.create(in_warehouse=order.warehouse, status=QuantityStatus.ACTIVE)
 
