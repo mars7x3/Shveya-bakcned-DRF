@@ -149,7 +149,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 class OrderProductAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProductAmount
-        fields = ['size', 'amount', 'color', 'done', 'defect']
+        fields = ['size', 'amount', 'color', 'defect']
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
