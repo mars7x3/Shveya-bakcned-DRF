@@ -46,6 +46,7 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
     color = ColorSerializer()
     cut = serializers.SerializerMethodField()
     otk = serializers.SerializerMethodField()
+    done = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderProductAmount
@@ -70,9 +71,23 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
                     work__party__in=order.parties.filter(nomenclature=nomenclature),
                     work__color=obj.color,
                     work__size=obj.size,
+                    combination__status=CombinationStatus.OTK
+                ).aggregate(total=Sum('amount'))['total'] or 0
+        )
+
+    def get_done(self, obj):
+        order = obj.order_product.order
+        nomenclature = obj.order_product.nomenclature
+
+        return (
+                WorkDetail.objects.filter(
+                    work__party__in=order.parties.filter(nomenclature=nomenclature),
+                    work__color=obj.color,
+                    work__size=obj.size,
                     combination__status=CombinationStatus.DONE
                 ).aggregate(total=Sum('amount'))['total'] or 0
         )
+
 
 
 class GETOrderProductSerializer(serializers.ModelSerializer):
