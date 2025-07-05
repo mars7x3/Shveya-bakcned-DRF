@@ -56,7 +56,7 @@ class SalaryInfoSerializer(serializers.Serializer):
 
 class SalaryCreateSerializer(serializers.Serializer):
     staff_id = serializers.PrimaryKeyRelatedField(queryset=StaffProfile.objects.all())
-    amount = serializers.IntegerField()
+    amount = serializers.DecimalField(decimal_places=2, max_digits=12)
     date_from = serializers.DateField()
     date_until = serializers.DateField()
 

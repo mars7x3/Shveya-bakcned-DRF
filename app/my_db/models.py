@@ -395,7 +395,7 @@ class Payment(models.Model):
     status = models.IntegerField(choices=PaymentStatus.choices)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    amount = models.IntegerField(default=0)
+    amount = models.DecimalField(decimal_places=2, max_digits=12, default=0)
     date_from = models.DateField(blank=True, null=True)
     date_until = models.DateField(blank=True, null=True)
 
