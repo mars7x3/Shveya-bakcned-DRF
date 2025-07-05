@@ -12,7 +12,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
-from my_db.enums import NomType, NomUnit
+from my_db.enums import NomType, NomUnit, NomStatus
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
     CombinationFile, NomFile, Warehouse, Consumable
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
@@ -61,11 +61,14 @@ class MaterialListMyView(ListAPIView):
     def get_queryset(self):
         staff = self.request.user.staff_profile
         product_id = self.request.query_params.get('product')
-        product_title = Nomenclature.objects.get(product_id).title
         warehouse = Warehouse.objects.filter(staffs=staff).first()
+        product = Nomenclature.objects.get(id=product_id)
+        titles = product.consumables.filter(
+            material_nomenclature__status=NomStatus.CUT
+        ).values_list('material_nomenclature__title', flat=True)
 
         nomenclatures = Nomenclature.objects.filter(
-            material_consumables__nomenclature__title=product_title,
+            title__in=titles,
             counts__warehouse=warehouse,
             counts__amount=1
         ).distinct()
