@@ -153,7 +153,7 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
 
         consumables = PartyConsumable.objects.bulk_create([
             PartyConsumable(party=party, **consumable) for consumable in consumptions
-        ], return_defaults=True)
+        ])
 
         consumables__ids = [obj.id for obj in consumables]
         write_off_from_warehouse.delay(staff.id, consumables__ids)
@@ -195,7 +195,7 @@ class PartyCreateUpdateSerializer(serializers.ModelSerializer):
 
         consumables = PartyConsumable.objects.bulk_create([
             PartyConsumable(party=instance, **consumable) for consumable in consumptions
-        ], return_defaults=True)
+        ])
 
         consumables__ids = [obj.id for obj in consumables]
         write_off_from_warehouse.delay(staff.id, consumables__ids)
