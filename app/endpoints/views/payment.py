@@ -66,7 +66,7 @@ class SalaryInfoView(APIView):
                 total_price=Sum('combination__operations__price', distinct=True),
             )
         )
-        print(works_queryset)
+
         works = [
             {
                 "operation": {

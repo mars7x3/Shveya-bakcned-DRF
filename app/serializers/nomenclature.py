@@ -223,7 +223,8 @@ class GPCRUDSerializer(serializers.ModelSerializer):
                   'prices', 'consumables', 'combinations']
 
     def validate(self, attrs):
-        attrs['type'] = NomType.GP
+        if attrs['type'] != NomType.ORDER:
+            attrs['type'] = NomType.GP
         return attrs
 
     def create(self, validated_data):
