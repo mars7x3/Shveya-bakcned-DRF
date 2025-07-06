@@ -1,12 +1,12 @@
+from my_db.enums import NomType
 from my_db.models import Nomenclature, Price, Consumable, Operation, Combination
 
 
-def duplicate_nomenclature(nomenclature_id):
-    original = Nomenclature.objects.get(id=nomenclature_id)
-
+def duplicate_nomenclature(original):
     data = original.__dict__.copy()
     data.pop('id')
     data.pop('_state', None)
+    data['type'] = NomType.ORDER
 
     duplicate = Nomenclature.objects.create(**data)
 
