@@ -151,7 +151,6 @@ class Combination(models.Model):
                              related_name='combinations')
     is_sample = models.BooleanField(default=False)
     status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True)
-    order = models.ForeignKey('Order', on_delete=models.CASCADE, blank=True, null=True, related_name='combinations')
 
     def __str__(self):
         return f'{self.id}. {self.title}'

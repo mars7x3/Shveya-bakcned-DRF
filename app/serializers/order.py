@@ -7,6 +7,7 @@ from my_db.enums import CombinationStatus, OrderStatus, QuantityStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
     Color, StaffProfile, WorkDetail, Warehouse, Quantity, QuantityNomenclature, QuantityHistory, NomCount
 from tasks.order import gp_move_in_warehouse, material_move_out_warehouse
+from utils.order import duplicate_nomenclature
 
 
 class OrderClientSerializer(serializers.ModelSerializer):
@@ -176,6 +177,10 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
         order_products_list = []
         for product_data in products_data:
             amounts_data = product_data.pop('amounts')
+
+            product = duplicate_nomenclature(product_data['nomenclature'])
+            product_data['nomenclature'] = product
+
             order_product = OrderProduct.objects.create(order=order, **product_data)
 
             for amount_data in amounts_data:

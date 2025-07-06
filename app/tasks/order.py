@@ -119,3 +119,4 @@ def material_move_out_warehouse(order_id, staff_id):
             ))
 
         QuantityNomenclature.objects.bulk_create(qn_objects)
+
