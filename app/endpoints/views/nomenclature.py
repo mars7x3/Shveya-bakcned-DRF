@@ -91,11 +91,7 @@ class GPDetailView(APIView):
     def get_object(self, pk):
         try:
             return Nomenclature.objects.prefetch_related(
-                Prefetch(
-                    'combinations',
-                    queryset=Combination.objects.filter(order__isnull=True),
-                    to_attr='filtered_combinations'
-                ),
+                'combinations',
                 'prices',
                 'consumables'
             ).get(id=pk)

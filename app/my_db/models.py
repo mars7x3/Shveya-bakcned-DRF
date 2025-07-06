@@ -111,7 +111,7 @@ class Nomenclature(models.Model):
     is_active = models.BooleanField(default=True)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     image = WEBPField(upload_to=nom_image_folder, blank=True, null=True)
-    color = models.ForeignKey(Color, on_delete=models.SET_NULL, verbose_name='nomenclatures', blank=True, null=True)
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL, related_name='colors', blank=True, null=True)
     coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True) #считать в m2
     status = models.IntegerField(choices=NomStatus.choices, blank=True, null=True)
 

@@ -232,7 +232,7 @@ class GETPriceInfoSerializer(serializers.ModelSerializer):
 
 
 class GETProductInfoSerializer(serializers.ModelSerializer):
-    combinations = GETCombinationInfoSerializer(many=True, source='filtered_combinations')
+    combinations = GETCombinationInfoSerializer(many=True)
     consumables = GETConsumableInfoSerializer(many=True)
     prices = GETPriceInfoSerializer(many=True)
 

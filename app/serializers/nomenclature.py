@@ -192,7 +192,7 @@ class PriceSerializer(serializers.ModelSerializer):
 
 
 class GPDetailSerializer(serializers.ModelSerializer):
-    combinations = CombinationSerializer(read_only=True, many=True, source='filtered_combinations')
+    combinations = CombinationSerializer(read_only=True, many=True)
     nom_operations = OperationSerializer(read_only=True, many=True)
     consumables = ConsumableSerializer(read_only=True, many=True)
     prices = PriceSerializer(read_only=True, many=True)
