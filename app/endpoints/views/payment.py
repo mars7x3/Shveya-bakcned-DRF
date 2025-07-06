@@ -62,11 +62,11 @@ class SalaryInfoView(APIView):
             .select_related('combination')
             .values('combination__id', 'combination__title', 'work__party__number', 'work__party__order_id')
             .annotate(
-                total_amount=Sum('amount'),
-                total_price=Sum('combination__operations__price'),
+                total_amount=Sum('amount', distinct=True),
+                total_price=Sum('combination__operations__price', distinct=True),
             )
         )
-
+        print(works_queryset)
         works = [
             {
                 "operation": {
