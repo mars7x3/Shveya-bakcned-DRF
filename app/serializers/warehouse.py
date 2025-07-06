@@ -88,6 +88,7 @@ class StockOutputSerializer(serializers.Serializer):
 
 class StockDefectiveSerializer(serializers.Serializer):
     products = StockInputSerializer(many=True)
+    status = serializers.IntegerField()
 
 
 class StockDefectiveFileSerializer(serializers.Serializer):
