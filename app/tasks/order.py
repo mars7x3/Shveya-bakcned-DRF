@@ -4,7 +4,7 @@ from django.db.models import Sum
 from main_conf.celery import app
 from my_db.enums import QuantityStatus, CombinationStatus
 from my_db.models import NomCount, Nomenclature, QuantityHistory, QuantityNomenclature, Quantity, StaffProfile, Order, \
-    Consumable, WorkDetail
+    Consumable, WorkDetail, OrderProductAmount
 
 
 @app.task
@@ -100,6 +100,9 @@ def material_move_out_warehouse(order_id, staff_id):
         qn_objects = []
 
         for consumable in consumables:
+            amount = Sum(OrderProductAmount.objects.filter(order_product__nomenclature=consumable.nomenclature,
+                                              order_product__order=order).values_list('amount', flat=True))
+
             material_nomenclature = consumable.material_nomenclature
             if not material_nomenclature:
                 continue
@@ -109,7 +112,7 @@ def material_move_out_warehouse(order_id, staff_id):
                 nomenclature=material_nomenclature
             )
 
-            nom_count.amount -= consumable.consumption
+            nom_count.amount -= consumable.consumption * amount
             nom_count.save()
 
             qn_objects.append(QuantityNomenclature(

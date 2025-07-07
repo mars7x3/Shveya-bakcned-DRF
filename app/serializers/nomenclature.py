@@ -222,16 +222,12 @@ class GPCRUDSerializer(serializers.ModelSerializer):
         fields = ['id', 'vendor_code', 'is_active', 'title', 'cost_price', 'image',
                   'prices', 'consumables', 'combinations']
 
-    def validate(self, attrs):
-        if attrs['type'] != NomType.ORDER:
-            attrs['type'] = NomType.GP
-        return attrs
-
     def create(self, validated_data):
         prices_data = validated_data.pop('prices', [])
         consumables_data = validated_data.pop('consumables', [])
         # operations_data = validated_data.pop('operations', [])
         combinations_data = validated_data.pop('combinations', [])
+        validated_data['type'] = NomType.GP
 
         if not has_cut_combination(combinations_data):
             raise ValidationError('Добавьте комбинацию со статусом "КРОЙ".')

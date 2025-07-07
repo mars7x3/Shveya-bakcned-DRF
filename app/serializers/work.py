@@ -3,7 +3,7 @@ from collections import defaultdict
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
-from my_db.enums import CombinationStatus, StaffRole
+from my_db.enums import CombinationStatus, StaffRole, WorkStatus
 from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
     PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
     Consumable
@@ -372,11 +372,8 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
         return work
 
     def update(self, instance, validated_data):
-        if instance.details.exclude(payment__isnull=True):
-            raise ValidationError({'detail': 'Объект нельзя изменить, т.к. ЗП уже выдана.',
-                                   'code': 100})
         details = validated_data.pop('details')
-        instance.details.all().delete()
+        instance.details.filter(status=WorkStatus.NEW).delete()
 
         WorkDetail.objects.bulk_create([
             WorkDetail(work=instance, **data) for data in details
@@ -415,11 +412,27 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
         staff = self.context.get('request').user.staff_profile
         if staff.role == StaffRole.OTK:
             filtered_details = obj.details.filter(
-                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE]
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE],
+                status=WorkStatus.NEW
             )
         else:
             filtered_details = obj.details.exclude(
-                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT]
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
+                status=WorkStatus.NEW
+            )
+        return WorkDetailReadSerializer(filtered_details, many=True).data
+
+    def get_salary_details(self, obj):
+        staff = self.context.get('request').user.staff_profile
+        if staff.role == StaffRole.OTK:
+            filtered_details = obj.details.filter(
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE],
+                status=WorkStatus.PAID
+            )
+        else:
+            filtered_details = obj.details.exclude(
+                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
+                status=WorkStatus.PAID
             )
         return WorkDetailReadSerializer(filtered_details, many=True).data
 
