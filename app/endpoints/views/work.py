@@ -282,7 +282,7 @@ class ProductOperationListView(APIView):
                             .values('id', 'title'))
         else:
             combinations = (Combination.objects.filter(nomenclature=product_id)
-                            .exclude(status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT])
+                            .filter(status=CombinationStatus.ZERO)
                             .values('id', 'title'))
 
         return Response(combinations)
@@ -302,8 +302,9 @@ class WorkCRUDView(mixins.CreateModelMixin,
 
 class WorkReadDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated, IsStaff]
-    queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related('details__combination',
-                                                                                                'details__staff')
+    queryset = Work.objects.all().select_related('color', 'size', 'staff').prefetch_related(
+        'details__staff',
+    )
     pagination_class = StandardPagination
     serializer_class = GETWorkDetailSerializer
 
@@ -332,9 +333,5 @@ class WorkReadListView(APIView):
 
         serializer = GETWorkListSerializer(works, many=True)
         return Response(serializer.data)
-
-
-
-
 
 

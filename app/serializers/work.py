@@ -414,14 +414,15 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
         staff = self.context.get('request').user.staff_profile
         if staff.role == StaffRole.OTK:
             filtered_details = obj.details.filter(
+                payment__isnull=True,
                 combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE],
-                status=WorkStatus.NEW
             )
         else:
-            filtered_details = obj.details.exclude(
-                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
-                status=WorkStatus.PAID
+            filtered_details = obj.details.filter(
+                payment__isnull=True,
+                combination__status=CombinationStatus.ZERO
             )
+
         return WorkDetailReadSerializer(filtered_details, many=True).data
 
     def get_salary_details(self, obj):
@@ -429,13 +430,16 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
         if staff.role == StaffRole.OTK:
             filtered_details = obj.details.filter(
                 combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE],
-                status=WorkStatus.PAID
+                payment__isnull=False
+
             )
         else:
-            filtered_details = obj.details.exclude(
-                combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
-                status=WorkStatus.NEW
+            filtered_details = obj.details.filter(
+                combination__status=CombinationStatus.ZERO,
+                payment__isnull=False
+
             )
+
         return WorkDetailReadSerializer(filtered_details, many=True).data
 
     def get_party_amount(self, obj):

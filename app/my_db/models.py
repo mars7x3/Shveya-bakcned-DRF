@@ -150,7 +150,8 @@ class Combination(models.Model):
     file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True,
                              related_name='combinations')
     is_sample = models.BooleanField(default=False)
-    status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True)
+    status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True,
+                                 default=CombinationStatus.ZERO)
 
     def __str__(self):
         return f'{self.id}. {self.title}'
