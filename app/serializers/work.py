@@ -420,7 +420,7 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
         else:
             filtered_details = obj.details.exclude(
                 combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
-                status=WorkStatus.NEW
+                status=WorkStatus.PAID
             )
         return WorkDetailReadSerializer(filtered_details, many=True).data
 
@@ -434,7 +434,7 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
         else:
             filtered_details = obj.details.exclude(
                 combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE, CombinationStatus.CUT],
-                status=WorkStatus.PAID
+                status=WorkStatus.NEW
             )
         return WorkDetailReadSerializer(filtered_details, many=True).data
 
