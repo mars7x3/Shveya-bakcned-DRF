@@ -403,12 +403,12 @@ class GETWorkDetailSerializer(serializers.ModelSerializer):
     color = ColorSerializer()
     details = serializers.SerializerMethodField()
     party_amount = serializers.SerializerMethodField()
-    get_salary_details = serializers.SerializerMethodField()
+    salary_details = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
         fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party', 'details', 'party_amount',
-                  'get_salary_details']
+                  'salary_details']
 
     def get_details(self, obj):
         staff = self.context.get('request').user.staff_profile
