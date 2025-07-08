@@ -373,7 +373,13 @@ class WorkCRUDSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         details = validated_data.pop('details')
-        instance.details.filter(status=WorkStatus.NEW).delete()
+        staff = self.context.get('request').user.staff_profile
+        if staff.role == StaffRole.OTK:
+            instance.details.filter(status=WorkStatus.NEW,
+                                    combination__status__in=[CombinationStatus.OTK, CombinationStatus.DONE]).delete()
+        else:
+            instance.details.filter(status=WorkStatus.NEW,
+                                    combination__status=CombinationStatus.ZERO).delete()
 
         WorkDetail.objects.bulk_create([
             WorkDetail(work=instance, **data) for data in details
