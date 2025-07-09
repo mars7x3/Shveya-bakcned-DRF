@@ -477,5 +477,3 @@ class GETWorkListSerializer(serializers.ModelSerializer):
         model = Work
         fields = ['id', 'created_at', 'updated_at', 'staff', 'size', 'color', 'party']
 
-
-

@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import Sum
 
 from main_conf.celery import app
-from my_db.enums import QuantityStatus, CombinationStatus
+from my_db.enums import QuantityStatus, CombinationStatus, NomStatus
 from my_db.models import NomCount, Nomenclature, QuantityHistory, QuantityNomenclature, Quantity, StaffProfile, Order, \
     Consumable, WorkDetail, OrderProductAmount
 
@@ -86,7 +86,8 @@ def material_move_out_warehouse(order_id, staff_id):
     out_warehouse = order.out_warehouse
 
     consumables = Consumable.objects.filter(
-        nomenclature__products__order=order
+        nomenclature__products__order=order,
+        material_nomenclature__status=NomStatus.SHOP
     ).select_related('material_nomenclature')
 
     with transaction.atomic():
@@ -117,7 +118,6 @@ def material_move_out_warehouse(order_id, staff_id):
             if nom_count:
                 nom_count.amount -= consumable.consumption * amount
                 nom_count.save()
-
                 qn_objects.append(QuantityNomenclature(
                     quantity=quantity,
                     nomenclature=material_nomenclature,
