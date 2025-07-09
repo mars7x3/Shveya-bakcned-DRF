@@ -100,8 +100,10 @@ def material_move_out_warehouse(order_id, staff_id):
         qn_objects = []
 
         for consumable in consumables:
-            amount = Sum(OrderProductAmount.objects.filter(order_product__nomenclature=consumable.nomenclature,
-                                              order_product__order=order).values_list('amount', flat=True))
+            amount = (WorkDetail.objects.filter(
+                work__party__in=order.parties.filter(
+                    nomenclature=consumable.nomenclature),
+                combination__status=CombinationStatus.DONE).aggregate(total=Sum('amount'))['total'] or 0)
 
             material_nomenclature = consumable.material_nomenclature
             if not material_nomenclature:

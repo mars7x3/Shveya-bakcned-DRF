@@ -37,7 +37,6 @@ class WarehouseCRUDSerializer(WarehouseSerializer):
     def update(self, instance, validated_data):
         staffs_data = validated_data.pop('staffs', [])
         warehouse = super().update(instance, validated_data)
-        warehouse.staffs.all().delete()
         if staffs_data:
             warehouse.staffs.set(staffs_data)
         return warehouse

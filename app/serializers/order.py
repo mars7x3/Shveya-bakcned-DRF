@@ -192,8 +192,8 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, instance, validated_data):
-        if instance.status == OrderStatus.DONE:
-            raise ValidationError("Вы не можете редактировать заказ, так как он уже готов.")
+        # if instance.status == OrderStatus.DONE:
+        #     raise ValidationError("Вы не можете редактировать заказ, так как он уже готов.")
 
         products_data = validated_data.pop('products')
 
