@@ -109,19 +109,20 @@ def material_move_out_warehouse(order_id, staff_id):
             if not material_nomenclature:
                 continue
 
-            nom_count = NomCount.objects.select_for_update().get(
+            nom_count = NomCount.objects.filter(
                 warehouse=out_warehouse,
                 nomenclature=material_nomenclature
-            )
+            ).first()
 
-            nom_count.amount -= consumable.consumption * amount
-            nom_count.save()
+            if nom_count:
+                nom_count.amount -= consumable.consumption * amount
+                nom_count.save()
 
-            qn_objects.append(QuantityNomenclature(
-                quantity=quantity,
-                nomenclature=material_nomenclature,
-                amount=consumable.consumption
-            ))
+                qn_objects.append(QuantityNomenclature(
+                    quantity=quantity,
+                    nomenclature=material_nomenclature,
+                    amount=consumable.consumption
+                ))
 
         QuantityNomenclature.objects.bulk_create(qn_objects)
 
