@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Sum, F, Min
+from django.db.models import Sum, F, Min, DecimalField, Subquery, OuterRef
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from drf_spectacular.utils import extend_schema
@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsOwner
 from my_db.enums import PaymentStatus, WorkStatus
-from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work
+from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work, Combination
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
     SalaryCreateSerializer, WorkPaymentDetailSerializer
 
@@ -54,25 +54,35 @@ class SalaryInfoView(APIView):
         responses=SalaryInfoSerializer(),
     )
     def get(self, request, pk):
+        operation_price_subquery = Combination.objects.filter(
+            id=OuterRef('combination_id')
+        ).annotate(
+            total_price=Sum('operations__price')
+        ).values('total_price')[:1]
+
         works_queryset = (
             WorkDetail.objects.filter(
                 staff_id=pk,
                 status=WorkStatus.NEW,
             )
-            .select_related('combination')
-            .values('combination__id', 'combination__title', 'work__party__number', 'work__party__order_id')
+            .values(
+                'combination_id',
+                'combination__title',
+                'work__party__number',
+                'work__party__order_id',
+            )
             .annotate(
-                total_amount=Sum('amount', distinct=True),
-                total_price=Sum('combination__operations__price', distinct=True),
+                total_amount=Sum('amount'),
+                price=Subquery(operation_price_subquery, output_field=DecimalField()),
             )
         )
 
         works = [
             {
                 "operation": {
-                    "id": work["combination__id"],
+                    "id": work["combination_id"],
                     "title": work["combination__title"],
-                    "price": work["total_price"],
+                    "price": work["price"],
                 },
                 "total_amount": work["total_amount"],
                 "party_number": work["work__party__number"],
