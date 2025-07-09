@@ -277,13 +277,15 @@ class ProductOperationListView(APIView):
         product_id = request.data.get('product')
         staff = request.user.staff_profile
         if staff.role == StaffRole.OTK:
-            combinations = (Combination.objects.filter(
-                nomenclature=product_id, status__in=[CombinationStatus.OTK, CombinationStatus.DONE])
-                            .values('id', 'title'))
+            combinations = Combination.objects.filter(
+                nomenclature=product_id,
+                status__in=[CombinationStatus.OTK, CombinationStatus.DONE]
+            ).values('id', 'title')
         else:
-            combinations = (Combination.objects.filter(nomenclature=product_id)
-                            .filter(status=CombinationStatus.ZERO)
-                            .values('id', 'title'))
+            combinations = Combination.objects.filter(
+                nomenclature=product_id,
+                status=CombinationStatus.ZERO
+            ).values('id', 'title')
 
         return Response(combinations)
 
