@@ -1,14 +1,11 @@
 import datetime
 
-from django.db.models import Sum, F, Min, DecimalField, Subquery, OuterRef
+from django.db.models import Sum, DecimalField, Subquery, OuterRef
 from django.utils import timezone
-from django.utils.dateparse import parse_date
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,7 +13,7 @@ from rest_framework.views import APIView
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff, IsOwner
 from my_db.enums import PaymentStatus, WorkStatus
-from my_db.models import Payment, StaffProfile, WorkDetail, PaymentFile, Work, Combination
+from my_db.models import Payment, WorkDetail, PaymentFile, Combination
 from serializers.payments import WorkPaymentSerializer, SalaryInfoSerializer, WorkPaymentFileCRUDSerializer, \
     SalaryCreateSerializer, WorkPaymentDetailSerializer
 

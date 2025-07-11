@@ -1,9 +1,7 @@
-from tracemalloc import Trace
 
 from django.db import transaction
-from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Sum
-from django.template.defaulttags import comment
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from django.db.models import Q, Subquery, OuterRef, F, Prefetch
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status, mixins
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -12,10 +10,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters import rest_framework as filters
 from rest_framework.viewsets import GenericViewSet
-from yaml.serializer import Serializer
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist, IsWarehouse, IsDirectorAndTechnologistAndWarehouse, IsStaff
+from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType, QuantityStatus, StaffRole
 from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHistory, QuantityNomenclature, \
     QuantityFile

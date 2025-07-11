@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
-from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
+from endpoints.permissions import IsStaff
 from my_db.enums import PartyStatus, OrderStatus
 from my_db.models import Rank, Size, Color
 from serializers.general import SizeSerializer, RankSerializer, ColorSerializer

@@ -1,35 +1,11 @@
-from collections import defaultdict
 
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 
 from my_db.enums import CombinationStatus, StaffRole, WorkStatus
-from my_db.models import StaffProfile, Combination, Operation, Payment, PaymentFile, Nomenclature, Work, WorkDetail, \
-    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile, \
-    Consumable
+from my_db.models import StaffProfile, Combination, Operation, Nomenclature, Work, WorkDetail, \
+    PartyConsumable, PartyDetail, Party, Order, OrderProduct, OrderProductAmount, Size, Color, ClientProfile
 from tasks.warehouse import write_off_from_warehouse
-
-
-class OperationOutAndInSerializer(serializers.Serializer):
-    operation_id = serializers.IntegerField()
-    amount = serializers.IntegerField()
-
-
-class WorkOutputSerializer(serializers.Serializer):
-    order_id = serializers.IntegerField()
-    staff_ids = serializers.ListSerializer(child=serializers.IntegerField())
-    operations = OperationOutAndInSerializer(many=True)
-
-
-class WorkInputSerializer(serializers.Serializer):
-    order_id = serializers.IntegerField()
-    staff_id = serializers.IntegerField()
-    operations = OperationOutAndInSerializer(many=True)
-
-
-class MyWorkInputSerializer(serializers.Serializer):
-    order_id = serializers.IntegerField()
-    operations = OperationOutAndInSerializer(many=True)
 
 
 class WorkStaffListSerializer(serializers.ModelSerializer):
@@ -56,14 +32,6 @@ class WorkCombinationSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'operations']
 
 
-class WorkNomenclatureSerializer(serializers.ModelSerializer):
-    combinations = WorkCombinationSerializer(many=True)
-
-    class Meta:
-        model = Nomenclature
-        fields = ['id', 'title', 'combinations']
-
-
 class OperationSummarySerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
     order_client = serializers.CharField()
@@ -87,19 +55,6 @@ class OperationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDetail
         fields = ['operation_id', 'operation_title', 'amount']
-
-
-class WorkModerationListSerializer(serializers.ModelSerializer):
-    staff = WorkStaffSerializer()
-    details = OperationDetailSerializer(many=True)
-
-    class Meta:
-        model = Work
-        fields = ['id', 'staff', 'details']
-
-
-class WorkModerationSerializer(serializers.Serializer):
-    work_id = serializers.IntegerField()
 
 
 class PartyConsumableSerializer(serializers.ModelSerializer):
@@ -296,12 +251,6 @@ class WorkDetailSerializer(serializers.Serializer):
     color = serializers.IntegerField()
     size = serializers.IntegerField()
     amount = serializers.IntegerField()
-
-
-class WorkSerializer(serializers.Serializer):
-    party = serializers.IntegerField()
-    nomenclature = serializers.IntegerField()
-    details = WorkDetailSerializer(many=True)
 
 
 class NomenclatureInfoSerializer(serializers.ModelSerializer):

@@ -1,11 +1,9 @@
-from django.db import transaction
 from django.db.models import Sum
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
-from my_db.enums import CombinationStatus, OrderStatus, QuantityStatus
+from my_db.enums import CombinationStatus, OrderStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
-    Color, StaffProfile, WorkDetail, Warehouse, Quantity, QuantityNomenclature, QuantityHistory, NomCount
+    Color, StaffProfile, WorkDetail, Warehouse
 from tasks.order import gp_move_in_warehouse, material_move_out_warehouse
 from utils.order import duplicate_nomenclature
 

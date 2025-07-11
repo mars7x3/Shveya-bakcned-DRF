@@ -12,7 +12,7 @@ from my_db.enums import UserStatus, StaffRole
 from my_db.models import MyUser, StaffProfile, ClientProfile, ClientFile
 
 from serializers.user_crud import StaffSerializer, MyUserCreateSerializer, \
-    MyUserUpdateSerializer, ClientSerializer, MyUserSerializer, ClientListSerializer, \
+    MyUserUpdateSerializer, ClientSerializer, ClientListSerializer, \
     ClientFileCRUDSerializer, StaffUpdateSerializer, StaffCreateSerializer, ClientUpdateSerializer, \
     ClientCreateSerializer, StaffListSerializer
 

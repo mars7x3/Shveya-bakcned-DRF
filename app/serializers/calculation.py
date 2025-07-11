@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from my_db.models import Rank, Nomenclature, Operation, CalOperation, CalConsumable, CalPrice, Calculation, \
-    ClientProfile, Consumable, Color, Price, Equipment, CalCombination, Combination
+    ClientProfile, Consumable, Price, Equipment, CalCombination, Combination
 from utils.get_or_none import serialize_instance
 
 
@@ -35,7 +35,7 @@ class ConsumableDetailSerializer(serializers.ModelSerializer):
 class CalOperationSerializer(serializers.ModelSerializer):
     rank_info = serializers.SerializerMethodField()
 
-    def get_rank_info(self, obj):
+    def get_rank_info(self, obj) -> OperationRankSerializer:
         return serialize_instance(
             obj.rank,
             ["id", "title"]
@@ -78,10 +78,10 @@ class CalculationSerializer(serializers.ModelSerializer):
     cal_prices = CalPriceSerializer(many=True, required=False)
     client_info = serializers.SerializerMethodField()
 
-    def get_client_info(self, obj):
+    def get_client_info(self, obj) -> CalClientSerializer:
         return serialize_instance(
             obj.client,
-            ["id", "name", "surename", "company_title", "phone", "combinations"]
+            ["id", "name", "surename", "company_title", "phone"]
         )
 
     class Meta:
@@ -187,12 +187,6 @@ class RankSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rank
         fields = ['id', 'title', 'percent']
-
-
-class ColorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Color
-        fields = ['id', 'title', 'code']
 
 
 class GETOperationInfoSerializer(serializers.ModelSerializer):

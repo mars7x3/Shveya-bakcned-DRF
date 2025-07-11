@@ -1,20 +1,18 @@
-from tracemalloc import Trace
 
-from django.db.models import Q, Prefetch
-from django.http import Http404
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsStaff, IsDirectorAndTechnologist
-from my_db.enums import NomType, NomUnit, NomStatus
+from my_db.enums import NomType, NomStatus
 from my_db.models import Nomenclature, Pattern, Combination, Operation, Equipment, EquipmentImages, EquipmentService, \
-    CombinationFile, NomFile, Warehouse, Consumable
+    NomFile, Warehouse
 from serializers.nomenclature import GPListSerializer, GPDetailSerializer, PatternCRUDSerializer, \
     CombinationCRUDSerializer, GPCRUDSerializer, OperationCRUDSerializer, EquipmentSerializer, MaterialListSerializer, \
     PatternSerializer, ProductListSerializer, CombinationSerializer, EquipmentImageCRUDSerializer, \

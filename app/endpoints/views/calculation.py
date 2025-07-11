@@ -1,16 +1,15 @@
-from django.db.models import Q, Prefetch
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, mixins
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import GenericViewSet
 from django_filters import rest_framework as filters
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
 from my_db.enums import NomType
-from my_db.models import Operation, Nomenclature, Calculation, StaffProfile, ClientProfile, Combination
+from my_db.models import Operation, Nomenclature, Calculation, ClientProfile
 from serializers.calculation import OperationDetailSerializer, ConsumableDetailSerializer, CalculationSerializer, \
     CalculationListSerializer, ClientProfileListSerializer, ConsumableTitleListSerializer, GPListSerializer, \
     GETProductInfoSerializer

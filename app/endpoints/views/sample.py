@@ -1,7 +1,6 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
-from rest_framework.views import APIView
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist

@@ -1,11 +1,8 @@
 from collections import defaultdict
 from decimal import Decimal
-from email.policy import default
 
-from django.db.models import Q, Sum, ExpressionWrapper, F, FloatField
+from django.db.models import Q
 from rest_framework import viewsets, mixins, status
-from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
 from rest_framework.response import Response

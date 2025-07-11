@@ -1,4 +1,3 @@
-from django.db.models import IntegerField
 from rest_framework import serializers
 
 from my_db.enums import NomType

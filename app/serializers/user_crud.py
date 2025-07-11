@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from my_db.enums import StaffRole
 from my_db.models import MyUser, StaffProfile, Rank, ClientProfile, Warehouse, ClientFile
-from serializers.general import RankSerializer
+
 
 
 class MyUserSerializer(serializers.ModelSerializer):

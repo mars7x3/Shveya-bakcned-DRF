@@ -437,6 +437,9 @@ class Calculation(models.Model):
         Nomenclature, on_delete=models.CASCADE, related_name='calculations', blank=True, null=True
     )
 
+    class Meta:
+        ordering = ['-id']
+
 
 class CalCombination(models.Model):
     calculation = models.ForeignKey(

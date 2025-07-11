@@ -4,7 +4,7 @@ from django.db.models import Sum
 from main_conf.celery import app
 from my_db.enums import QuantityStatus, CombinationStatus, NomStatus
 from my_db.models import NomCount, Nomenclature, QuantityHistory, QuantityNomenclature, Quantity, StaffProfile, Order, \
-    Consumable, WorkDetail, OrderProductAmount
+    Consumable, WorkDetail
 
 
 @app.task

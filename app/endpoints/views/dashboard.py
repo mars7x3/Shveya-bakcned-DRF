@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from endpoints.permissions import IsDirectorAndTechnologist
 from my_db.enums import PaymentStatus
-from my_db.models import Plan, Order, OrderProduct, Work, Payment, EquipmentService, Operation
+from my_db.models import Plan, OrderProduct, Work, Payment, EquipmentService, Operation
 from serializers.dashboard import PlanSerializer
 
 

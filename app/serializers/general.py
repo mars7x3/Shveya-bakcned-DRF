@@ -15,10 +15,6 @@ class SizeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SizeCreateSerializer(serializers.Serializer):
-    title = serializers.CharField()
-
-
 class ColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Color

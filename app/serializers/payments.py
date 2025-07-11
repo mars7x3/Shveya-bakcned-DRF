@@ -1,7 +1,7 @@
 from django.db.models import Sum, F, DecimalField, ExpressionWrapper
 from rest_framework import serializers
 
-from my_db.models import PaymentFile, Payment, WorkDetail, Operation, StaffProfile
+from my_db.models import PaymentFile, Payment, WorkDetail, StaffProfile
 
 
 class WorkPaymentFileCRUDSerializer(serializers.Serializer):
