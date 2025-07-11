@@ -73,7 +73,8 @@ class WarehouseMaterialListView(ListAPIView):
                             warehouse_id=warehouse_id,
                         ).values('amount')[:1]
                     ),
-                    Value(0)
+                    Value(0),
+                    output_field=DecimalField()
                 )
             ).exclude(filtered_count_amount=0)
 
