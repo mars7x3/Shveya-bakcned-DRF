@@ -1,6 +1,6 @@
 
 from django.db import transaction
-from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Value
+from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Value, DecimalField
 from django.db.models.functions import Coalesce
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status, mixins
@@ -75,7 +75,7 @@ class WarehouseMaterialListView(ListAPIView):
                     ),
                     Value(0)
                 )
-            ).exclude(filtered_count_amount=0).order_by('-filtered_count_amount')
+            ).exclude(filtered_count_amount=0)
 
         return base_qs
 
