@@ -1,6 +1,7 @@
 
 from django.db import transaction
-from django.db.models import Q, Subquery, OuterRef, F, Prefetch
+from django.db.models import Q, Subquery, OuterRef, F, Prefetch, Value
+from django.db.models.functions import Coalesce
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status, mixins
 from rest_framework.exceptions import ValidationError
@@ -61,17 +62,22 @@ class WarehouseMaterialListView(ListAPIView):
     def get_queryset(self):
         warehouse_id = self.request.query_params.get('warehouse')
 
+        base_qs = Nomenclature.objects.filter(type=NomType.MATERIAL)
+
         if warehouse_id:
-            return Nomenclature.objects.filter(type=NomType.MATERIAL).annotate(
-                filtered_count_amount=Subquery(
-                    NomCount.objects.filter(
-                        nomenclature=OuterRef('pk'),
-                        warehouse_id=warehouse_id
-                    ).values('amount')[:1]
+            return base_qs.annotate(
+                filtered_count_amount=Coalesce(
+                    Subquery(
+                        NomCount.objects.filter(
+                            nomenclature=OuterRef('pk'),
+                            warehouse_id=warehouse_id,
+                        ).values('amount')[:1]
+                    ),
+                    Value(0)
                 )
-            )
-        else:
-            return Nomenclature.objects.filter(type=NomType.MATERIAL)
+            ).exclude(filtered_count_amount=0).order_by('-filtered_count_amount')
+
+        return base_qs
 
 
 class MyMaterialListFilter(filters.FilterSet):
@@ -105,9 +111,10 @@ class MyMaterialListView(ListAPIView):
                 to_attr='filtered_counts'
             )
         ).filter(
-                counts__warehouse=warehouse,
-                counts__amount__gt=0
-            ).distinct()
+            counts__warehouse=warehouse
+        ).filter(
+            ~Q(counts__amount=0)
+        ).distinct()
         return queryset
 
 
@@ -329,11 +336,35 @@ class StockOutputUpdateView(APIView):
                     ).update(amount=F('amount') - update.amount)
 
             with transaction.atomic():
+                nom_count_updates = []
+                nomenclature_updates = []
                 for update in updates:
-                    NomCount.objects.filter(
+                    nomenclature = update.nomenclature
+                    obj, created = NomCount.objects.get_or_create(
                         warehouse=quantity.in_warehouse,
-                        nomenclature=update.nomenclature
-                    ).update(amount=F('amount') + update.amount)
+                        nomenclature=nomenclature
+                    )
+
+                    if created:
+                        old_amount = 0
+                        old_price = 0
+                    else:
+                        old_amount = obj.amount
+                        old_price = nomenclature.cost_price or 0
+
+                    obj.amount = old_amount + update.amount
+                    nom_count_updates.append(obj)
+
+                    total_amount = obj.amount
+                    total_cost = (old_amount * old_price) + (update.amount * update.price)
+
+                    if total_amount > 0:
+                        nomenclature.cost_price = total_cost / total_amount
+                    else:
+                        nomenclature.cost_price = 0
+                    nomenclature_updates.append(nomenclature)
+                NomCount.objects.bulk_update(nom_count_updates, ['amount'])
+                Nomenclature.objects.bulk_update(nomenclature_updates, ['cost_price'])
 
         return Response('Success!', status=status.HTTP_200_OK)
 
@@ -345,7 +376,7 @@ class WarehouseListView(ListAPIView):
     def get_queryset(self):
         manager = self.request.user.staff_profile
         if manager.role == StaffRole.WAREHOUSE:
-            queryset = Warehouse.objects.exclude(id=manager.warehouses.first().id)
+            queryset = Warehouse.objects.exclude(id__in=manager.warehouses.values_list('id', flat=True))
         else:
             queryset = Warehouse.objects.all()
         return queryset
