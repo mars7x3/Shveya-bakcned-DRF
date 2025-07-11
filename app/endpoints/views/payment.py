@@ -90,7 +90,7 @@ class SalaryInfoView(APIView):
 
         payments = Payment.objects.filter(
             staff_id=pk,
-            status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE]
+            status__in=[PaymentStatus.FINE, PaymentStatus.ADVANCE, PaymentStatus.BONUS]
         )
 
         work_detail = WorkDetail.objects.filter(
