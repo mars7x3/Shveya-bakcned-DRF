@@ -76,10 +76,10 @@ urlpatterns = [
         path('order/invoice/data/', InvoiceDataVie.as_view()),
 
 
-        path('product/list/', GPListView.as_view()),
         path('material/list/', MaterialListView.as_view()),
         path('material/list/my/', MaterialListMyView.as_view()),
 
+        path('product/list/', GPListView.as_view()),
         path('product/detail/<int:pk>/', GPDetailView.as_view()),
         path('product/images/crud', PatternCRUDView.as_view()),
         path('product/files/crud', FileCRUDView.as_view()),
