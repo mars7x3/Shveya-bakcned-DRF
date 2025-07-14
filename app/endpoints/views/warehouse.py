@@ -112,9 +112,8 @@ class MyMaterialListView(ListAPIView):
                 to_attr='filtered_counts'
             )
         ).filter(
-            counts__warehouse=warehouse
-        ).filter(
-            ~Q(counts__amount=0)
+            counts__warehouse=warehouse,
+            counts__amount__gt=0
         ).distinct()
         return queryset
 
@@ -164,7 +163,7 @@ class StockInputView(APIView):
                 amount = item['amount']
 
                 obj, created = NomCount.objects.get_or_create(
-                    warehouse=quantity.in_warehouse,
+                    warehouse=warehouse,
                     nomenclature=nomenclature
                 )
 
