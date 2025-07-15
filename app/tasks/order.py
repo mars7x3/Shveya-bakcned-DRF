@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models import Sum
 
 from main_conf.celery import app
-from my_db.enums import QuantityStatus, CombinationStatus, NomStatus
+from my_db.enums import QuantityStatus, CombinationStatus, NomStatus, NomUnit, NomType
 from my_db.models import NomCount, Nomenclature, QuantityHistory, QuantityNomenclature, Quantity, StaffProfile, Order, \
     Consumable, WorkDetail
 
@@ -73,10 +73,13 @@ def gp_move_in_warehouse(order_id, staff_id):
             total_cost_after = total_cost_before + (item['amount'] * item['price'])
 
             nomenclature.cost_price = total_cost_after / total_amount_after
+            nomenclature.unit = NomUnit.U
+            nomenclature.type = NomType.GP
+
             nomenclature_updates.append(nomenclature)
 
         NomCount.objects.bulk_update(nom_count_updates, ['amount'])
-        Nomenclature.objects.bulk_update(nomenclature_updates, ['cost_price'])
+        Nomenclature.objects.bulk_update(nomenclature_updates, ['cost_price', 'unit', 'type'])
 
 
 @app.task

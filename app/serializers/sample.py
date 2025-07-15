@@ -47,7 +47,7 @@ class OperationDetailSerializer(serializers.ModelSerializer):
 class OperationListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'is_active']
 
 
 class CombinationDetailSerializer(serializers.ModelSerializer):

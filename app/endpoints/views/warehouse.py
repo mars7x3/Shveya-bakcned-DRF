@@ -62,7 +62,7 @@ class WarehouseMaterialListView(ListAPIView):
     def get_queryset(self):
         warehouse_id = self.request.query_params.get('warehouse')
 
-        base_qs = Nomenclature.objects.filter(type=NomType.MATERIAL)
+        base_qs = Nomenclature.objects.all()
 
         if warehouse_id:
             return base_qs.annotate(
@@ -111,6 +111,9 @@ class MyMaterialListView(ListAPIView):
                 queryset=NomCount.objects.filter(warehouse=warehouse),
                 to_attr='filtered_counts'
             )
+        ).filter(
+            counts__warehouse=warehouse,
+            counts__amount__gt=0
         ).distinct()
         return queryset
 

@@ -58,7 +58,7 @@ class OperationListFilter(filters.FilterSet):
 
     class Meta:
         model = Operation
-        fields = ['title']
+        fields = ['title', 'is_active']
 
 
 class SampleOperationListView(viewsets.ReadOnlyModelViewSet):
