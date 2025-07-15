@@ -111,9 +111,6 @@ class MyMaterialListView(ListAPIView):
                 queryset=NomCount.objects.filter(warehouse=warehouse),
                 to_attr='filtered_counts'
             )
-        ).filter(
-            counts__warehouse=warehouse,
-            counts__amount__gt=0
         ).distinct()
         return queryset
 
