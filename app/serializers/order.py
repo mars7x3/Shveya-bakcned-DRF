@@ -1,5 +1,6 @@
 from django.db.models import Sum
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from my_db.enums import CombinationStatus, OrderStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
@@ -190,8 +191,8 @@ class OrderCRUDSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, instance, validated_data):
-        # if instance.status == OrderStatus.DONE:
-        #     raise ValidationError("Вы не можете редактировать заказ, так как он уже готов.")
+        if instance.status == OrderStatus.DONE:
+            raise ValidationError("Вы не можете редактировать заказ, так как он уже готов.")
 
         products_data = validated_data.pop('products')
 
