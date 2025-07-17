@@ -158,13 +158,13 @@ class ConsumableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Consumable
-        fields = ['id', 'material_nomenclature', 'consumption', 'unit']
+        fields = ['id', 'material_nomenclature', 'consumption', 'unit', 'price']
 
 
 class ConsumableCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consumable
-        fields = ['material_nomenclature', 'consumption', 'unit']
+        fields = ['material_nomenclature', 'consumption', 'unit', 'price']
 
 
 class OperationCreateSerializer(serializers.ModelSerializer):

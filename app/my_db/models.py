@@ -212,6 +212,7 @@ class Consumable(models.Model):
     )
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
+    price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
 
 class Price(models.Model):
@@ -247,6 +248,7 @@ class Quantity(models.Model):
     )
     status = models.IntegerField(choices=QuantityStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
+    order = models.ForeignKey('Order', on_delete=models.SET_NULL, blank=True, null=True, related_name='quantities')
 
 
 class QuantityNomenclature(models.Model):

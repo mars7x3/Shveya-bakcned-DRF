@@ -35,12 +35,11 @@ class WarehouseModelViewSet(viewsets.ModelViewSet):
 
 class MaterialListFilter(filters.FilterSet):
     warehouse = filters.CharFilter(method='filter_by_warehouse', label='ID склада')
-    is_active = filters.NumberFilter(field_name='is_active')
     title = filters.CharFilter(method='filter_by_title_vendor_code', label='Название или артикул')
 
     class Meta:
         model = Nomenclature
-        fields = ['title', 'is_active', 'warehouse', 'vendor_code']
+        fields = ['title', 'is_active', 'warehouse', 'vendor_code', 'status']
 
     def filter_by_warehouse(self, queryset, warehouse, value):
         return queryset.filter(counts__warehouse_id=value)
@@ -81,25 +80,11 @@ class WarehouseMaterialListView(ListAPIView):
         return base_qs
 
 
-class MyMaterialListFilter(filters.FilterSet):
-    title = filters.CharFilter(method='filter_by_title_vendor_code', label='Название или артикул')
-
-    class Meta:
-        model = Nomenclature
-        fields = ['title', 'is_active']
-
-    def filter_by_title_vendor_code(self, queryset, title, value):
-        return queryset.filter(
-            Q(title__icontains=value) |
-            Q(vendor_code__icontains=value)
-        )
-
-
 class MyMaterialListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = MyMaterialsSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = MyMaterialListFilter
+    filterset_class = MaterialListFilter
     pagination_class = StandardPagination
 
     def get_queryset(self):
@@ -397,8 +382,12 @@ class QuantityHistoryListView(viewsets.ReadOnlyModelViewSet):
             return QuantityHistory.objects.select_related(
                 'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
         staff = self.request.user.staff_profile
-        return QuantityHistory.objects.filter(staff_id=staff.id).select_related(
-            'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse').order_by('-id')
+        warehouse = staff.warehouses.first()
+        return QuantityHistory.objects.filter(
+                Q(quantity__out_warehouse=warehouse) | Q(quantity__in_warehouse=warehouse)
+                ).select_related(
+                    'quantity', 'quantity__in_warehouse', 'quantity__out_warehouse'
+                ).order_by('-id')
 
 
 

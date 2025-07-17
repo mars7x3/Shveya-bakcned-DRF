@@ -55,7 +55,7 @@ class MaterialSerializer(serializers.ModelSerializer):
 class MaterialCRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'is_active', 'title', 'unit', 'color', 'coefficient', 'status']
+        fields = ['id', 'vendor_code', 'is_active', 'title', 'unit', 'color', 'coefficient', 'status', 'cost_price']
 
     def validate(self, attrs):
         attrs['type'] = NomType.MATERIAL
@@ -166,7 +166,7 @@ class QuantitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quantity
-        fields = ['id', 'in_warehouse', 'out_warehouse']
+        fields = ['id', 'in_warehouse', 'out_warehouse', 'order']
 
 
 class QuantityHistoryListSerializer(serializers.ModelSerializer):
@@ -205,7 +205,7 @@ class QuantityDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quantity
-        fields = ['id', 'in_warehouse', 'out_warehouse', 'quantities', 'files', 'status', 'created_at']
+        fields = ['id', 'in_warehouse', 'out_warehouse', 'quantities', 'files', 'status', 'created_at', 'order']
 
 
 class QuantityHistoryDetailSerializer(serializers.ModelSerializer):

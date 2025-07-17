@@ -174,7 +174,7 @@ class ClientProfileListSerializer(serializers.ModelSerializer):
 class ConsumableTitleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'color', 'coefficient']
+        fields = ['id', 'title', 'vendor_code', 'color', 'coefficient', 'cost_price']
 
 
 class GPListSerializer(serializers.ModelSerializer):

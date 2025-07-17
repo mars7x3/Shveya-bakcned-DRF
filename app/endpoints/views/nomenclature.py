@@ -68,7 +68,7 @@ class MaterialListMyView(ListAPIView):
         nomenclatures = Nomenclature.objects.filter(
             title__in=titles,
             counts__warehouse=warehouse,
-            counts__amount=1
+            counts__amount__gt=0
         ).distinct()
 
         return nomenclatures

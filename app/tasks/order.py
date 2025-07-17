@@ -26,7 +26,9 @@ def gp_move_in_warehouse(order_id, staff_id):
             "price": product.true_price,
         })
 
-    quantity = Quantity.objects.create(in_warehouse=order.in_warehouse, status=QuantityStatus.ACTIVE)
+    quantity = Quantity.objects.create(in_warehouse=order.in_warehouse,
+                                       status=QuantityStatus.ORDER,
+                                       order=order)
 
     create_data = []
     for i in data:
@@ -96,7 +98,8 @@ def material_move_out_warehouse(order_id, staff_id):
     with transaction.atomic():
         quantity = Quantity.objects.create(
             out_warehouse=out_warehouse,
-            status=QuantityStatus.ORDER
+            status=QuantityStatus.ORDER,
+            order=order
         )
         QuantityHistory.objects.create(quantity=quantity, staff_id=staff.id, staff_name=staff.name,
                                        staff_surname=staff.surname, status=quantity.status)
