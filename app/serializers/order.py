@@ -23,6 +23,13 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = ['id', 'client', 'status', 'deadline', 'created_at']
 
 
+class ClientOrderListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Order
+        fields = ['id', 'status', 'deadline', 'created_at']
+
+
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
@@ -89,6 +96,39 @@ class GETOrderProductAmountSerializer(serializers.ModelSerializer):
         )
 
 
+class ClientGETOrderProductAmountSerializer(serializers.ModelSerializer):
+    size = SizeSerializer()
+    color = ColorSerializer()
+    cut = serializers.SerializerMethodField()
+    done = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderProductAmount
+        fields = ['size', 'amount', 'done', 'color', 'cut']
+
+    def get_cut(self, obj):
+        order = obj.order_product.order
+        nomenclature = obj.order_product.nomenclature
+
+        return sum(
+            detail.true_amount
+            for party in order.parties.filter(nomenclature=nomenclature)
+            for detail in party.details.filter(color=obj.color, size=obj.size)
+        )
+
+    def get_done(self, obj):
+        order = obj.order_product.order
+        nomenclature = obj.order_product.nomenclature
+
+        return (
+                WorkDetail.objects.filter(
+                    work__party__in=order.parties.filter(nomenclature=nomenclature),
+                    work__color=obj.color,
+                    work__size=obj.size,
+                    combination__status=CombinationStatus.DONE
+                ).aggregate(total=Sum('amount'))['total'] or 0
+        )
+
 
 class GETOrderProductSerializer(serializers.ModelSerializer):
     amounts = GETOrderProductAmountSerializer(many=True)
@@ -101,6 +141,15 @@ class GETOrderProductSerializer(serializers.ModelSerializer):
 
     def get_time(self, obj):
         return sum(operation.time for operation in obj.nomenclature.operations.all())
+
+
+class ClientGETOrderProductSerializer(serializers.ModelSerializer):
+    amounts = ClientGETOrderProductAmountSerializer(many=True)
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = OrderProduct
+        fields = ['nomenclature', 'price', 'true_price', 'amounts']
 
 
 class GETPartyDetailSerializer(serializers.ModelSerializer):
@@ -144,6 +193,14 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'client', 'status', 'deadline', 'created_at', 'true_deadline', 'products', 'parties',
                   'in_warehouse', 'out_warehouse']
+
+
+class ClientOrderDetailSerializer(serializers.ModelSerializer):
+    products = ClientGETOrderProductSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'status', 'deadline', 'created_at', 'true_deadline', 'products',]
 
 
 class OrderProductAmountSerializer(serializers.ModelSerializer):

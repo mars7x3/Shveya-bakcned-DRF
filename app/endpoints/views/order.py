@@ -10,9 +10,10 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
-from endpoints.permissions import IsDirectorAndTechnologist
+from endpoints.permissions import IsDirectorAndTechnologist, ClientIsOwner
 from my_db.models import Order
-from serializers.order import OrderListSerializer, OrderCRUDSerializer, OrderDetailSerializer
+from serializers.order import OrderListSerializer, OrderCRUDSerializer, OrderDetailSerializer, \
+    ClientOrderListSerializer, ClientOrderDetailSerializer
 
 
 class OrderFilter(filters.FilterSet):
@@ -101,3 +102,17 @@ class InvoiceDataVie(APIView):
 
         return Response(result, status=status.HTTP_200_OK)
 
+
+class ClientOrdersView(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, ClientIsOwner]
+    queryset = Order.objects.all()
+    pagination_class = StandardPagination
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ClientOrderDetailSerializer
+        return ClientOrderListSerializer
+
+    def get_queryset(self):
+        client = self.request.user.client_profile
+        return Order.objects.filter(client=client)

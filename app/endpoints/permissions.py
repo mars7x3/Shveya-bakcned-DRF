@@ -43,3 +43,6 @@ class IsAuthor(BasePermission):
         return obj.staff == request.user.staff_profile
 
 
+class ClientIsOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.client == request.user.client_profile

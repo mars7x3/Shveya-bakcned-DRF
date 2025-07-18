@@ -13,7 +13,7 @@ from .views.dashboard import PlanCRUDView, StatisticView
 from .views.nomenclature import GPListView, GPModelViewSet, PatternCRUDView, CombinationModelViewSet, GPDetailView, \
     OperationModelViewSet, EquipmentModelViewSet, MaterialListView, PatternListView, ProductListView, \
     EquipmentImageCRUDView, EquipmentServiceView, FileCRUDView, FileListView, MaterialListMyView
-from .views.order import OrderReadView, OrderModelViewSet, InvoiceDataVie
+from .views.order import OrderReadView, OrderModelViewSet, InvoiceDataVie, ClientOrdersView
 from .views.payment import PaymentCreateView, SalaryInfoView, PaymentHistoryListView, PaymentFilesCreateView, \
     SalaryCreateView, PaymentDetailView, MyPaymentHistoryListView, MyPaymentDetailView
 from .views.sample import CombinationFileCRUDVIew, SampleCombinationListView, SampleOperationListView
@@ -40,6 +40,7 @@ router.register('product/operation/crud', OperationModelViewSet)
 router.register('equipment/crud', EquipmentModelViewSet)
 router.register('order/crud', OrderModelViewSet)
 router.register('order/list', OrderReadView)
+router.register('client/order/list', ClientOrdersView)
 router.register('warehouse/crud', WarehouseModelViewSet)
 router.register('warehouse/material/crud', MaterialModelViewSet)
 router.register('warehouse/history/list', QuantityHistoryListView)
