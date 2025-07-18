@@ -206,9 +206,11 @@ class GETCombinationInfoSerializer(serializers.ModelSerializer):
 
 
 class GPInfoSerializer(serializers.ModelSerializer):
+    price = serializers.DecimalField(source='cost_price', max_digits=12, decimal_places=3)
+
     class Meta:
         model = Nomenclature
-        fields = ['id', 'vendor_code', 'title', 'cost_price', 'unit']
+        fields = ['id', 'vendor_code', 'title', 'price', 'unit']
 
 
 class GETConsumableInfoSerializer(serializers.ModelSerializer):
