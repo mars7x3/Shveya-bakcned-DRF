@@ -119,7 +119,8 @@ class CreateMaterialsView(APIView):
 
     @extend_schema(request=CreateMaterialsSerializer())
     def post(self, request):
-        warehouse = request.user.staff_profile.warehouses.first()
+        staff = request.user.staff_profile
+        warehouse = staff.warehouses.first()
         data = request.data
 
         materials_data = []
@@ -138,19 +139,34 @@ class CreateMaterialsView(APIView):
             )
 
         created_materials = Nomenclature.objects.bulk_create(materials_data)
-        material_ids = [op.id for op in created_materials]
+        materials_info = [{'id': op.id, 'price': op.cost_price} for op in created_materials]
 
+        quantity = Quantity.objects.create(in_warehouse=warehouse, status=QuantityStatus.ACTIVE)
         count_data = []
+        create_data = []
 
-        for m in material_ids:
+        for m in materials_info:
             count_data.append(
                 NomCount(
                     warehouse=warehouse,
-                    nomenclature_id=m,
+                    nomenclature_id=m['id'],
                     amount=1
                 )
             )
+            create_data.append(
+                QuantityNomenclature(
+                    quantity=quantity,
+                    nomenclature_id=m['id'],
+                    amount=1,
+                    price=m['price']
+                )
+            )
         NomCount.objects.bulk_create(count_data)
+        QuantityNomenclature.objects.bulk_create(create_data)
+
+        QuantityHistory.objects.create(quantity=quantity, staff_id=staff.id, staff_name=staff.name,
+                                       staff_surname=staff.surname, status=quantity.status)
+
 
         return Response('Success!', status=status.HTTP_200_OK)
 
