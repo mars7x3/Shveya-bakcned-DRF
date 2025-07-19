@@ -71,6 +71,18 @@ class MaterialCRUDSerializer(serializers.ModelSerializer):
         return obj
 
 
+class CreateMaterialsDetailSerializer(serializers.Serializer):
+    color = serializers.IntegerField()
+    cost_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    coefficient = serializers.DecimalField(max_digits=10, decimal_places=1)
+
+
+class CreateMaterialsSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    unit = serializers.IntegerField()
+    details = CreateMaterialsDetailSerializer(many=True)
+
+
 class StockInputSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
     amount = serializers.IntegerField()

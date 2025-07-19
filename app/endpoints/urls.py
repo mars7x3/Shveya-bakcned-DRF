@@ -22,7 +22,7 @@ from .views.user_crud import StaffInfoView, StaffModelViewSet, ClientModelViewSe
 from .views.general import RankListView, SizeListView, RankModelViewSet, ColorModelViewSet, SizeModelViewSet
 from .views.warehouse import WarehouseModelViewSet, WarehouseMaterialListView, MaterialModelViewSet, StockInputView, \
     StockOutputView, StockDefectiveView, StockDefectiveFileView, StockOutputUpdateView, MovingListView, \
-    MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView
+    MovingDetailView, MyMaterialListView, WarehouseListView, QuantityHistoryListView, CreateMaterialsView
 from .views.work import WorkStaffListView, MyWorkListView, PartyCreateCRUDView, OrderInfoListView, PartyListView, \
     ProductInfoView, PartyInfoListView, ProductOperationListView, WorkCRUDView, WorkReadListView, \
     WorkReadDetailView
@@ -97,6 +97,8 @@ urlpatterns = [
         path('warehouse/defective/', StockDefectiveView.as_view()),
         path('warehouse/defective/files/', StockDefectiveFileView.as_view()),
         path('warehouse/list/', WarehouseListView.as_view()),
+        path('warehouse/materials/create/', CreateMaterialsView.as_view()),
+
 
         path('work/staffs/list/', WorkStaffListView.as_view()),
         path('work/history/list/my/', MyWorkListView.as_view()),

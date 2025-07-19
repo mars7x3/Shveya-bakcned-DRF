@@ -112,7 +112,7 @@ class Nomenclature(models.Model):
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     image = WEBPField(upload_to=nom_image_folder, blank=True, null=True)
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, related_name='colors', blank=True, null=True)
-    coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True) #считать в m2
+    coefficient = models.DecimalField(max_digits=10, decimal_places=1, blank=True, null=True)
     status = models.IntegerField(choices=NomStatus.choices, blank=True, null=True)
 
     def __str__(self):
@@ -352,15 +352,16 @@ class PartyConsumable(models.Model):
     nomenclature = models.ForeignKey(Nomenclature, on_delete=models.CASCADE, related_name='party_cons')
     defect = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
     remainder = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
-    passport_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
-    table_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    passport_length = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    table_length = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
     layers_count = models.IntegerField(blank=True, null=True)
     number_of_marker = models.CharField(max_length=50, blank=True, null=True)
-    restyled = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
-    fact_length = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
-    fail = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    restyled = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    fact_length = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    fail = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
     quantity = models.IntegerField(blank=True, null=True)
-    count_in_layer = models.DecimalField(decimal_places=1, max_digits=12, blank=True, null=True)
+    count_in_layer = models.DecimalField(decimal_places=3, max_digits=12, blank=True, null=True)
+    is_main = models.BooleanField(default=False)
 
 
 class Work(models.Model):

@@ -14,13 +14,14 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, IsStaff
-from my_db.enums import NomType, QuantityStatus, StaffRole
+from my_db.enums import NomType, QuantityStatus, StaffRole, NomStatus
 from my_db.models import Warehouse, Nomenclature, NomCount, Quantity, QuantityHistory, QuantityNomenclature, \
     QuantityFile
 from serializers.warehouse import WarehouseSerializer, WarehouseCRUDSerializer, MaterialSerializer, \
     MaterialCRUDSerializer, StockInputSerializer, StockOutputSerializer, StockDefectiveSerializer, \
     StockDefectiveFileSerializer, StockOutputUpdateSerializer, MovingSerializer, MovingListSerializer, \
-    MyMaterialsSerializer, WarehouseListSerializer, QuantityHistoryListSerializer, QuantityHistoryDetailSerializer
+    MyMaterialsSerializer, WarehouseListSerializer, QuantityHistoryListSerializer, QuantityHistoryDetailSerializer, \
+    CreateMaterialsSerializer
 
 
 class WarehouseModelViewSet(viewsets.ModelViewSet):
@@ -111,6 +112,48 @@ class MaterialModelViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated, IsStaff]
     queryset = Nomenclature.objects.filter(type=NomType.MATERIAL)
     serializer_class = MaterialCRUDSerializer
+
+
+class CreateMaterialsView(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    @extend_schema(request=CreateMaterialsSerializer())
+    def post(self, request):
+        warehouse = request.user.staff_profile.warehouses.first()
+        data = request.data
+
+        materials_data = []
+
+        for d in data['details']:
+            materials_data.append(
+                Nomenclature(
+                    title=data['title'],
+                    type=NomType.MATERIAL,
+                    unit=data['unit'],
+                    cost_price=d['cost_price'],
+                    color_id=d['color'],
+                    coefficient=d['coefficient'],
+                    status=NomStatus.CUT
+                )
+            )
+
+        created_materials = Nomenclature.objects.bulk_create(materials_data)
+        material_ids = [op.id for op in created_materials]
+
+        count_data = []
+
+        for m in material_ids:
+            count_data.append(
+                NomCount(
+                    warehouse=warehouse,
+                    nomenclature_id=m,
+                    amount=1
+                )
+            )
+        NomCount.objects.bulk_create(count_data)
+
+        return Response('Success!', status=status.HTTP_200_OK)
+
 
 
 class StockInputView(APIView):
