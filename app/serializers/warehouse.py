@@ -192,7 +192,7 @@ class QuantityHistoryListSerializer(serializers.ModelSerializer):
 class NomenclatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Nomenclature
-        fields = ['id', 'title', 'vendor_code', 'unit']
+        fields = ['id', 'title', 'vendor_code', 'unit', 'color']
 
 
 class QuantityNomenclatureSerializer(serializers.ModelSerializer):
