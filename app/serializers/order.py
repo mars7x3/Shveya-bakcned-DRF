@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 from my_db.enums import CombinationStatus, OrderStatus
 from my_db.models import Order, ClientProfile, OrderProductAmount, OrderProduct, PartyDetail, Party, Nomenclature, Size, \
-    Color, StaffProfile, WorkDetail, Warehouse
+    Color, StaffProfile, WorkDetail, Warehouse, PartyConsumable
 from tasks.order import gp_move_in_warehouse, material_move_out_warehouse
 from utils.order import duplicate_nomenclature
 
@@ -161,6 +161,15 @@ class GETPartyDetailSerializer(serializers.ModelSerializer):
         fields = ['size', 'plan_amount', 'true_amount', 'color']
 
 
+class GETPartyConsumableSerializer(serializers.ModelSerializer):
+    nomenclature = NomenclatureSerializer()
+
+    class Meta:
+        model = PartyConsumable
+        fields = ['nomenclature', 'defect', 'remainder', 'passport_length', 'table_length', 'layers_count',
+                  'number_of_marker', 'restyled', 'fact_length', 'fail', 'quantity', 'count_in_layer']
+
+
 class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfile
@@ -169,11 +178,12 @@ class StaffSerializer(serializers.ModelSerializer):
 
 class GETPartySerializer(serializers.ModelSerializer):
     details = GETPartyDetailSerializer(many=True)
+    consumptions = GETPartyConsumableSerializer(many=True)
     staff = StaffSerializer()
 
     class Meta:
         model = Party
-        fields = ['nomenclature', 'staff', 'number', 'status', 'created_at', 'details']
+        fields = ['nomenclature', 'staff', 'number', 'status', 'created_at', 'details', 'consumptions']
 
 
 class WarehouseSerializer(serializers.ModelSerializer):

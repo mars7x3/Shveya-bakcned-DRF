@@ -1,7 +1,7 @@
 from collections import defaultdict
 from decimal import Decimal
 
-from django.db.models import Q
+from django.db.models import Q, Sum
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from django_filters import rest_framework as filters
@@ -11,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from endpoints.pagination import StandardPagination
 from endpoints.permissions import IsDirectorAndTechnologist, ClientIsOwner
-from my_db.models import Order
+from my_db.models import Order, NomCount
 from serializers.order import OrderListSerializer, OrderCRUDSerializer, OrderDetailSerializer, \
     ClientOrderListSerializer, ClientOrderDetailSerializer
 
@@ -63,18 +63,24 @@ class OrderModelViewSet(mixins.CreateModelMixin,
 class InvoiceDataVie(APIView):
     def get(self, request):
         order_id = request.query_params.get('order_id')
-        invoice = defaultdict(lambda: {'colors': defaultdict(Decimal), 'unit': None, 'title': None})
+        invoice = defaultdict(lambda: {
+            'colors': defaultdict(Decimal),
+            'unit': None,
+            'title': None,
+            'stock_amount': Decimal(0)
+        })
 
         order = Order.objects.prefetch_related(
             'products__amounts__color',
             'products__nomenclature__consumables__material_nomenclature',
         ).get(id=order_id)
 
+        # Собираем ID всех материалов, которые будут в накладной
+        material_ids = set()
         for order_product in order.products.all():
             product_nomenclature = order_product.nomenclature
             consumables = product_nomenclature.consumables.all()
 
-            # Для каждого OrderProductAmount (может быть разный цвет/размер)
             for amount_entry in order_product.amounts.all():
                 amount = amount_entry.amount
                 color_title = amount_entry.color.title if amount_entry.color else '—'
@@ -85,19 +91,31 @@ class InvoiceDataVie(APIView):
                         continue
 
                     total_consumed = amount * consumable.consumption
-
                     key = material.id
+
                     invoice[key]['title'] = material.title
                     invoice[key]['unit'] = consumable.unit
                     invoice[key]['colors'][color_title] += total_consumed
 
-        # Формируем итоговый список
+                    material_ids.add(material.id)
+
+        # Получаем остатки по всем складам для этих материалов
+        stocks = (
+            NomCount.objects
+            .filter(nomenclature_id__in=material_ids)
+            .values('nomenclature_id')
+            .annotate(total_stock=Sum('amount'))
+        )
+        stock_map = {s['nomenclature_id']: s['total_stock'] or Decimal(0) for s in stocks}
+
+        # Формируем результат
         result = []
-        for entry in invoice.values():
+        for material_id, entry in invoice.items():
             result.append({
                 'title': entry['title'],
                 'colors': {color: float(amount) for color, amount in entry['colors'].items()},
                 'unit': entry['unit'],
+                'stock_amount': float(stock_map.get(material_id, Decimal(0)))
             })
 
         return Response(result, status=status.HTTP_200_OK)
