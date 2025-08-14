@@ -286,6 +286,8 @@ class MovingListView(ListAPIView):
 
 
 class MovingDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
     def get_object(self, pk):
         try:
             return Quantity.objects.prefetch_related('quantities').get(pk=pk)

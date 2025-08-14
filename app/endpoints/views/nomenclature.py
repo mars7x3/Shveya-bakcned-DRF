@@ -107,6 +107,9 @@ class GPDetailView(APIView):
 
 
 class PatternListView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
+    @staticmethod
     def get_object(self, pk):
         try:
             return Nomenclature.objects.prefetch_related('patterns').get(pk=pk)
@@ -124,6 +127,8 @@ class PatternListView(APIView):
 
 
 class FileListView(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
     def get_object(self, pk):
         try:
             return Nomenclature.objects.prefetch_related('files').get(pk=pk)

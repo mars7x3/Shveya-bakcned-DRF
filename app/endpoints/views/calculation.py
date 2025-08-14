@@ -52,7 +52,7 @@ class CalculationViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
                    GenericViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
     serializer_class = CalculationSerializer
     queryset = Calculation.objects.all()
 

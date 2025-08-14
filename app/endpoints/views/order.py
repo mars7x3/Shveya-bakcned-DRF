@@ -61,6 +61,8 @@ class OrderModelViewSet(mixins.CreateModelMixin,
 
 
 class InvoiceDataVie(APIView):
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
+
     def get(self, request):
         order_id = request.query_params.get('order_id')
         invoice = defaultdict(lambda: {

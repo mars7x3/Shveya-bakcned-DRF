@@ -20,7 +20,7 @@ class PlanCRUDView(viewsets.ModelViewSet):
 
 
 class StatisticView(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsDirectorAndTechnologist]
 
     def get(self, request):
         date = request.query_params.get('date')
