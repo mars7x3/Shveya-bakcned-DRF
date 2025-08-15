@@ -66,18 +66,17 @@ class InvoiceDataVie(APIView):
     def get(self, request):
         order_id = request.query_params.get('order_id')
         invoice = defaultdict(lambda: {
-            'colors': defaultdict(Decimal),
+            'colors_need': defaultdict(Decimal),   # расход по цветам
+            'colors_stock': defaultdict(Decimal),  # остатки по цветам
             'unit': None,
-            'title': None,
-            'stock_amount': Decimal(0)
+            'title': None
         })
 
         order = Order.objects.prefetch_related(
             'products__amounts__color',
-            'products__nomenclature__consumables__material_nomenclature',
+            'products__nomenclature__consumables__material_nomenclature__color',
         ).get(id=order_id)
 
-        # Собираем ID всех материалов, которые будут в накладной
         material_ids = set()
         for order_product in order.products.all():
             product_nomenclature = order_product.nomenclature
@@ -97,27 +96,38 @@ class InvoiceDataVie(APIView):
 
                     invoice[key]['title'] = material.title
                     invoice[key]['unit'] = consumable.unit
-                    invoice[key]['colors'][color_title] += total_consumed
+                    invoice[key]['colors_need'][color_title] += total_consumed
 
                     material_ids.add(material.id)
 
-        # Получаем остатки по всем складам для этих материалов
+        # Остатки по цветам из NomCount.nomenclature.color
         stocks = (
             NomCount.objects
             .filter(nomenclature_id__in=material_ids)
-            .values('nomenclature_id')
+            .values('nomenclature_id', 'nomenclature__color__title')
             .annotate(total_stock=Sum('amount'))
         )
-        stock_map = {s['nomenclature_id']: s['total_stock'] or Decimal(0) for s in stocks}
+
+        for stock in stocks:
+            mat_id = stock['nomenclature_id']
+            color_title = stock['nomenclature__color__title'] or '—'
+            invoice[mat_id]['colors_stock'][color_title] += stock['total_stock'] or Decimal(0)
 
         # Формируем результат
         result = []
-        for material_id, entry in invoice.items():
+        for entry in invoice.values():
+            colors_dict = {}
+            # теперь берём только цвета, которые есть в заказе
+            for color in entry['colors_need'].keys():
+                colors_dict[color] = {
+                    'need': float(entry['colors_need'][color]),
+                    'stock': float(entry['colors_stock'].get(color, Decimal(0)))
+                }
+
             result.append({
                 'title': entry['title'],
-                'colors': {color: float(amount) for color, amount in entry['colors'].items()},
-                'unit': entry['unit'],
-                'stock_amount': float(stock_map.get(material_id, Decimal(0)))
+                'colors': colors_dict,
+                'unit': entry['unit']
             })
 
         return Response(result, status=status.HTTP_200_OK)

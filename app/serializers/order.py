@@ -42,6 +42,14 @@ class ColorSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'code']
 
 
+class GetNomenclatureSerializer(serializers.ModelSerializer):
+    color = ColorSerializer()
+
+    class Meta:
+        model = Nomenclature
+        fields = ['id', 'title', 'vendor_code', 'color']
+
+
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
@@ -162,7 +170,7 @@ class GETPartyDetailSerializer(serializers.ModelSerializer):
 
 
 class GETPartyConsumableSerializer(serializers.ModelSerializer):
-    nomenclature = NomenclatureSerializer()
+    nomenclature = GetNomenclatureSerializer()
 
     class Meta:
         model = PartyConsumable
