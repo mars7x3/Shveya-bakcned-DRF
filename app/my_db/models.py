@@ -140,6 +140,9 @@ class NomFile(models.Model):
 class CombinationFile(models.Model):
     title = models.CharField(max_length=100)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Combination(models.Model):
     nomenclature = models.ForeignKey(
@@ -156,6 +159,9 @@ class Combination(models.Model):
     def __str__(self):
         return f'{self.id}. {self.title}'
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Equipment(models.Model):
     title = models.CharField(max_length=100)
@@ -167,6 +173,9 @@ class Equipment(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-id']
 
 
 class EquipmentImages(models.Model):
@@ -187,6 +196,9 @@ class EquipmentService(models.Model):
     price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Operation(models.Model):
     title = models.CharField(max_length=100)
@@ -202,6 +214,9 @@ class Operation(models.Model):
     is_active = models.BooleanField(default=True)
     is_sample = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Consumable(models.Model):
     nomenclature = models.ForeignKey(
@@ -214,6 +229,9 @@ class Consumable(models.Model):
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
 
+    class Meta:
+        ordering = ['-id']
+
 
 class Price(models.Model):
     nomenclature = models.ForeignKey(
@@ -221,6 +239,9 @@ class Price(models.Model):
     )
     title = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=12, decimal_places=3)
+
+    class Meta:
+        ordering = ['-id']
 
 # ______________________________ Nomenclature Operation end ______________________________
 
