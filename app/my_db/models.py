@@ -105,7 +105,7 @@ class Color(models.Model):
 
 class Nomenclature(models.Model):
     vendor_code = models.CharField(max_length=50, blank=True, null=True)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     type = models.IntegerField(choices=NomType.choices)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -146,7 +146,7 @@ class Combination(models.Model):
         Nomenclature, on_delete=models.SET_NULL, blank=True, null=True, related_name='combinations'
     )
     operations = models.ManyToManyField('Operation', related_name='combinations')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     file = models.ForeignKey(CombinationFile, on_delete=models.SET_NULL, blank=True, null=True,
                              related_name='combinations')
     is_sample = models.BooleanField(default=False)
@@ -158,7 +158,7 @@ class Combination(models.Model):
 
 
 class Equipment(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
     is_active = models.BooleanField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
@@ -189,7 +189,7 @@ class EquipmentService(models.Model):
 
 
 class Operation(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     time = models.IntegerField(default=0)  # secs
     price = models.DecimalField(max_digits=12, decimal_places=3)
     nomenclature = models.ForeignKey(
@@ -219,7 +219,7 @@ class Price(models.Model):
     nomenclature = models.ForeignKey(
         Nomenclature, on_delete=models.CASCADE, related_name='prices',
     )
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=12, decimal_places=3)
 
 # ______________________________ Nomenclature Operation end ______________________________
@@ -228,9 +228,9 @@ class Price(models.Model):
 # ______________________________ Warehouse ______________________________
 
 class Warehouse(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     staffs = models.ManyToManyField(StaffProfile, related_name='warehouses')
-    address = models.CharField(max_length=50, blank=True, null=True)
+    address = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f'{self.id}. {self.title}'
@@ -430,7 +430,7 @@ class Plan(models.Model):
 class Calculation(models.Model):
     vendor_code = models.CharField(max_length=50, blank=True, null=True)
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, blank=True, null=True)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
     cost_price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
@@ -448,7 +448,7 @@ class CalCombination(models.Model):
     calculation = models.ForeignKey(
         Calculation, on_delete=models.CASCADE, related_name='combinations'
     )
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     status = models.IntegerField(choices=CombinationStatus.choices, blank=True, null=True)
 
     def __str__(self):
@@ -465,7 +465,7 @@ class CalOperation(models.Model):
     rank = models.ForeignKey(
         Rank, on_delete=models.SET_NULL, blank=True, null=True, related_name='cal_operations'
     )
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     time = models.IntegerField(default=0)  # secs
     price = models.DecimalField(max_digits=12, decimal_places=3, blank=True, null=True)
 
@@ -477,7 +477,7 @@ class CalConsumable(models.Model):
     calculation = models.ForeignKey(
         Calculation, on_delete=models.CASCADE, related_name='cal_consumables'
     )
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     consumption = models.DecimalField(max_digits=12, decimal_places=3)
     unit = models.IntegerField(choices=NomUnit.choices, blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=3, default=0)
@@ -487,7 +487,7 @@ class CalPrice(models.Model):
     calculation = models.ForeignKey(
         Calculation, on_delete=models.CASCADE, related_name='cal_prices'
     )
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=12, decimal_places=3)
 
 
